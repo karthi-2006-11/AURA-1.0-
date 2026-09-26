@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AURA - Autonomous User Request Agent</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="app-header">
+      <div class="logo-badge">AURA</div>
+      <h1>Autonomous User Request Agent</h1>
+      <p class="subtitle">Phase 1: Railway Natural-Language Understanding Prototype</p>
+    </header>
+
+    <main class="main-content">
+      <!-- Input Card -->
+      <section class="card input-card">
+        <label for="request-input" class="input-label">Describe your train journey in natural language:</label>
+        <textarea
+          id="request-input"
+          rows="3"
+          placeholder="Example: Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC."
+        ></textarea>
+
+        <!-- Quick Example Prompts -->
+        <div class="examples-container">
+          <span class="examples-label">Try quick examples:</span>
+          <div class="example-chips">
+            <button type="button" class="chip" data-text="Book a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC.">Full Request</button>
+            <button type="button" class="chip" data-text="I want to travel from Chennai to Bangalore tomorrow.">Basic Request</button>
+            <button type="button" class="chip" data-text="Book me a sleeper train from Madurai to Chennai for 3 passengers.">Missing Date</button>
+            <button type="button" class="chip" data-text="Book a train to Coimbatore tomorrow.">Missing Source</button>
+            <button type="button" class="chip" data-text="Hello, how are you?">Unrelated</button>
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button id="analyze-btn" class="btn btn-primary">Analyze Request</button>
+          <button id="clear-btn" class="btn btn-secondary">Clear</button>
+        </div>
+
+        <div id="error-message" class="alert alert-error" style="display: none;"></div>
+      </section>
+
+      <!-- Output Card -->
+      <section id="result-card" class="card result-card" style="display: none;">
+        <!-- Status Banner -->
+        <div id="status-banner" class="status-banner">
+          <span id="status-badge" class="badge">Valid Request</span>
+          <span id="status-intent" class="intent-text">Intent: train_booking</span>
+        </div>
+
+        <!-- Human-Readable Interpretation -->
+        <div class="interpretation-box">
+          <h3>Human-Readable Interpretation</h3>
+          <p id="human-readable-text" class="interpretation-text"></p>
+        </div>
+
+        <!-- Missing Information Alert (if any) -->
+        <div id="missing-fields-box" class="alert alert-warning" style="display: none;">
+          <strong>Missing Information Required:</strong>
+          <ul id="missing-fields-list"></ul>
+        </div>
+
+        <!-- Structured Entities Grid -->
+        <div class="structured-box">
+          <h3>Structured Extracted Information</h3>
+          <div class="entity-grid">
+            <div class="entity-item">
+              <span class="entity-label">Intent</span>
+              <span id="entity-intent" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">From (Source)</span>
+              <span id="entity-source" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">To (Destination)</span>
+              <span id="entity-destination" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">Date</span>
+              <span id="entity-date" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">Time Preference</span>
+              <span id="entity-time" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">Passengers</span>
+              <span id="entity-passengers" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">Class</span>
+              <span id="entity-class" class="entity-value">-</span>
+            </div>
+            <div class="entity-item">
+              <span class="entity-label">Status</span>
+              <span id="entity-valid" class="entity-value">-</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Raw JSON Viewer -->
+        <details class="json-details">
+          <summary>View Structured JSON Response</summary>
+          <pre id="json-output"></pre>
+        </details>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>AURA Prototype &bull; Phase 1: Foundation & Natural Language Understanding</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
