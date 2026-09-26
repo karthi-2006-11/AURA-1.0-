@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AURA - Autonomous User Request Agent</title>
+  <title>AURA - Autonomous User Request Agent (Phase 2)</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -11,108 +11,138 @@
     <header class="app-header">
       <div class="logo-badge">AURA</div>
       <h1>Autonomous User Request Agent</h1>
-      <p class="subtitle">Phase 1: Railway Natural-Language Understanding Prototype</p>
+      <p class="subtitle">Phase 2: AI Agent & Multi-Turn Booking Workflow Prototype</p>
+
+      <!-- Workflow Status Stepper -->
+      <div class="stepper-container">
+        <div id="step-collecting" class="step active">
+          <span class="step-num">1</span>
+          <span class="step-label">Collecting Information</span>
+        </div>
+        <div class="step-arrow">&rarr;</div>
+        <div id="step-ready" class="step">
+          <span class="step-num">2</span>
+          <span class="step-label">Ready for Confirmation</span>
+        </div>
+        <div class="step-arrow">&rarr;</div>
+        <div id="step-confirmed" class="step">
+          <span class="step-num">3</span>
+          <span class="step-label">Confirmed</span>
+        </div>
+      </div>
     </header>
 
-    <main class="main-content">
-      <!-- Input Card -->
-      <section class="card input-card">
-        <label for="request-input" class="input-label">Describe your train journey in natural language:</label>
-        <textarea
-          id="request-input"
-          rows="3"
-          placeholder="Example: Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC."
-        ></textarea>
+    <main class="agent-layout">
+      <!-- Left Column: Conversational Agent Interface -->
+      <section class="card chat-card">
+        <div class="chat-header">
+          <h2>Agent Conversation</h2>
+          <button id="reset-btn" class="btn btn-outline-sm" title="Start a new booking session">New Request</button>
+        </div>
 
-        <!-- Quick Example Prompts -->
-        <div class="examples-container">
-          <span class="examples-label">Try quick examples:</span>
-          <div class="example-chips">
-            <button type="button" class="chip" data-text="Book a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC.">Full Request</button>
-            <button type="button" class="chip" data-text="I want to travel from Chennai to Bangalore tomorrow.">Basic Request</button>
-            <button type="button" class="chip" data-text="Book me a sleeper train from Madurai to Chennai for 3 passengers.">Missing Date</button>
-            <button type="button" class="chip" data-text="Book a train to Coimbatore tomorrow.">Missing Source</button>
-            <button type="button" class="chip" data-text="Hello, how are you?">Unrelated</button>
+        <!-- Chat History -->
+        <div id="chat-messages" class="chat-messages">
+          <!-- Initial welcome bubble -->
+          <div class="message-bubble agent-bubble">
+            <div class="bubble-sender">AURA Agent</div>
+            <div class="bubble-content">
+              Hello! I am AURA. Tell me where and when you would like to travel (e.g. <em>"Book a train from Chennai to Coimbatore tomorrow"</em>).
+            </div>
           </div>
         </div>
 
-        <div class="button-group">
-          <button id="analyze-btn" class="btn btn-primary">Analyze Request</button>
-          <button id="clear-btn" class="btn btn-secondary">Clear</button>
+        <!-- Dynamic Contextual Suggestions / Quick Chips -->
+        <div id="quick-suggestions" class="quick-suggestions">
+          <span class="suggestions-label">Quick suggestions:</span>
+          <div id="chips-container" class="chips-container">
+            <button type="button" class="chip-action" data-msg="Book a train from Chennai to Coimbatore tomorrow for 2 people in 3AC.">Full Request</button>
+            <button type="button" class="chip-action" data-msg="Book a train from Chennai to Coimbatore tomorrow.">Missing Passengers & Class</button>
+            <button type="button" class="chip-action" data-msg="Book a train to Coimbatore tomorrow.">Missing Source</button>
+          </div>
         </div>
 
-        <div id="error-message" class="alert alert-error" style="display: none;"></div>
+        <!-- Chat Input Form -->
+        <form id="chat-form" class="chat-input-area">
+          <textarea
+            id="user-input"
+            rows="2"
+            placeholder="Type your railway request or reply..."
+            autocomplete="off"
+          ></textarea>
+          <div class="chat-controls">
+            <button type="submit" id="send-btn" class="btn btn-primary">Send</button>
+          </div>
+        </form>
       </section>
 
-      <!-- Output Card -->
-      <section id="result-card" class="card result-card" style="display: none;">
-        <!-- Status Banner -->
-        <div id="status-banner" class="status-banner">
-          <span id="status-badge" class="badge">Valid Request</span>
-          <span id="status-intent" class="intent-text">Intent: train_booking</span>
+      <!-- Right Column: Live Booking Task State -->
+      <section class="card state-card">
+        <div class="state-header">
+          <h2>Booking Task State</h2>
+          <span id="task-status-badge" class="badge badge-collecting">Collecting Info</span>
         </div>
 
-        <!-- Human-Readable Interpretation -->
-        <div class="interpretation-box">
-          <h3>Human-Readable Interpretation</h3>
-          <p id="human-readable-text" class="interpretation-text"></p>
+        <div class="task-id-bar">
+          <span class="meta-label">Task ID:</span>
+          <span id="task-id-display" class="meta-value">Not Started</span>
         </div>
 
-        <!-- Missing Information Alert (if any) -->
-        <div id="missing-fields-box" class="alert alert-warning" style="display: none;">
-          <strong>Missing Information Required:</strong>
-          <ul id="missing-fields-list"></ul>
-        </div>
-
-        <!-- Structured Entities Grid -->
-        <div class="structured-box">
-          <h3>Structured Extracted Information</h3>
-          <div class="entity-grid">
-            <div class="entity-item">
-              <span class="entity-label">Intent</span>
-              <span id="entity-intent" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">From (Source)</span>
-              <span id="entity-source" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">To (Destination)</span>
-              <span id="entity-destination" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">Date</span>
-              <span id="entity-date" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">Time Preference</span>
-              <span id="entity-time" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">Passengers</span>
-              <span id="entity-passengers" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">Class</span>
-              <span id="entity-class" class="entity-value">-</span>
-            </div>
-            <div class="entity-item">
-              <span class="entity-label">Status</span>
-              <span id="entity-valid" class="entity-value">-</span>
-            </div>
+        <!-- Journey Parameters Table -->
+        <div class="state-details">
+          <div class="state-row">
+            <span class="field-label">From (Source):</span>
+            <span id="state-source" class="field-value null-value">null</span>
+          </div>
+          <div class="state-row">
+            <span class="field-label">To (Destination):</span>
+            <span id="state-destination" class="field-value null-value">null</span>
+          </div>
+          <div class="state-row">
+            <span class="field-label">Date:</span>
+            <span id="state-date" class="field-value null-value">null</span>
+          </div>
+          <div class="state-row">
+            <span class="field-label">Time Preference:</span>
+            <span id="state-time" class="field-value null-value">null</span>
+          </div>
+          <div class="state-row">
+            <span class="field-label">Passengers:</span>
+            <span id="state-passengers" class="field-value null-value">null</span>
+          </div>
+          <div class="state-row">
+            <span class="field-label">Travel Class:</span>
+            <span id="state-class" class="field-value null-value">null</span>
           </div>
         </div>
 
-        <!-- Raw JSON Viewer -->
+        <!-- Missing Information Notice -->
+        <div id="missing-box" class="missing-box">
+          <span class="missing-title">Missing Information:</span>
+          <div id="missing-tags" class="missing-tags">
+            <span class="tag">source</span>
+            <span class="tag">destination</span>
+            <span class="tag">date</span>
+            <span class="tag">passengers</span>
+            <span class="tag">class</span>
+          </div>
+        </div>
+
+        <!-- Next Required Action -->
+        <div class="action-box">
+          <span class="action-label">Agent Next Action:</span>
+          <span id="state-action" class="action-value">request_source</span>
+        </div>
+
+        <!-- Collapsible Raw JSON Task State -->
         <details class="json-details">
-          <summary>View Structured JSON Response</summary>
-          <pre id="json-output"></pre>
+          <summary>Live Task JSON</summary>
+          <pre id="state-json">{ "status": "uninitialized" }</pre>
         </details>
       </section>
     </main>
 
     <footer class="app-footer">
-      <p>AURA Prototype &bull; Phase 1: Foundation & Natural Language Understanding</p>
+      <p>AURA Prototype &bull; Phase 2: Autonomous Agent &amp; Simulated Booking Workflow</p>
     </footer>
   </div>
 

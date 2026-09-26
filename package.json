@@ -1,11 +1,11 @@
 {
   "name": "aura",
   "version": "1.0.0",
-  "description": "AURA - Autonomous User Request Agent (Phase 1)",
+  "description": "AURA - Autonomous User Request Agent (Phase 1 & Phase 2)",
   "main": "backend/server.js",
   "scripts": {
     "start": "node backend/server.js",
-    "test": "node tests/parser.test.js && node tests/server.test.js"
+    "test": "node tests/parser.test.js && node tests/server.test.js && node tests/agent.test.js && node tests/agent_server.test.js"
   },
   "dependencies": {
     "express": "^4.21.2"
