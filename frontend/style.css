@@ -210,11 +210,17 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 14px 22px;
-  background-color: var(--bg-panel);
+  height: 68px;
+  padding: 0 22px;
+  position: sticky;
+  top: 12px;
+  z-index: 100;
+  background-color: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
-  margin-bottom: 14px;
+  margin-bottom: 16px;
   box-shadow: var(--shadow-panel);
   transition: all var(--transition-normal);
 }
@@ -222,21 +228,22 @@ body {
 .header-brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
 }
 
 .brand-monogram {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 42px;
-  height: 42px;
+  width: 38px;
+  height: 38px;
   background: var(--monogram-bg);
   border: 1px solid var(--monogram-border);
   border-radius: var(--radius-md);
   color: #ffffff;
   box-shadow: 0 2px 10px rgba(2, 132, 199, 0.3);
   transition: transform var(--transition-fast);
+  flex-shrink: 0;
 }
 
 .brand-monogram:hover {
@@ -249,13 +256,14 @@ body {
 }
 
 .brand-title {
-  font-size: 1.18rem;
+  font-size: 1.15rem;
   font-weight: 800;
-  letter-spacing: -0.2px;
+  letter-spacing: -0.3px;
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--text-primary);
+  line-height: 1.2;
 }
 
 .version-tag {
@@ -271,8 +279,9 @@ body {
 }
 
 .brand-desc {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-muted);
+  font-weight: 500;
 }
 
 .header-controls {
@@ -512,21 +521,24 @@ body {
 
 .workspace-grid {
   display: grid;
-  grid-template-columns: 1fr 390px;
-  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 20px;
   flex: 1;
   align-items: stretch;
+  transition: all var(--transition-normal);
 }
 
 @media (max-width: 1120px) {
   .workspace-grid {
-    grid-template-columns: 1fr 350px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 16px;
   }
 }
 
-@media (max-width: 890px) {
+@media (max-width: 900px) {
   .workspace-grid {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 }
 
@@ -623,12 +635,12 @@ body {
   border-radius: var(--radius-full);
 }
 
-/* Hero / Empty State Card */
+/* Hero / Empty State Card (AI Railway Assistant Landing Experience) */
 .empty-state-card {
   margin: auto;
-  max-width: 580px;
+  max-width: 620px;
   text-align: center;
-  padding: 40px 32px;
+  padding: 48px 32px;
   background-color: var(--bg-card);
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-xl);
@@ -646,11 +658,11 @@ body {
   color: var(--accent-cyan);
   font-size: 0.72rem;
   font-weight: 700;
-  letter-spacing: 0.8px;
+  letter-spacing: 0.9px;
   text-transform: uppercase;
-  padding: 4px 12px;
+  padding: 4px 14px;
   border-radius: var(--radius-full);
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .hero-sparkle {
@@ -658,107 +670,73 @@ body {
 }
 
 .empty-title {
-  font-size: 1.45rem;
+  font-size: 2.5rem;
   font-weight: 800;
-  letter-spacing: -0.4px;
-  margin-bottom: 10px;
+  letter-spacing: -0.035em;
+  margin-bottom: 12px;
   color: var(--text-primary);
-  line-height: 1.25;
+  line-height: 1.15;
 }
 
 .empty-desc {
-  font-size: 0.92rem;
+  font-size: 1.05rem;
   color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 28px;
+  line-height: 1.55;
+  margin-bottom: 30px;
 }
 
-.starter-prompts {
-  text-align: left;
-}
-
-.starter-label {
-  display: block;
-  font-size: 0.74rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.6px;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-}
-
-.starter-chips {
+.popular-requests-box {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.popular-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-muted);
+}
+
+.popular-chips {
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
+  justify-content: center;
 }
 
 .starter-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  width: 100%;
-  text-align: left;
+  justify-content: center;
   background-color: var(--bg-elevated);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 12px 16px;
+  border-radius: var(--radius-full);
+  padding: 9px 18px;
   font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--transition-fast);
+  white-space: nowrap;
 }
 
 .starter-chip:hover {
   background-color: var(--bg-card-hover);
   border-color: var(--accent-cyan);
-  transform: translateY(-1px) translateX(2px);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+  color: var(--accent-cyan);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px var(--accent-glow);
 }
 
-.chip-icon-wrap {
-  display: flex;
+.chip-route {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  background: rgba(56, 189, 248, 0.1);
-  color: var(--accent-cyan);
-  flex-shrink: 0;
-}
-
-.chip-content {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.chip-query {
-  font-size: 0.88rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.chip-meta {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-}
-
-.chip-arrow {
-  color: var(--text-muted);
-  font-size: 1rem;
-  transition: transform var(--transition-fast), color var(--transition-fast);
-}
-
-.starter-chip:hover .chip-arrow {
-  color: var(--accent-cyan);
-  transform: translateX(3px);
+  gap: 6px;
 }
 
 /* ==========================================================================
@@ -1262,13 +1240,106 @@ body {
 }
 
 /* ==========================================================================
+   DEDICATED FINAL BOOKING CONFIRMATION STATE (body.booking-complete)
+   ========================================================================== */
+
+body.booking-complete .workspace-grid {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: flex-start !important;
+  max-width: 960px !important;
+  margin: 0 auto !important;
+  width: 100% !important;
+}
+
+body.booking-complete .inspector-panel,
+body.booking-complete .composer-container,
+body.booking-complete #quick-replies-bar,
+body.booking-complete #agent-typing,
+body.booking-complete .chat-bubble,
+body.booking-complete .mock-provider-banner {
+  display: none !important;
+}
+
+body.booking-complete .conversation-panel {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: unset !important;
+  overflow: visible !important;
+}
+
+body.booking-complete .chat-stream {
+  padding: 10px 0 40px !important;
+  overflow: visible !important;
+  align-items: center !important;
+  width: 100% !important;
+}
+
+body.booking-complete .aura-booking-success-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  animation: slideUpFadeIn 0.35s ease-out;
+}
+
+/* 1. Final Confirmation Hero */
+.confirmation-hero {
+  text-align: center;
+  margin-bottom: 26px;
+  animation: slideUpFadeIn 0.3s ease-out;
+}
+
+.hero-check-circle {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  color: #10b981;
+  border: 2px solid rgba(16, 185, 129, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 14px;
+  box-shadow: 0 0 28px rgba(16, 185, 129, 0.25);
+}
+
+.hero-eyebrow {
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 1.4px;
+  text-transform: uppercase;
+  color: #10b981;
+  margin-bottom: 6px;
+}
+
+.hero-main-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  line-height: 1.2;
+}
+
+.hero-sub-title {
+  font-size: 1rem;
+  color: var(--text-secondary);
+}
+
+/* ==========================================================================
    10. AURA ELECTRONIC RESERVATION SLIP (E-TICKET)
    ========================================================================== */
 
 .aura-eticket-wrapper {
-  align-self: flex-start;
+  align-self: center;
   width: 100%;
-  max-width: 680px;
+  max-width: 860px;
   margin-top: 12px;
   margin-bottom: 8px;
   animation: slideUpFadeIn 0.35s ease-out;
@@ -1278,12 +1349,18 @@ body {
   background-color: #ffffff !important;
   color: #0f172a !important;
   border: 1px solid #cbd5e1;
-  border-top: 4px solid #1e3a8a;
-  border-radius: 12px;
+  border-top: 5px solid #1e3a8a;
+  border-radius: 18px;
   overflow: hidden;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.08);
   font-family: var(--font-sans);
   line-height: 1.45;
+  width: 100%;
+  max-width: 860px;
+}
+
+[data-theme="light"] .aura-eticket-card {
+  box-shadow: 0 20px 48px -10px rgba(15, 23, 42, 0.14), 0 0 0 1px rgba(15, 23, 42, 0.06);
 }
 
 /* Header */
@@ -1700,38 +1777,47 @@ body {
   color: #1e3a8a !important;
 }
 
-/* Disclaimer Footer */
+/* Disclaimer Footer (Subtle & Elegant Academic Prototype Note) */
 .eticket-disclaimer-footer {
-  background-color: #fefce8 !important;
-  border-top: 1px solid #fef08a;
-  padding: 12px 20px;
+  background-color: #f8fafc !important;
+  border-top: 1px solid #e2e8f0;
+  padding: 14px 20px;
   font-size: 0.72rem;
-  color: #854d0e !important;
+  color: #64748b !important;
   line-height: 1.45;
-}
-
-.eticket-disclaimer-header {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 800;
-  font-size: 0.74rem;
-  color: #a16207 !important;
-  margin-bottom: 4px;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
+  text-align: center;
 }
 
 .eticket-disclaimer-p {
   margin: 0;
+  font-weight: 600;
+  color: #475569 !important;
 }
 
-/* Actions Toolbar */
+.eticket-disclaimer-sub {
+  margin-top: 3px;
+  font-size: 0.66rem;
+  color: #94a3b8 !important;
+}
+
+/* Actions Toolbar (Under Ticket) */
+.confirmation-actions,
 .eticket-actions-toolbar {
   display: flex;
-  gap: 10px;
-  margin-top: 12px;
+  gap: 12px;
+  margin-top: 24px;
+  margin-bottom: 18px;
+  justify-content: center;
   flex-wrap: wrap;
+  width: 100%;
+}
+
+.confirmation-actions .btn-primary {
+  padding: 12px 26px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border-radius: var(--radius-full);
+  box-shadow: 0 4px 18px rgba(2, 132, 199, 0.35);
 }
 
 .btn-ticket-action {
@@ -1739,11 +1825,72 @@ body {
   align-items: center;
   gap: 6px;
   cursor: pointer;
+  padding: 10px 18px;
+  font-size: 0.86rem;
+  font-weight: 600;
+  border-radius: var(--radius-full);
   transition: all var(--transition-fast);
 }
 
 .btn-ticket-action:hover {
   transform: translateY(-1px);
+}
+
+/* Collapsible Technical Session Details */
+.confirmation-technical-details {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  font-size: 0.82rem;
+  box-sizing: border-box;
+}
+
+.confirmation-technical-details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--text-muted);
+  user-select: none;
+  font-size: 0.78rem;
+  letter-spacing: 0.2px;
+}
+
+.confirmation-technical-details summary:hover {
+  color: var(--text-primary);
+}
+
+.conf-tech-body {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  color: var(--text-secondary);
+}
+
+.conf-tech-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conf-tech-row .mono {
+  font-family: var(--font-mono);
+  color: var(--accent-cyan);
+}
+
+.conf-tech-row .pill-cnf {
+  background-color: var(--success-bg);
+  color: var(--success-text);
+  border: 1px solid var(--success-border);
+  font-weight: 800;
+  font-size: 0.7rem;
+  padding: 2px 7px;
+  border-radius: 4px;
 }
 
 /* ==========================================================================
@@ -1955,17 +2102,128 @@ kbd {
   margin-bottom: 14px;
 }
 
-/* 1. Workflow Stepper */
-.stepper-header {
+/* 1. Trip Summary Card */
+.trip-summary-card {
+  padding: 16px;
+}
+
+.compact-route-display {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  gap: 6px;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
   margin-bottom: 12px;
 }
 
-.progress-pill {
+.route-station-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.route-point-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.origin-dot {
+  background-color: var(--accent-cyan);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
+}
+
+.dest-dot {
+  background-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.route-arrow-down {
+  padding-left: 2px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1;
+  margin: 1px 0;
+}
+
+.route-station-name {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.compact-trip-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.trip-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.trip-meta-date {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.btn-trip-change {
+  background: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  color: var(--accent-cyan);
+  border-radius: var(--radius-full);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-trip-change:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: var(--accent-cyan);
+}
+
+.trip-meta-sub {
+  font-size: 0.76rem;
+  color: var(--text-muted);
+}
+
+/* 2. Journey Workflow Stepper */
+.journey-stepper-card {
+  padding: 16px;
+}
+
+.workflow-strip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.workflow-strip-title {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-muted);
+}
+
+.workflow-strip-pct {
   font-family: var(--font-mono);
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 800;
   color: var(--accent-cyan);
 }
@@ -1976,7 +2234,7 @@ kbd {
   background-color: var(--bg-elevated);
   border-radius: var(--radius-full);
   overflow: hidden;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
   border: 1px solid var(--border-subtle);
 }
 
@@ -1987,26 +2245,26 @@ kbd {
   transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.workflow-steps {
+.journey-steps-track {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.journey-steps-track .step-node {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-.step-node {
-  display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 9px 12px;
-  border-radius: var(--radius-md);
-  background-color: var(--bg-elevated);
-  border: 1px solid transparent;
-  transition: all var(--transition-fast);
+  gap: 4px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  flex: 0 0 auto;
 }
 
-.step-indicator {
-  width: 30px;
-  height: 30px;
+.journey-steps-track .step-indicator {
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background-color: var(--bg-card);
   border: 1px solid var(--border-medium);
@@ -2014,113 +2272,167 @@ kbd {
   align-items: center;
   justify-content: center;
   font-family: var(--font-mono);
-  font-size: 0.74rem;
+  font-size: 0.7rem;
   font-weight: 800;
   color: var(--text-muted);
-  flex-shrink: 0;
   transition: all var(--transition-fast);
 }
 
-.step-check {
-  display: none;
-}
-
-.step-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.step-title {
-  font-size: 0.86rem;
-  font-weight: 700;
-  color: var(--text-secondary);
-}
-
-.step-caption {
-  font-size: 0.72rem;
-  color: var(--text-muted);
-}
-
-/* Active Step */
-.step-node.active {
-  background-color: rgba(56, 189, 248, 0.1);
-  border-color: rgba(56, 189, 248, 0.35);
-}
-
-.step-node.active .step-indicator {
+.journey-steps-track .step-node.active .step-indicator {
   background-color: var(--accent-cyan);
   border-color: var(--accent-cyan);
   color: var(--text-inverse);
-  box-shadow: 0 0 12px var(--accent-glow);
+  box-shadow: 0 0 10px var(--accent-glow);
 }
 
-.step-node.active .step-title {
-  color: var(--text-primary);
-}
-
-/* Completed Step */
-.step-node.completed {
-  background-color: var(--success-bg);
-  border-color: var(--success-border);
-}
-
-.step-node.completed .step-indicator {
+.journey-steps-track .step-node.completed .step-indicator {
   background-color: var(--success-base);
   border-color: var(--success-base);
   color: #ffffff;
 }
 
-.step-node.completed .step-number {
+.journey-steps-track .step-check {
   display: none;
 }
 
-.step-node.completed .step-check {
+.journey-steps-track .step-node.completed .step-check {
   display: block;
-  font-size: 0.85rem;
 }
 
-.step-node.completed .step-title {
+.journey-steps-track .step-node.completed .step-number {
+  display: none;
+}
+
+.journey-steps-track .step-node-label {
+  font-size: 0.6rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.journey-steps-track .step-node.active .step-node-label {
+  color: var(--accent-cyan);
+  font-weight: 800;
+}
+
+.journey-steps-track .step-node.completed .step-node-label {
   color: var(--success-text);
 }
 
-.step-connector {
-  width: 2px;
-  height: 10px;
+.journey-steps-track .step-connector {
+  flex: 1;
+  height: 2px;
   background-color: var(--border-subtle);
-  margin-left: 26px;
+  margin: 0 4px;
+  margin-bottom: 16px;
 }
 
-/* 2. Current Action Card */
-.current-action-card {
+/* 3. Collapsible Technical Drawer */
+.technical-drawer {
   background-color: var(--bg-card);
-  border-color: rgba(56, 189, 248, 0.25);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: 12px 14px;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-normal);
 }
 
-.action-top {
+.drawer-summary {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
+  cursor: pointer;
+  list-style: none;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--text-secondary);
+  user-select: none;
 }
 
-.pulse-badge {
+.drawer-summary::-webkit-details-marker {
+  display: none;
+}
+
+.summary-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.drawer-toggle-badge {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 3px 8px;
+  font-size: 0.68rem;
+  padding: 2px 7px;
   border-radius: var(--radius-xs);
-  background-color: rgba(56, 189, 248, 0.15);
-  color: var(--accent-cyan);
-  border: 1px solid rgba(56, 189, 248, 0.35);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-subtle);
+  color: var(--text-muted);
 }
 
-.current-action-text {
-  font-size: 0.94rem;
+.technical-drawer[open] .drawer-toggle-badge {
+  color: var(--accent-cyan);
+  border-color: var(--accent-cyan);
+}
+
+.drawer-body {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.tech-item-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.78rem;
+}
+
+.tech-key {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.tech-mono {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--accent-cyan);
+}
+
+.action-status-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tech-action-text {
+  font-size: 0.78rem;
   font-weight: 700;
   color: var(--text-primary);
 }
 
-/* 3. Trip Overview / Live Booking State */
+.tech-activity-block,
+.tech-json-block {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.tech-block-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+}
+
+/* Legacy & Shared Status Tags */
 .validity-tag {
   font-family: var(--font-mono);
   font-size: 0.7rem;
@@ -2629,8 +2941,14 @@ kbd {
   .app-header,
   .app-sidebar,
   .sidebar,
+  .inspector-panel,
+  .confirmation-hero,
+  .confirmation-actions,
+  .confirmation-technical-details,
+  .technical-drawer,
   .chat-composer,
   .composer-wrapper,
+  .composer-container,
   .message-bubble,
   .chat-bubble,
   .chat-date-divider,
@@ -2643,6 +2961,7 @@ kbd {
   .app-footer,
   .starter-prompts-grid,
   .empty-state,
+  .empty-state-card,
   #btn-new-request,
   #quick-replies-bar,
   #agent-typing {
