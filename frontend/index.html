@@ -305,7 +305,7 @@
                     <line x1="3" x2="21" y1="10" y2="10"/>
                   </svg>
                 </button>
-                <input type="date" id="journey-date-picker" class="journey-date-input" aria-label="Choose travel date">
+                <input type="date" id="journey-date-picker" class="journey-date-input" aria-hidden="true" tabindex="-1" style="display: none;">
               </div>
             </div>
 
@@ -394,6 +394,32 @@
         <span class="simulated-badge">&bull; MOCK RAILWAY PROVIDER &bull; Simulation only — no real railway ticket is booked</span>
       </div>
     </footer>
+    <!-- Custom AURA Calendar Popover (Floating above all scrollable panels) -->
+    <div class="aura-calendar" id="aura-calendar" role="dialog" aria-modal="true" aria-label="Select Journey Date" style="display: none;">
+      <div class="calendar-header">
+        <button type="button" class="cal-nav-btn prev-btn" id="cal-prev-month" aria-label="Previous month">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"></polyline></svg>
+        </button>
+        <div class="calendar-month-title" id="cal-month-title" aria-live="polite">September 2026</div>
+        <button type="button" class="cal-nav-btn next-btn" id="cal-next-month" aria-label="Next month">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+      </div>
+
+      <div class="calendar-weekdays" aria-hidden="true">
+        <span>Sun</span>
+        <span>Mon</span>
+        <span>Tue</span>
+        <span>Wed</span>
+        <span>Thu</span>
+        <span>Fri</span>
+        <span>Sat</span>
+      </div>
+
+      <div class="calendar-grid" id="cal-grid" role="grid" aria-label="Month dates">
+        <!-- Generated dynamically by script.js -->
+      </div>
+    </div>
   </div>
 
   <script src="script.js"></script>

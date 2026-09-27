@@ -51,6 +51,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const valDate = document.getElementById('val-date');
   const journeyDatePicker = document.getElementById('journey-date-picker');
   const btnOpenDatePicker = document.getElementById('btn-open-date-picker');
+
+  // DOM Elements: Custom AURA Calendar Popover
+  const auraCalendar = document.getElementById('aura-calendar');
+  const calPrevMonth = document.getElementById('cal-prev-month');
+  const calNextMonth = document.getElementById('cal-next-month');
+  const calMonthTitle = document.getElementById('cal-month-title');
+  const calGrid = document.getElementById('cal-grid');
+
+  // Calendar Popover State
+  let isCalendarOpen = false;
+  let activeCalendarTrigger = null;
+  let calViewYear = new Date().getFullYear();
+  let calViewMonth = new Date().getMonth();
+  let selectedJourneyDate = null;
   const rowTime = document.getElementById('row-time');
   const valTime = document.getElementById('val-time');
   const rowPassengers = document.getElementById('row-passengers');
@@ -111,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function initEventListeners() {
-    initDatePicker();
+    initCalendar();
 
     // Composer Submission
     composerForm.addEventListener('submit', (e) => {
@@ -139,44 +153,299 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  function initDatePicker() {
-    if (!journeyDatePicker) return;
-    const today = new Date();
-    journeyDatePicker.min = toDateInputValue(today);
+  function initCalendar() {
+    if (!auraCalendar) return;
 
     if (btnOpenDatePicker) {
       btnOpenDatePicker.addEventListener('click', (e) => {
         e.stopPropagation();
-        openDatePicker();
+        toggleCalendar(btnOpenDatePicker);
       });
     }
 
     if (valDate) {
-      valDate.addEventListener('click', () => {
-        openDatePicker();
+      valDate.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleCalendar(btnOpenDatePicker || valDate);
       });
     }
 
-    journeyDatePicker.addEventListener('change', (e) => {
-      const chosenIso = e.target.value;
-      if (!chosenIso) return;
-      onDatePicked(chosenIso);
+    if (rowDate) {
+      rowDate.addEventListener('click', (e) => {
+        if (e.target.closest('#btn-open-date-picker')) return;
+        toggleCalendar(btnOpenDatePicker || rowDate);
+      });
+    }
+
+    if (calPrevMonth) {
+      calPrevMonth.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeCalendarMonth(-1);
+      });
+    }
+
+    if (calNextMonth) {
+      calNextMonth.addEventListener('click', (e) => {
+        e.stopPropagation();
+        changeCalendarMonth(1);
+      });
+    }
+
+    // Dismiss on click outside
+    document.addEventListener('click', (e) => {
+      if (!isCalendarOpen) return;
+      if (auraCalendar.contains(e.target)) return;
+      if (activeCalendarTrigger && (activeCalendarTrigger.contains(e.target) || activeCalendarTrigger === e.target)) return;
+      closeCalendar();
+    });
+
+    // Dismiss on Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && isCalendarOpen) {
+        e.preventDefault();
+        const returnFocus = activeCalendarTrigger;
+        closeCalendar();
+        if (returnFocus && typeof returnFocus.focus === 'function') {
+          returnFocus.focus();
+        }
+      }
     });
   }
 
-  function openDatePicker() {
-    if (!journeyDatePicker) return;
-    try {
-      if (typeof journeyDatePicker.showPicker === 'function') {
-        journeyDatePicker.showPicker();
-      } else {
-        journeyDatePicker.focus();
-        journeyDatePicker.click();
-      }
-    } catch (err) {
-      journeyDatePicker.focus();
-      journeyDatePicker.click();
+  function toggleCalendar(triggerEl) {
+    if (isCalendarOpen && activeCalendarTrigger === triggerEl) {
+      closeCalendar();
+    } else {
+      openCalendar(triggerEl);
     }
+  }
+
+  function openCalendar(triggerEl) {
+    if (!auraCalendar) return;
+
+    activeCalendarTrigger = triggerEl || btnOpenDatePicker || rowDate;
+
+    // Determine initial month and selected date
+    const existingDateRaw = (currentBookingState && currentBookingState.date) || (valDate && !valDate.classList.contains('not-set') ? valDate.textContent : null);
+    const parsedExisting = parseJourneyDate(existingDateRaw);
+    const now = new Date();
+
+    if (parsedExisting && !isNaN(parsedExisting.getTime())) {
+      selectedJourneyDate = parsedExisting;
+      calViewYear = parsedExisting.getFullYear();
+      calViewMonth = parsedExisting.getMonth();
+    } else {
+      selectedJourneyDate = null;
+      calViewYear = now.getFullYear();
+      calViewMonth = now.getMonth();
+    }
+
+    renderCalendarGrid();
+
+    // Display calendar
+    auraCalendar.style.display = 'block';
+    isCalendarOpen = true;
+
+    positionCalendar(activeCalendarTrigger);
+
+    window.addEventListener('scroll', onCalendarViewportEvent, true);
+    window.addEventListener('resize', onCalendarViewportEvent);
+  }
+
+  function closeCalendar() {
+    if (!isCalendarOpen || !auraCalendar) return;
+    auraCalendar.style.display = 'none';
+    isCalendarOpen = false;
+    activeCalendarTrigger = null;
+
+    window.removeEventListener('scroll', onCalendarViewportEvent, true);
+    window.removeEventListener('resize', onCalendarViewportEvent);
+  }
+
+  function onCalendarViewportEvent() {
+    if (!isCalendarOpen || !activeCalendarTrigger) return;
+    if (!document.body.contains(activeCalendarTrigger)) {
+      closeCalendar();
+      return;
+    }
+    const rect = activeCalendarTrigger.getBoundingClientRect();
+    if (rect.bottom < -20 || rect.top > window.innerHeight + 20) {
+      closeCalendar();
+      return;
+    }
+    positionCalendar(activeCalendarTrigger);
+  }
+
+  function positionCalendar(trigger) {
+    if (!auraCalendar || !trigger) return;
+
+    const rect = trigger.getBoundingClientRect();
+    const calWidth = auraCalendar.offsetWidth || 310;
+    const calHeight = auraCalendar.offsetHeight || 320;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+    let top;
+
+    // Smart vertical positioning (above vs below)
+    if (spaceBelow >= calHeight + 12) {
+      top = rect.bottom + 8;
+    } else if (spaceAbove >= calHeight + 12) {
+      top = rect.top - calHeight - 8;
+    } else {
+      if (spaceBelow >= spaceAbove) {
+        top = Math.max(12, Math.min(rect.bottom + 8, window.innerHeight - calHeight - 12));
+      } else {
+        top = Math.max(12, Math.min(rect.top - calHeight - 8, window.innerHeight - calHeight - 12));
+      }
+    }
+
+    // Horizontal clamping: keep entirely inside viewport
+    let left;
+    if (window.innerWidth <= 480) {
+      left = Math.max(12, (window.innerWidth - calWidth) / 2);
+    } else {
+      // If trigger is in the right half of the screen, right-align calendar to trigger
+      let desiredLeft = (rect.right > window.innerWidth / 2)
+        ? (rect.right - calWidth)
+        : rect.left;
+
+      left = Math.max(12, Math.min(desiredLeft, window.innerWidth - calWidth - 12));
+    }
+
+    top = Math.max(12, Math.min(top, window.innerHeight - calHeight - 12));
+
+    auraCalendar.style.position = 'fixed';
+    auraCalendar.style.top = `${Math.round(top)}px`;
+    auraCalendar.style.left = `${Math.round(left)}px`;
+  }
+
+  function changeCalendarMonth(delta) {
+    const now = new Date();
+    const todayYear = now.getFullYear();
+    const todayMonth = now.getMonth();
+
+    calViewMonth += delta;
+    if (calViewMonth < 0) {
+      calViewMonth = 11;
+      calViewYear--;
+    } else if (calViewMonth > 11) {
+      calViewMonth = 0;
+      calViewYear++;
+    }
+
+    // Do not allow navigating before the current month
+    if (calViewYear < todayYear || (calViewYear === todayYear && calViewMonth < todayMonth)) {
+      calViewYear = todayYear;
+      calViewMonth = todayMonth;
+    }
+
+    renderCalendarGrid();
+    if (activeCalendarTrigger) {
+      positionCalendar(activeCalendarTrigger);
+    }
+  }
+
+  function renderCalendarGrid() {
+    if (!calGrid || !calMonthTitle) return;
+
+    const monthNames = [
+      'January', 'February', 'March', 'April', 'May', 'June',
+      'July', 'August', 'September', 'October', 'November', 'December'
+    ];
+
+    calMonthTitle.textContent = `${monthNames[calViewMonth]} ${calViewYear}`;
+
+    const now = new Date();
+    const todayYear = now.getFullYear();
+    const todayMonth = now.getMonth();
+    const todayDay = now.getDate();
+
+    const isAtCurrentMonth = (calViewYear === todayYear && calViewMonth === todayMonth);
+    if (calPrevMonth) {
+      calPrevMonth.disabled = isAtCurrentMonth;
+      calPrevMonth.setAttribute('aria-disabled', isAtCurrentMonth ? 'true' : 'false');
+    }
+
+    calGrid.innerHTML = '';
+
+    const firstDayIndex = new Date(calViewYear, calViewMonth, 1).getDay();
+    const daysInMonth = new Date(calViewYear, calViewMonth + 1, 0).getDate();
+    const daysInPrevMonth = new Date(calViewYear, calViewMonth, 0).getDate();
+
+    // Trailing days from previous month (muted/disabled)
+    for (let i = 0; i < firstDayIndex; i++) {
+      const dayNum = daysInPrevMonth - firstDayIndex + i + 1;
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day-btn is-outside';
+      btn.textContent = dayNum;
+      btn.disabled = true;
+      btn.tabIndex = -1;
+      btn.setAttribute('aria-hidden', 'true');
+      calGrid.appendChild(btn);
+    }
+
+    // Days in current month
+    for (let d = 1; d <= daysInMonth; d++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day-btn';
+      btn.textContent = d;
+
+      const dateObj = new Date(calViewYear, calViewMonth, d);
+      const isPast = (calViewYear < todayYear) ||
+                     (calViewYear === todayYear && calViewMonth < todayMonth) ||
+                     (calViewYear === todayYear && calViewMonth === todayMonth && d < todayDay);
+      const isToday = (calViewYear === todayYear && calViewMonth === todayMonth && d === todayDay);
+      const isSelected = selectedJourneyDate &&
+                         (selectedJourneyDate.getFullYear() === calViewYear &&
+                          selectedJourneyDate.getMonth() === calViewMonth &&
+                          selectedJourneyDate.getDate() === d);
+
+      const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      btn.setAttribute('aria-label', `${daysOfWeek[dateObj.getDay()]}, ${monthNames[calViewMonth]} ${d}, ${calViewYear}`);
+
+      if (isPast) {
+        btn.classList.add('is-past');
+        btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
+      } else {
+        if (isToday) btn.classList.add('is-today');
+        if (isSelected) {
+          btn.classList.add('is-selected');
+          btn.setAttribute('aria-selected', 'true');
+        }
+
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          onDateSelected(dateObj);
+        });
+      }
+
+      calGrid.appendChild(btn);
+    }
+
+    // Leading days from next month to complete the grid (fixed rows to avoid jumping)
+    const totalRendered = firstDayIndex + daysInMonth;
+    const targetCells = totalRendered > 35 ? 42 : 35;
+    for (let n = 1; n <= (targetCells - totalRendered); n++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'cal-day-btn is-outside';
+      btn.textContent = n;
+      btn.disabled = true;
+      btn.tabIndex = -1;
+      btn.setAttribute('aria-hidden', 'true');
+      calGrid.appendChild(btn);
+    }
+  }
+
+  function onDateSelected(dateObj) {
+    selectedJourneyDate = dateObj;
+    closeCalendar();
+    const isoStr = toDateInputValue(dateObj);
+    onDatePicked(isoStr);
   }
 
   function onDatePicked(chosenIso) {
@@ -407,7 +676,10 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    card.querySelector('.btn-edit-date-review')?.addEventListener('click', openDatePicker);
+    card.querySelector('.btn-edit-date-review')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCalendar(e.currentTarget);
+    });
 
     card.querySelector('.btn-confirm-action').addEventListener('click', () => {
       sendMessage('confirm');
@@ -610,7 +882,10 @@ document.addEventListener('DOMContentLoaded', () => {
       </div>
     `;
 
-    card.querySelector('.btn-edit-date-review')?.addEventListener('click', openDatePicker);
+    card.querySelector('.btn-edit-date-review')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openCalendar(e.currentTarget);
+    });
 
     card.querySelector('.btn-confirm-final').addEventListener('click', () => {
       sendMessage('confirm');
@@ -750,11 +1025,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (b.date) {
       updateEntityRow(rowDate, valDate, formatJourneyDate(b.date));
       const parsed = parseJourneyDate(b.date);
-      if (parsed && journeyDatePicker) {
-        journeyDatePicker.value = toDateInputValue(parsed);
+      if (parsed) {
+        selectedJourneyDate = parsed;
+        if (journeyDatePicker) {
+          journeyDatePicker.value = toDateInputValue(parsed);
+        }
       }
     } else {
       updateEntityRow(rowDate, valDate, null);
+      selectedJourneyDate = null;
       if (journeyDatePicker) journeyDatePicker.value = '';
     }
     updateEntityRow(rowTime, valTime, b.time_preference ? capitalize(b.time_preference) : null);
@@ -1080,6 +1359,9 @@ document.addEventListener('DOMContentLoaded', () => {
       journeyDatePicker.value = '';
       journeyDatePicker.min = toDateInputValue(new Date());
     }
+
+    closeCalendar();
+    selectedJourneyDate = null;
 
     // Clear chat stream and restore empty state
     chatStream.innerHTML = '';

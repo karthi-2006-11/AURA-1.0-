@@ -1832,15 +1832,7 @@ kbd {
 }
 
 .journey-date-input {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 28px;
-  height: 28px;
-  opacity: 0;
-  cursor: pointer;
-  pointer-events: auto;
-  z-index: 2;
+  display: none !important;
 }
 
 .btn-date-picker {
@@ -1866,6 +1858,167 @@ kbd {
 
 .btn-date-picker:active {
   transform: translateY(0);
+}
+
+/* ==========================================================================
+   CUSTOM AURA CALENDAR POPOVER
+   ========================================================================== */
+
+.aura-calendar {
+  position: fixed;
+  z-index: 10000;
+  width: 310px;
+  max-width: calc(100vw - 24px);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--border-subtle);
+  padding: 16px;
+  box-sizing: border-box;
+  user-select: none;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  animation: calPopIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] .aura-calendar {
+  box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.16), 0 0 0 1px rgba(0, 0, 0, 0.06);
+}
+
+@keyframes calPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.calendar-month-title {
+  font-size: 0.94rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.2px;
+}
+
+.cal-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.cal-nav-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  color: var(--accent-cyan);
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.cal-nav-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.cal-nav-btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+.calendar-weekdays span {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 0;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.cal-day-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  width: 100%;
+  border-radius: var(--radius-sm);
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.cal-day-btn:hover:not(:disabled) {
+  background: var(--bg-card-hover);
+  color: var(--accent-cyan);
+  border-color: rgba(56, 189, 248, 0.25);
+}
+
+.cal-day-btn:active:not(:disabled) {
+  transform: scale(0.94);
+}
+
+.cal-day-btn.is-today {
+  border-color: var(--accent-cyan);
+  font-weight: 700;
+  color: var(--accent-cyan);
+}
+
+.cal-day-btn.is-selected {
+  background: var(--accent-gradient) !important;
+  color: #ffffff !important;
+  font-weight: 700;
+  border-color: transparent !important;
+  box-shadow: 0 2px 8px var(--accent-glow);
+}
+
+.cal-day-btn.is-past {
+  color: var(--text-muted);
+  opacity: 0.28;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.cal-day-btn.is-outside {
+  color: var(--text-muted);
+  opacity: 0.18;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* 4. Activity Timeline */
