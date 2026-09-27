@@ -1261,93 +1261,489 @@ body {
   gap: 10px;
 }
 
-/* Mock Boarding Pass */
-.mock-ticket-card {
+/* ==========================================================================
+   10. AURA ELECTRONIC RESERVATION SLIP (E-TICKET)
+   ========================================================================== */
+
+.aura-eticket-wrapper {
   align-self: flex-start;
   width: 100%;
-  max-width: 580px;
-  background: var(--bg-card);
-  border: 2px solid var(--success-base);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  margin-top: 10px;
-  box-shadow: 0 12px 36px rgba(16, 185, 129, 0.16);
+  max-width: 680px;
+  margin-top: 12px;
+  margin-bottom: 8px;
   animation: slideUpFadeIn 0.35s ease-out;
 }
 
-.ticket-header {
-  background: linear-gradient(90deg, #065f46, #059669);
-  padding: 14px 20px;
+.aura-eticket-card {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1;
+  border-top: 4px solid #1e3a8a;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.16), 0 2px 6px rgba(0, 0, 0, 0.08);
+  font-family: var(--font-sans);
+  line-height: 1.45;
+}
+
+/* Header */
+.eticket-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
+  padding: 16px 20px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
 }
 
-.ticket-brand {
+.eticket-brand-col {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: #ffffff;
+}
+
+.eticket-logo-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.eticket-logo-icon {
+  color: #38bdf8 !important;
+  flex-shrink: 0;
+}
+
+.eticket-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.eticket-org-name {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  color: #94a3b8 !important;
+  text-transform: uppercase;
+}
+
+.eticket-doc-type {
+  font-size: 0.98rem;
   font-weight: 800;
-  font-size: 0.92rem;
+  letter-spacing: 0.5px;
+  color: #ffffff !important;
+}
+
+.eticket-status-col {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.eticket-simulated-badge {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #cbd5e1 !important;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.eticket-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background-color: #059669 !important;
+  color: #ffffff !important;
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Reference & Meta Bar */
+.eticket-ref-bar {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 20px;
+  gap: 10px;
+}
+
+.eticket-ref-cell {
+  display: flex;
+  flex-direction: column;
+}
+
+.eticket-cell-right {
+  text-align: right;
+}
+
+.eticket-cell-lbl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b !important;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+}
+
+.eticket-cell-val {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #0f172a !important;
+}
+
+.eticket-mono-ref {
+  font-family: var(--font-mono);
+  color: #1e3a8a !important;
+  font-size: 0.95rem;
+  font-weight: 800;
   letter-spacing: 0.5px;
 }
 
-.ticket-status-pill {
+.eticket-mono {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
-  font-weight: 800;
-  background-color: rgba(255, 255, 255, 0.22);
-  color: #ffffff;
-  padding: 3px 10px;
-  border-radius: var(--radius-full);
+  font-size: 0.8rem;
+  color: #334155 !important;
 }
 
-.ticket-body {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.ticket-pnr-row {
+/* Journey Route Banner */
+.eticket-journey-banner {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--bg-elevated);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: 10px 16px;
+  padding: 16px 20px;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 12px;
 }
 
-.ticket-pnr-lbl {
-  font-size: 0.74rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
+.eticket-journey-station {
+  min-width: 130px;
+}
+
+.eticket-station-dst {
+  text-align: right;
+}
+
+.eticket-stn-code {
+  font-size: 1.4rem;
+  font-weight: 900;
+  color: #1e3a8a !important;
+  letter-spacing: 0.5px;
+  line-height: 1.1;
+}
+
+.eticket-stn-name {
+  font-size: 0.85rem;
   font-weight: 700;
+  color: #1e293b !important;
+  margin-top: 2px;
 }
 
-.ticket-pnr-val {
-  font-family: var(--font-mono);
-  font-size: 1.05rem;
+.eticket-stn-time {
+  font-size: 0.78rem;
+  color: #64748b !important;
+  margin-top: 2px;
+}
+
+.eticket-stn-time strong {
+  color: #0f172a !important;
+}
+
+.eticket-route-middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 0 12px;
+}
+
+.eticket-journey-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e3a8a !important;
+  background-color: #eff6ff !important;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #dbeafe;
+}
+
+.eticket-route-arrow-line {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
+  height: 2px;
+  background-color: #cbd5e1;
+  margin: 6px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.route-line-fill {
+  width: 100%;
+  height: 100%;
+}
+
+.route-duration-badge {
+  position: absolute;
+  background-color: #f8fafc !important;
+  border: 1px solid #cbd5e1;
+  border-radius: 9999px;
+  padding: 1px 8px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #475569 !important;
+}
+
+.eticket-class-pill {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #0369a1 !important;
+  background-color: #f0f9ff !important;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+/* Schedule Strip */
+.eticket-schedule-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #f8fafc !important;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 10px 20px;
+  gap: 10px;
+}
+
+.eticket-strip-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.strip-lbl {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: #64748b !important;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.strip-val {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1e293b !important;
+}
+
+/* Passenger Table */
+.eticket-passengers-section {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff !important;
+}
+
+.eticket-section-title {
+  font-size: 0.72rem;
   font-weight: 800;
-  color: var(--success-text);
-  letter-spacing: 1px;
+  color: #475569 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin-bottom: 8px;
 }
 
-.ticket-divider {
-  border-top: 1px dashed var(--border-medium);
-  margin: 4px 0;
+.eticket-table-scroll {
+  overflow-x: auto;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
 }
 
-.ticket-disclaimer-box {
-  background-color: var(--warning-bg);
-  border: 1px solid var(--warning-border);
-  border-radius: var(--radius-sm);
-  padding: 9px 14px;
-  font-size: 0.76rem;
-  color: var(--warning-text);
+.eticket-passengers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.eticket-passengers-table th {
+  background-color: #f1f5f9 !important;
+  color: #334155 !important;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
+}
+
+.eticket-passengers-table td {
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  color: #0f172a !important;
+  font-weight: 600;
+  background-color: #ffffff !important;
+}
+
+.eticket-cnf-badge {
+  display: inline-block;
+  background-color: #dcfce7 !important;
+  color: #15803d !important;
+  font-weight: 800;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+/* Bottom Split: Fare & QR */
+.eticket-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr 140px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 16px;
+  align-items: center;
+  background-color: #ffffff !important;
+}
+
+.eticket-fare-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.eticket-fare-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.eticket-fare-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  color: #475569 !important;
+}
+
+.eticket-fare-total {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px dashed #cbd5e1;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #0f172a !important;
+}
+
+.fare-total-highlight {
+  color: #059669 !important;
+  font-size: 1.05rem;
+  font-family: var(--font-mono);
+  font-weight: 900;
+}
+
+.eticket-payment-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  color: #059669 !important;
+  background-color: #ecfdf5 !important;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+  align-self: flex-start;
+  border: 1px solid #a7f3d0;
+}
+
+.eticket-qr-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  justify-content: center;
+}
+
+.eticket-qr-wrapper {
+  padding: 4px;
+  background: #ffffff !important;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  display: inline-flex;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.eticket-qr-wrapper svg {
+  display: block;
+}
+
+.eticket-qr-caption {
+  margin-top: 4px;
+}
+
+.qr-verify-txt {
+  font-size: 0.62rem;
+  font-weight: 800;
+  color: #64748b !important;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+}
+
+.qr-hash-mono {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #1e3a8a !important;
+}
+
+/* Disclaimer Footer */
+.eticket-disclaimer-footer {
+  background-color: #fefce8 !important;
+  border-top: 1px solid #fef08a;
+  padding: 12px 20px;
+  font-size: 0.72rem;
+  color: #854d0e !important;
+  line-height: 1.45;
+}
+
+.eticket-disclaimer-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 800;
+  font-size: 0.74rem;
+  color: #a16207 !important;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.eticket-disclaimer-p {
+  margin: 0;
+}
+
+/* Actions Toolbar */
+.eticket-actions-toolbar {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-ticket-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-ticket-action:hover {
+  transform: translateY(-1px);
 }
 
 /* ==========================================================================
@@ -2154,3 +2550,151 @@ kbd {
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   16. E-TICKET MOBILE RESPONSIVENESS
+   ========================================================================== */
+
+@media (max-width: 640px) {
+  .aura-eticket-wrapper {
+    max-width: 100%;
+  }
+
+  .eticket-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .eticket-status-col {
+    align-items: flex-start;
+  }
+
+  .eticket-ref-bar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .eticket-cell-right {
+    text-align: left;
+  }
+
+  .eticket-journey-banner {
+    flex-direction: column;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .eticket-journey-station,
+  .eticket-station-dst {
+    text-align: center;
+    width: 100%;
+  }
+
+  .eticket-schedule-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .eticket-bottom-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .eticket-qr-box {
+    margin-top: 4px;
+  }
+
+  .eticket-actions-toolbar {
+    flex-direction: column;
+  }
+
+  .btn-ticket-action {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ==========================================================================
+   17. PRINT STYLESHEET (CLEAN TICKET PRINTING / PDF EXPORT)
+   ========================================================================== */
+
+@media print {
+  /* Hide non-ticket application elements */
+  body, html {
+    background: #ffffff !important;
+    color: #000000 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .app-header,
+  .app-sidebar,
+  .sidebar,
+  .chat-composer,
+  .composer-wrapper,
+  .message-bubble,
+  .chat-bubble,
+  .chat-date-divider,
+  .final-status-card,
+  .trains-card,
+  .confirm-card,
+  .final-review-card,
+  .eticket-actions-toolbar,
+  .theme-toggle,
+  .app-footer,
+  .starter-prompts-grid,
+  .empty-state,
+  #btn-new-request,
+  #quick-replies-bar,
+  #agent-typing {
+    display: none !important;
+  }
+
+  .app-container,
+  .main-content,
+  .chat-container,
+  .chat-stream {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+    border: none !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+
+  .aura-eticket-wrapper {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .aura-eticket-card {
+    border: 1px solid #1e3a8a !important;
+    box-shadow: none !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .eticket-header {
+    background: #1e3a8a !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .eticket-status-pill {
+    background-color: #059669 !important;
+    color: #ffffff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}
+

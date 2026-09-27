@@ -65,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let calViewYear = new Date().getFullYear();
   let calViewMonth = new Date().getMonth();
   let selectedJourneyDate = null;
+  let lastSelectedTrain = null;
   const rowTime = document.getElementById('row-time');
   const valTime = document.getElementById('val-time');
   const rowPassengers = document.getElementById('row-passengers');
@@ -546,10 +547,14 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStatus = data.status;
     sessionTag.textContent = `Task: ${data.task_id.substring(0, 11)}`;
 
+    if (data.selected_train) {
+      lastSelectedTrain = data.selected_train;
+    }
+
     // 1. Render Agent Response Bubble or Specialized Card
     if (data.booking_result) {
-      renderAgentMessage(data.message);
-      renderMockTicketCard(data.booking_result);
+      renderAgentMessage('Booking confirmed! Here is your official AURA Electronic Reservation Slip (E-Ticket):');
+      renderMockTicketCard(data.booking_result, data.selected_train || lastSelectedTrain, data.booking);
     } else if (data.status === 'cancelled') {
       renderFinalStatusBanner('cancelled', data.message);
     } else if ((data.next_action === 'request_final_confirmation' || data.status === 'booking_ready') && data.selected_train) {
@@ -918,88 +923,478 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Phase 4: Renders full mock railway boarding ticket
+   * Helper: Generates crisp simulated QR code vector SVG
    */
-  function renderMockTicketCard(result) {
+  function generateSimulatedQrSvg(refCode, size = 104) {
+    const N = 25;
+    const grid = Array.from({ length: N }, () => Array(N).fill(0));
+
+    function placeFinder(r0, c0) {
+      for (let r = 0; r < 7; r++) {
+        for (let c = 0; c < 7; c++) {
+          if (r === 0 || r === 6 || c === 0 || c === 6) {
+            grid[r0 + r][c0 + c] = 1;
+          } else if (r === 1 || r === 5 || c === 1 || c === 5) {
+            grid[r0 + r][c0 + c] = 0;
+          } else {
+            grid[r0 + r][c0 + c] = 1;
+          }
+        }
+      }
+    }
+
+    placeFinder(0, 0);
+    placeFinder(0, N - 7);
+    placeFinder(N - 7, 0);
+
+    for (let i = 8; i < N - 8; i++) {
+      grid[6][i] = (i % 2 === 0) ? 1 : 0;
+      grid[i][6] = (i % 2 === 0) ? 1 : 0;
+    }
+
+    const ar = 16, ac = 16;
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 5; c++) {
+        if (r === 0 || r === 4 || c === 0 || c === 4) {
+          grid[ar + r][ac + c] = 1;
+        } else if (r === 1 || r === 3 || c === 1 || c === 3) {
+          grid[ar + r][ac + c] = 0;
+        } else {
+          grid[ar + r][ac + c] = 1;
+        }
+      }
+    }
+
+    let hash = 5381;
+    const str = String(refCode || 'AURA-TICKET');
+    for (let i = 0; i < str.length; i++) {
+      hash = ((hash << 5) + hash) + str.charCodeAt(i);
+    }
+
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        const inTL = r < 8 && c < 8;
+        const inTR = r < 8 && c >= N - 8;
+        const inBL = r >= N - 8 && c < 8;
+        const inAlign = r >= ar && r < ar + 5 && c >= ac && c < ac + 5;
+        const isTiming = (r === 6 && c >= 8 && c < N - 8) || (c === 6 && r >= 8 && r < N - 8);
+
+        if (!inTL && !inTR && !inBL && !inAlign && !isTiming) {
+          const bitVal = Math.abs((hash ^ (r * 31 + c * 17 + (r ^ c) * 7))) % 7;
+          grid[r][c] = (bitVal === 0 || bitVal === 2 || bitVal === 5) ? 1 : 0;
+        }
+      }
+    }
+
+    let rects = '';
+    for (let r = 0; r < N; r++) {
+      for (let c = 0; c < N; c++) {
+        if (grid[r][c] === 1) {
+          rects += `<rect x="${c}" y="${r}" width="1" height="1" fill="#0f172a"/>`;
+        }
+      }
+    }
+
+    return `<svg width="${size}" height="${size}" viewBox="0 0 ${N} ${N}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+      <rect width="${N}" height="${N}" fill="#ffffff"/>
+      ${rects}
+    </svg>`;
+  }
+
+  const STATION_DIRECTORY = {
+    'chennai': { code: 'MAS', name: 'Chennai Central' },
+    'coimbatore': { code: 'CBE', name: 'Coimbatore Jn' },
+    'bangalore': { code: 'SBC', name: 'KSR Bengaluru' },
+    'bengaluru': { code: 'SBC', name: 'KSR Bengaluru' },
+    'madurai': { code: 'MDU', name: 'Madurai Jn' },
+    'salem': { code: 'SA', name: 'Salem Jn' },
+    'tiruchirappalli': { code: 'TPJ', name: 'Tiruchirappalli Jn' },
+    'trichy': { code: 'TPJ', name: 'Tiruchirappalli Jn' },
+    'erode': { code: 'ED', name: 'Erode Jn' },
+    'delhi': { code: 'NDLS', name: 'New Delhi' },
+    'mumbai': { code: 'CSMT', name: 'Mumbai CSMT' }
+  };
+
+  function getStationMeta(stationName) {
+    if (!stationName) return { code: 'STN', name: 'Station' };
+    const key = stationName.trim().toLowerCase();
+    if (STATION_DIRECTORY[key]) return STATION_DIRECTORY[key];
+    const code = stationName.length <= 4 ? stationName.toUpperCase() : stationName.slice(0, 3).toUpperCase();
+    return { code: code, name: capitalize(stationName) };
+  }
+
+  const CLASS_FULL_NAMES = {
+    '1A': 'AC First Class (1A)',
+    '2A': 'AC 2 Tier (2A)',
+    '3A': 'AC 3 Tier (3A)',
+    '3E': 'AC 3 Economy (3E)',
+    'SL': 'Sleeper Class (SL)',
+    'CC': 'AC Chair Car (CC)',
+    'EC': 'Executive Chair Car (EC)',
+    '2S': 'Second Sitting (2S)'
+  };
+
+  function formatBookingTimestamp(isoStr) {
+    const d = isoStr ? new Date(isoStr) : new Date();
+    if (isNaN(d.getTime())) return 'Recently booked';
+    const day = String(d.getDate()).padStart(2, '0');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const month = months[d.getMonth()];
+    const year = d.getFullYear();
+    const hrs = String(d.getHours()).padStart(2, '0');
+    const mins = String(d.getMinutes()).padStart(2, '0');
+    return `${day}-${month}-${year} ${hrs}:${mins} IST`;
+  }
+
+  function generatePassengerAllocations(passengerCount, travelClass, refCode) {
+    const cls = (travelClass || '3A').toUpperCase();
+    let coachPrefix = 'B';
+    let berths = ['Lower', 'Middle', 'Upper', 'Side Lower', 'Side Upper'];
+
+    if (cls === '1A') {
+      coachPrefix = 'H';
+      berths = ['Lower', 'Upper', 'Lower', 'Upper'];
+    } else if (cls === '2A') {
+      coachPrefix = 'A';
+      berths = ['Lower', 'Upper', 'Side Lower', 'Side Upper'];
+    } else if (cls === '3A' || cls === '3E') {
+      coachPrefix = 'B';
+      berths = ['Lower', 'Middle', 'Upper', 'Side Lower', 'Side Upper'];
+    } else if (cls === 'SL') {
+      coachPrefix = 'S';
+      berths = ['Lower', 'Middle', 'Upper', 'Side Lower', 'Side Upper'];
+    } else if (cls === 'CC') {
+      coachPrefix = 'C';
+      berths = ['Window', 'Aisle', 'Middle', 'Window', 'Aisle'];
+    } else if (cls === 'EC') {
+      coachPrefix = 'E';
+      berths = ['Window', 'Aisle', 'Window', 'Aisle'];
+    } else if (cls === '2S') {
+      coachPrefix = 'D';
+      berths = ['Window', 'Middle', 'Aisle'];
+    }
+
+    let seed = 21;
+    if (refCode) {
+      let hash = 0;
+      for (let i = 0; i < refCode.length; i++) {
+        hash = (hash * 31 + refCode.charCodeAt(i)) % 35;
+      }
+      seed = 12 + Math.abs(hash);
+    }
+
+    const rows = [];
+    const count = Math.max(1, parseInt(passengerCount, 10) || 1);
+    for (let i = 1; i <= count; i++) {
+      const seatNum = seed + (i - 1);
+      const berthType = berths[(i - 1) % berths.length];
+      const coach = `${coachPrefix}1`;
+      rows.push({
+        sno: i,
+        name: `Passenger ${i} (Adult)`,
+        bookingStatus: 'CNF',
+        currentStatus: 'CNF',
+        coach: coach,
+        berth: `${seatNum} / ${berthType}`,
+        quota: 'GN'
+      });
+    }
+    return rows;
+  }
+
+  /**
+   * Phase 4 & Post-Phase 6: Renders AURA Electronic Reservation Slip (E-Ticket)
+   */
+  function renderMockTicketCard(result, selectedTrain = null, booking = null) {
     if (!result) return;
 
-    const card = document.createElement('div');
-    card.className = 'mock-ticket-card';
-    const formattedDate = formatJourneyDate(result.date);
+    const wrapper = document.createElement('div');
+    wrapper.className = 'aura-eticket-wrapper';
 
-    card.innerHTML = `
-      <div class="ticket-header">
-        <div class="ticket-brand">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <rect width="16" height="16" x="4" y="4" rx="2"/>
-            <path d="M4 10h16"/>
-            <path d="M12 4v16"/>
-          </svg>
-          <span>DIGITAL BOARDING PASS</span>
+    const formattedDate = formatJourneyDate(result.date || (booking && booking.date));
+    const srcMeta = getStationMeta(result.source);
+    const dstMeta = getStationMeta(result.destination);
+
+    const trainSchedules = {
+      '12675': { dep: '06:10', arr: '14:05', dur: '07h 55m' },
+      '12679': { dep: '14:30', arr: '22:15', dur: '07h 45m' },
+      '12673': { dep: '22:10', arr: '06:00', dur: '07h 50m' },
+      '12676': { dep: '15:15', arr: '22:50', dur: '07h 35m' },
+      '12680': { dep: '06:20', arr: '13:50', dur: '07h 30m' },
+      '12007': { dep: '06:00', arr: '10:45', dur: '04h 45m' },
+      '12607': { dep: '15:30', arr: '21:35', dur: '06h 05m' },
+      '12657': { dep: '22:50', arr: '04:30', dur: '05h 40m' },
+      '12608': { dep: '06:20', arr: '12:20', dur: '06h 00m' },
+      '12658': { dep: '22:40', arr: '04:20', dur: '05h 40m' },
+      '12638': { dep: '21:35', arr: '05:15', dur: '07h 40m' },
+      '12637': { dep: '21:40', arr: '05:35', dur: '07h 55m' },
+      '12635': { dep: '13:50', arr: '21:15', dur: '07h 25m' }
+    };
+
+    const schedFallback = trainSchedules[result.train_number] || { dep: '08:00', arr: '15:30', dur: '07h 30m' };
+    const depTime = (selectedTrain && (selectedTrain.departure || selectedTrain.departure_time)) || schedFallback.dep;
+    const arrTime = (selectedTrain && (selectedTrain.arrival || selectedTrain.arrival_time)) || schedFallback.arr;
+    const duration = (selectedTrain && selectedTrain.duration) || schedFallback.dur;
+
+    const travelClass = result.class || (booking && booking.class) || '3A';
+    const classDisplayName = CLASS_FULL_NAMES[travelClass] || `${travelClass} Class`;
+    const passengersCount = Math.max(1, parseInt(result.passengers || (booking && booking.passengers) || 1, 10));
+    const passengerAllocations = generatePassengerAllocations(passengersCount, travelClass, result.booking_reference);
+
+    const totalFare = Number(result.total_fare) || 0;
+    const convenienceFee = totalFare > 40 ? 40 : 0;
+    const baseFare = Math.max(0, totalFare - convenienceFee);
+    const bookingTimeStr = formatBookingTimestamp(result.booked_at);
+    const qrSvg = generateSimulatedQrSvg(result.booking_reference, 104);
+
+    const passengerRowsHtml = passengerAllocations.map(p => `
+      <tr>
+        <td style="text-align: center; color: #64748b; font-weight: 700;">${p.sno}</td>
+        <td>
+          <div style="font-weight: 700; color: #0f172a;">${escapeHtml(p.name)}</div>
+          <div style="font-size: 0.72rem; color: #64748b;">Adult &bull; Indian National</div>
+        </td>
+        <td style="text-align: center;">
+          <span class="eticket-cnf-badge">CNF</span>
+        </td>
+        <td style="text-align: center;">
+          <span class="eticket-cnf-badge">CNF</span>
+        </td>
+        <td style="text-align: center; font-weight: 800; color: #1e3a8a; font-family: var(--font-mono);">${escapeHtml(p.coach)}</td>
+        <td style="font-weight: 800; color: #0f172a; font-family: var(--font-mono);">${escapeHtml(p.berth)}</td>
+        <td style="text-align: center; font-weight: 700; color: #475569;">${escapeHtml(p.quota)}</td>
+      </tr>
+    `).join('');
+
+    wrapper.innerHTML = `
+      <div class="aura-eticket-card mock-ticket-card" id="aura-eticket-document">
+        <!-- 1. Header -->
+        <div class="eticket-header">
+          <div class="eticket-brand-col">
+            <div class="eticket-logo-row">
+              <svg class="eticket-logo-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="16" x="3" y="4" rx="3"/>
+                <path d="M7 15h10"/>
+                <circle cx="7.5" cy="11.5" r="1.5" fill="currentColor"/>
+                <circle cx="16.5" cy="11.5" r="1.5" fill="currentColor"/>
+                <path d="M9 4v-1a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1"/>
+              </svg>
+              <div class="eticket-titles">
+                <div class="eticket-org-name">AURA RAILWAY RESERVATION SYSTEM</div>
+                <div class="eticket-doc-type">ELECTRONIC RESERVATION SLIP (ERS)</div>
+              </div>
+            </div>
+          </div>
+          <div class="eticket-status-col">
+            <span class="eticket-simulated-badge">SIMULATED RESERVATION</span>
+            <span class="eticket-status-pill">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+              CONFIRMED
+            </span>
+          </div>
         </div>
-        <span class="ticket-status-pill">CONFIRMED</span>
+
+        <!-- 2. Reference & Meta Bar -->
+        <div class="eticket-ref-bar">
+          <div class="eticket-ref-cell">
+            <span class="eticket-cell-lbl">PNR / BOOKING REF</span>
+            <span class="eticket-cell-val eticket-mono-ref">${escapeHtml(result.booking_reference)}</span>
+          </div>
+          <div class="eticket-ref-cell">
+            <span class="eticket-cell-lbl">TRANSACTION / TASK ID</span>
+            <span class="eticket-cell-val eticket-mono">${escapeHtml(currentTaskId ? currentTaskId.substring(0, 15) : 'AURA-TXN-001')}</span>
+          </div>
+          <div class="eticket-ref-cell">
+            <span class="eticket-cell-lbl">BOOKING DATE & TIME</span>
+            <span class="eticket-cell-val">${escapeHtml(bookingTimeStr)}</span>
+          </div>
+          <div class="eticket-ref-cell eticket-cell-right">
+            <span class="eticket-cell-lbl">QUOTA</span>
+            <span class="eticket-cell-val">GENERAL (GN)</span>
+          </div>
+        </div>
+
+        <!-- 3. Journey Route Banner -->
+        <div class="eticket-journey-banner">
+          <div class="eticket-journey-station">
+            <div class="eticket-stn-code">${escapeHtml(srcMeta.code)}</div>
+            <div class="eticket-stn-name">${escapeHtml(srcMeta.name)}</div>
+            <div class="eticket-stn-time">Dep: <strong>${escapeHtml(depTime)} hrs</strong></div>
+          </div>
+
+          <div class="eticket-route-middle">
+            <div class="eticket-journey-date">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                <line x1="16" x2="16" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="2" y2="6"/>
+                <line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>
+              <span>${escapeHtml(formattedDate)}</span>
+            </div>
+            <div class="eticket-route-arrow-line">
+              <div class="route-line-fill"></div>
+              <span class="route-duration-badge">${escapeHtml(duration)}</span>
+            </div>
+            <div class="eticket-class-pill">${escapeHtml(classDisplayName)}</div>
+          </div>
+
+          <div class="eticket-journey-station eticket-station-dst">
+            <div class="eticket-stn-code">${escapeHtml(dstMeta.code)}</div>
+            <div class="eticket-stn-name">${escapeHtml(dstMeta.name)}</div>
+            <div class="eticket-stn-time">Arr: <strong>${escapeHtml(arrTime)} hrs</strong></div>
+          </div>
+        </div>
+
+        <!-- 4. Train Details Strip -->
+        <div class="eticket-schedule-strip">
+          <div class="eticket-strip-col">
+            <span class="strip-lbl">Train Number & Name</span>
+            <span class="strip-val">${escapeHtml(result.train_number)} / ${escapeHtml(result.train_name)}</span>
+          </div>
+          <div class="eticket-strip-col">
+            <span class="strip-lbl">Boarding Station</span>
+            <span class="strip-val">${escapeHtml(srcMeta.name)} (${escapeHtml(srcMeta.code)})</span>
+          </div>
+          <div class="eticket-strip-col">
+            <span class="strip-lbl">Destination Station</span>
+            <span class="strip-val">${escapeHtml(dstMeta.name)} (${escapeHtml(dstMeta.code)})</span>
+          </div>
+          <div class="eticket-strip-col">
+            <span class="strip-lbl">Class / Quota</span>
+            <span class="strip-val">${escapeHtml(result.class)} &bull; GN</span>
+          </div>
+        </div>
+
+        <!-- 5. Passenger Table -->
+        <div class="eticket-passengers-section">
+          <div class="eticket-section-title">PASSENGER DETAILS (${passengersCount})</div>
+          <div class="eticket-table-scroll">
+            <table class="eticket-passengers-table">
+              <thead>
+                <tr>
+                  <th style="width: 44px; text-align: center;">#</th>
+                  <th>Passenger</th>
+                  <th style="text-align: center;">Booking Status</th>
+                  <th style="text-align: center;">Current Status</th>
+                  <th style="text-align: center;">Coach</th>
+                  <th>Seat / Berth</th>
+                  <th style="text-align: center;">Quota</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${passengerRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- 6. Bottom Split: Fare Box & QR Verification -->
+        <div class="eticket-bottom-grid">
+          <div class="eticket-fare-box">
+            <div class="eticket-section-title" style="margin-bottom: 8px;">PAYMENT &amp; FARE SUMMARY</div>
+            <div class="eticket-fare-rows">
+              <div class="eticket-fare-row">
+                <span>Ticket Base Fare (${passengersCount} Passenger${passengersCount > 1 ? 's' : ''}):</span>
+                <span>₹${baseFare.toFixed(2)}</span>
+              </div>
+              <div class="eticket-fare-row">
+                <span>Convenience &amp; Reservation Fee:</span>
+                <span>₹${convenienceFee.toFixed(2)}</span>
+              </div>
+              <div class="eticket-fare-row">
+                <span>Goods &amp; Services Tax (GST):</span>
+                <span>₹0.00</span>
+              </div>
+              <div class="eticket-fare-row eticket-fare-total">
+                <span>Total Amount Paid:</span>
+                <span class="fare-total-highlight">₹${totalFare.toFixed(2)}</span>
+              </div>
+            </div>
+            <div class="eticket-payment-tag">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="20" height="14" x="2" y="5" rx="2"/>
+                <line x1="2" x2="22" y1="10" y2="10"/>
+              </svg>
+              PAYMENT STATUS: COMPLETED (SIMULATED)
+            </div>
+          </div>
+
+          <div class="eticket-qr-box">
+            <div class="eticket-qr-wrapper">
+              ${qrSvg}
+            </div>
+            <div class="eticket-qr-caption">
+              <div class="qr-verify-txt">DIGITAL TOKEN</div>
+              <div class="qr-hash-mono">${escapeHtml(result.booking_reference)}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7. Disclaimer / Advisory Footer -->
+        <div class="eticket-disclaimer-footer">
+          <div class="eticket-disclaimer-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="12" x2="12" y1="8" y2="12"/>
+              <line x1="12" x2="12.01" y1="16" y2="16"/>
+            </svg>
+            <span>RESEARCH &amp; DEMONSTRATION PROTOTYPE RESERVATION</span>
+          </div>
+          <p class="eticket-disclaimer-p">
+            This Electronic Reservation Slip (ERS) is generated by the <strong>AURA (Autonomous User Request Agent)</strong> prototype.
+            This document represents a synthetic simulation for academic evaluation and is <strong>not valid for actual travel</strong> on Indian Railways or IRCTC networks.
+          </p>
+          <p class="eticket-disclaimer-p" style="margin-top: 4px;">
+            On real railway journeys, one passenger must carry a valid original photo identity card (Aadhaar, Passport, Driving License, Voter ID, or PAN Card).
+          </p>
+        </div>
       </div>
 
-      <div class="ticket-body">
-        <div class="ticket-pnr-row">
-          <div>
-            <div class="ticket-pnr-lbl">Booking Reference</div>
-            <div class="ticket-pnr-val">${escapeHtml(result.booking_reference)}</div>
-          </div>
-          <div style="text-align: right;">
-            <div class="ticket-pnr-lbl">PNR Number</div>
-            <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: #7dd3fc;">${escapeHtml(result.pnr || result.booking_reference)}</div>
-          </div>
-        </div>
+      <!-- 8. Actions Toolbar -->
+      <div class="eticket-actions-toolbar">
+        <button type="button" class="btn btn-secondary btn-sm btn-ticket-action" id="btn-print-eticket">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="6 9 6 2 18 2 18 9"/>
+            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+            <rect width="12" height="8" x="6" y="14"/>
+          </svg>
+          Print Ticket
+        </button>
 
-        <div class="route-summary-box" style="margin-bottom: 0;">
-          <div class="route-loc-item">
-            <span class="route-loc-lbl">From</span>
-            <div class="route-loc">${escapeHtml(result.source)}</div>
-          </div>
-          <div class="route-dir-arrow">&rarr;</div>
-          <div class="route-loc-item">
-            <span class="route-loc-lbl">To</span>
-            <div class="route-loc">${escapeHtml(result.destination)}</div>
-          </div>
-        </div>
+        <button type="button" class="btn btn-secondary btn-sm btn-ticket-action" id="btn-save-pdf">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="12" x2="12" y1="18" y2="12"/>
+            <polyline points="9 15 12 18 15 15"/>
+          </svg>
+          Save as PDF
+        </button>
 
-        <div class="confirm-details-grid" style="margin-bottom: 0;">
-          <div class="confirm-field">
-            <span class="confirm-field-lbl">Train</span>
-            <span class="confirm-field-val">${escapeHtml(result.train_number)} - ${escapeHtml(result.train_name)}</span>
-          </div>
-          <div class="confirm-field">
-            <span class="confirm-field-lbl">Date & Class</span>
-            <span class="confirm-field-val">${escapeHtml(formattedDate)} &bull; ${escapeHtml(result.class)}</span>
-          </div>
-          <div class="confirm-field">
-            <span class="confirm-field-lbl">Passengers</span>
-            <span class="confirm-field-val">${result.passengers} Passenger(s)</span>
-          </div>
-          <div class="confirm-field">
-            <span class="confirm-field-lbl">Total Fare</span>
-            <span class="confirm-field-val" style="color: var(--success-text); font-size: 1rem;">₹${result.total_fare}</span>
-          </div>
-        </div>
-
-        <div class="ticket-divider"></div>
-
-        <div style="font-size: 0.74rem; color: var(--text-muted); text-align: center;">
-          Prototype Reservation &bull; Booking Reference: ${escapeHtml(result.booking_reference)}
-        </div>
-
-        <div style="text-align: center; margin-top: 4px;">
-          <button type="button" class="btn btn-secondary btn-sm" id="btn-book-another">
-            Book Another Journey
-          </button>
-        </div>
+        <button type="button" class="btn btn-primary btn-sm btn-ticket-action" id="btn-book-another">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="1 4 1 10 7 10"/>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/>
+          </svg>
+          Book Another Journey
+        </button>
       </div>
     `;
 
-    card.querySelector('#btn-book-another').addEventListener('click', resetConversation);
+    wrapper.querySelector('#btn-print-eticket')?.addEventListener('click', () => {
+      window.print();
+    });
 
-    chatStream.appendChild(card);
+    wrapper.querySelector('#btn-save-pdf')?.addEventListener('click', () => {
+      window.print();
+    });
+
+    wrapper.querySelector('#btn-book-another')?.addEventListener('click', resetConversation);
+
+    chatStream.appendChild(wrapper);
     scrollChatToBottom();
   }
 
@@ -1371,6 +1766,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentTaskId = null;
     currentNextAction = null;
     currentStatus = null;
+    lastSelectedTrain = null;
     sessionTag.textContent = 'Session: Idle';
 
     if (journeyDatePicker) {
