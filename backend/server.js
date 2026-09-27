@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const analyzeRoute = require('./routes/analyze');
 const agentRoute = require('./routes/agent');
+const trainsRoute = require('./routes/trains');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,9 +13,10 @@ app.use(express.json());
 // Serve static frontend files from the frontend directory
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
 
-// Mount API routes (Phase 1 & Phase 2)
+// Mount API routes (Phase 1, Phase 2 & Phase 4)
 app.use('/api', analyzeRoute);
 app.use('/api/agent', agentRoute);
+app.use('/api/trains', trainsRoute);
 
 // Fallback route to serve index.html for any root requests
 app.get('/', (req, res) => {

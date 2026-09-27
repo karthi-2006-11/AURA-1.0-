@@ -52,21 +52,88 @@ router.post('/reset', (req, res) => {
 });
 
 /**
- * GET /api/agent/task/:id
- * Retrieves current task state by ID
+ * POST /api/agent/book
+ * Body: { task_id: string }
+ * Executes mock booking through the active Railway Provider
  */
-router.get('/task/:id', (req, res) => {
+router.post('/book', async (req, res) => {
   try {
-    const taskId = req.params.id;
-    if (!taskStore.has(taskId)) {
-      return res.status(404).json({ error: 'Task not found.' });
+    const { task_id } = req.body || {};
+
+    if (!task_id) {
+      return res.status(400).json({
+        success: false,
+        error: '"task_id" is required to complete booking.'
+      });
     }
 
-    const task = getOrCreateTask(taskId);
-    return res.json(task.toJSON());
+    if (!taskStore.has(task_id)) {
+      return res.status(404).json({
+        success: false,
+        error: `Booking task "${task_id}" not found.`
+      });
+    }
+
+    const task = getOrCreateTask(task_id);
+
+    // Duplicate booking protection
+    if (task.status === 'booking_confirmed' && task.booking_result) {
+      return res.status(400).json({
+        success: false,
+        error: 'Booking has already been completed for this task.',
+        booking_result: task.booking_result
+      });
+    }
+
+    // Verify required journey parameters
+    const b = task.booking;
+    if (!b.source || !b.destination || !b.date) {
+      return res.status(400).json({
+        success: false,
+        error: 'Incomplete booking parameters. Journey source, destination, and date are required.'
+      });
+    }
+
+    // Verify selected train
+    if (!task.selected_train) {
+      return res.status(400).json({
+        success: false,
+        error: 'No train selected. Please select a train before booking.'
+      });
+    }
+
+    task.status = 'booking_in_progress';
+    task.logActivity('mock_booking_submitted', `Submitting mock booking for train ${task.selected_train.train_number}`);
+
+    const { getProvider } = require('../services/mockRailwayProvider');
+    const provider = getProvider();
+
+    const bookingResult = await provider.book(task);
+
+    task.setBookingResult(bookingResult);
+    task.logActivity('mock_booking_confirmed', `Simulated booking confirmed. Reference: ${bookingResult.booking_reference}`);
+
+    const confirmMsg = `MOCK BOOKING COMPLETED.\nReference: ${bookingResult.booking_reference}\nStatus: CONFIRMED\nTrain: ${bookingResult.train_number} - ${bookingResult.train_name}\nPassengers: ${bookingResult.passengers}\nTotal Fare: ₹${bookingResult.total_fare}\n\n⚠️ This is a simulated booking through the MOCK RAILWAY PROVIDER and is NOT a real railway ticket.`;
+    task.recordMessage('agent', confirmMsg);
+
+    return res.json({
+      success: true,
+      provider: 'mock',
+      mock: true,
+      task_id: task.task_id,
+      status: task.status,
+      booking_result: bookingResult,
+      message: confirmMsg,
+      booking: task.booking,
+      activity: task.activity,
+      disclaimer: 'MOCK RAILWAY PROVIDER — Simulation only, no real railway ticket is booked.'
+    });
   } catch (error) {
-    console.error('Error retrieving agent task:', error);
-    return res.status(500).json({ error: 'Internal server error while fetching task.' });
+    console.error('Error executing booking:', error);
+    return res.status(500).json({
+      success: false,
+      error: error.message || 'An internal error occurred while processing the booking.'
+    });
   }
 });
 

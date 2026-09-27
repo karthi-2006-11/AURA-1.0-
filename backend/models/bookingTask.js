@@ -1,8 +1,9 @@
 /**
  * AURA - Autonomous User Request Agent
- * Phase 2: Booking Task Model
+ * Phase 4: Extended Booking Task Model
  *
- * Represents the state and lifecycle of a railway booking task workflow.
+ * Represents the state and lifecycle of a railway booking task workflow,
+ * including train search, selection, availability check, and simulated booking.
  */
 
 const crypto = require('crypto');
@@ -10,8 +11,15 @@ const crypto = require('crypto');
 /**
  * Task Statuses:
  * - 'collecting_information': Actively gathering required journey details.
- * - 'ready_for_confirmation': All required details collected; awaiting user approval.
- * - 'confirmed': User approved request; ready for future execution (simulated).
+ * - 'ready_for_confirmation': All required journey details collected; awaiting initial user approval.
+ * - 'confirmed': User approved initial journey parameters.
+ * - 'searching_trains': In the process of searching available trains.
+ * - 'train_selected': User selected a specific train option.
+ * - 'checking_availability': Verifying seat availability for the selected train.
+ * - 'booking_ready': Ready for final booking confirmation.
+ * - 'booking_in_progress': Processing booking with the railway provider.
+ * - 'booking_confirmed': Simulated booking completed successfully.
+ * - 'booking_failed': Booking could not be completed.
  * - 'cancelled': User aborted or cancelled the request.
  */
 class BookingTask {
@@ -33,6 +41,13 @@ class BookingTask {
     // Priority ordered missing required fields
     this.missing_fields = ['source', 'destination', 'date', 'passengers', 'class'];
     this.next_action = 'request_source';
+
+    // Phase 4: Provider & Train booking state
+    this.available_trains = [];
+    this.selected_train = null;
+    this.availability = null;
+    this.booking_result = null;
+    this.error_reason = null;
 
     // Safe workflow activities (no hidden reasoning)
     this.activity = [
@@ -92,16 +107,24 @@ class BookingTask {
   }
 
   /**
-   * Re-evaluates missing fields according to Phase 2 priority order:
-   * 1. source
-   * 2. destination
-   * 3. date
-   * 4. passengers
-   * 5. class
+   * Re-evaluates missing fields according to priority order:
+   * 1. source -> 2. destination -> 3. date -> 4. passengers -> 5. class
    */
   recalculateMissingFields() {
-    // If task was already cancelled or confirmed, keep its terminal state
-    if (this.status === 'cancelled' || this.status === 'confirmed') {
+    // Only alter status during early collection phases
+    const terminalOrAdvanced = [
+      'cancelled',
+      'confirmed',
+      'searching_trains',
+      'train_selected',
+      'checking_availability',
+      'booking_ready',
+      'booking_in_progress',
+      'booking_confirmed',
+      'booking_failed'
+    ];
+
+    if (terminalOrAdvanced.includes(this.status)) {
       return;
     }
 
@@ -121,13 +144,65 @@ class BookingTask {
       this.next_action = 'request_confirmation';
     } else {
       this.status = 'collecting_information';
-      // Next action is directly mapped to the highest priority missing field
       this.next_action = `request_${missing[0]}`;
     }
   }
 
   /**
-   * Converts instance to a clean JSON-serializable representation
+   * Sets available trains discovered from search
+   */
+  setAvailableTrains(trains) {
+    this.available_trains = Array.isArray(trains) ? trains : [];
+  }
+
+  /**
+   * Selects a specific train by train number
+   */
+  selectTrain(trainNumber) {
+    const num = String(trainNumber).trim();
+    const found = this.available_trains.find(t => String(t.train_number) === num);
+
+    if (!found) {
+      throw new Error(`Train number ${num} was not found in available search results.`);
+    }
+
+    this.selected_train = { ...found };
+    this.status = 'train_selected';
+    this.next_action = 'request_final_confirmation';
+    return this.selected_train;
+  }
+
+  /**
+   * Sets seat availability verification result
+   */
+  setAvailability(availData) {
+    this.availability = availData;
+    if (this.selected_train && availData) {
+      this.selected_train.availability = availData.availability;
+      this.selected_train.seats = availData.seats;
+    }
+  }
+
+  /**
+   * Completes the booking with mock confirmation payload
+   */
+  setBookingResult(result) {
+    this.booking_result = result;
+    this.status = 'booking_confirmed';
+    this.next_action = 'none';
+  }
+
+  /**
+   * Marks booking as failed with explanation
+   */
+  failBooking(reason) {
+    this.error_reason = reason;
+    this.status = 'booking_failed';
+    this.next_action = 'none';
+  }
+
+  /**
+   * Converts instance to clean JSON-serializable representation
    */
   toJSON() {
     return {
@@ -137,6 +212,10 @@ class BookingTask {
       booking: { ...this.booking },
       missing_fields: [...this.missing_fields],
       next_action: this.next_action,
+      available_trains: [...this.available_trains],
+      selected_train: this.selected_train ? { ...this.selected_train } : null,
+      availability: this.availability ? { ...this.availability } : null,
+      booking_result: this.booking_result ? { ...this.booking_result } : null,
       activity: [...this.activity]
     };
   }

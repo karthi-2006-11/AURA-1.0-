@@ -3,146 +3,346 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AURA - Autonomous User Request Agent (Phase 2)</title>
+  <title>AURA — Autonomous Railway Request Agent</title>
   <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
 <body>
-  <div class="container">
-    <header class="app-header">
-      <div class="logo-badge">AURA</div>
-      <h1>Autonomous User Request Agent</h1>
-      <p class="subtitle">Phase 2: AI Agent & Multi-Turn Booking Workflow Prototype</p>
+  <div class="app-shell">
+    <!-- Top Header -->
+    <header class="app-header" role="banner">
+      <div class="header-brand">
+        <div class="brand-monogram" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m4 11 8-8 8 8"/>
+            <path d="m4 18 8-8 8 8"/>
+            <path d="M12 2v20"/>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <div class="brand-title">AURA <span class="version-tag">PROTOTYPE</span></div>
+          <div class="brand-desc">Autonomous User Request Agent &bull; Railway NLU</div>
+        </div>
+      </div>
 
-      <!-- Workflow Status Stepper -->
-      <div class="stepper-container">
-        <div id="step-collecting" class="step active">
-          <span class="step-num">1</span>
-          <span class="step-label">Collecting Information</span>
+      <div class="header-controls">
+        <div class="agent-indicator" aria-live="polite" title="Local AURA agent service is running">
+          <span class="status-dot"></span>
+          <span class="status-text">Agent Online</span>
         </div>
-        <div class="step-arrow">&rarr;</div>
-        <div id="step-ready" class="step">
-          <span class="step-num">2</span>
-          <span class="step-label">Ready for Confirmation</span>
-        </div>
-        <div class="step-arrow">&rarr;</div>
-        <div id="step-confirmed" class="step">
-          <span class="step-num">3</span>
-          <span class="step-label">Confirmed</span>
-        </div>
+        <button id="btn-new-request" class="btn btn-secondary btn-sm" aria-label="Start new booking request">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+            <path d="M21 3v5h-5"/>
+            <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+            <path d="M8 16H3v5"/>
+          </svg>
+          <span>New Request</span>
+        </button>
       </div>
     </header>
 
-    <main class="agent-layout">
-      <!-- Left Column: Conversational Agent Interface -->
-      <section class="card chat-card">
-        <div class="chat-header">
-          <h2>Agent Conversation</h2>
-          <button id="reset-btn" class="btn btn-outline-sm" title="Start a new booking session">New Request</button>
+    <!-- Mock Provider Warning Banner -->
+    <div class="mock-provider-banner" role="status" aria-label="Mock Provider Notice">
+      <div class="banner-left">
+        <span class="mock-chip">MOCK RAILWAY PROVIDER</span>
+        <span class="mock-banner-text">Simulation only — no real railway ticket is booked. Authorized B2B/PSP Architecture Prototype.</span>
+      </div>
+      <div class="banner-right">
+        <span class="mock-dot-pulse"></span>
+        <span class="mock-mode-label">Mock Sandbox Active</span>
+      </div>
+    </div>
+
+    <!-- Main Workspace Layout -->
+    <main class="workspace-grid" role="main">
+      <!-- LEFT / MAIN: Conversation & Request Area -->
+      <section class="panel conversation-panel" aria-label="Agent Conversation">
+        <div class="panel-header">
+          <div class="panel-title-group">
+            <h2 class="panel-title">Request Conversation</h2>
+            <span id="session-tag" class="meta-tag">Session: Idle</span>
+          </div>
+          <div class="badge-railway">Railway Intent Engine</div>
         </div>
 
-        <!-- Chat History -->
-        <div id="chat-messages" class="chat-messages">
-          <!-- Initial welcome bubble -->
-          <div class="message-bubble agent-bubble">
-            <div class="bubble-sender">AURA Agent</div>
-            <div class="bubble-content">
-              Hello! I am AURA. Tell me where and when you would like to travel (e.g. <em>"Book a train from Chennai to Coimbatore tomorrow"</em>).
+        <!-- Chat Stream Scrollable Container -->
+        <div id="chat-stream" class="chat-stream" role="log" aria-live="polite">
+          <!-- Empty State (Shown initially before conversation begins) -->
+          <div id="empty-state" class="empty-state-card">
+            <div class="empty-icon-wrap" aria-hidden="true">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="16" height="16" x="4" y="4" rx="2"/>
+                <path d="M4 10h16"/>
+                <path d="M12 4v16"/>
+              </svg>
+            </div>
+            <h3 class="empty-title">Your Railway Journey Assistant</h3>
+            <p class="empty-desc">
+              Describe your journey in natural language. AURA will understand the route, date, passengers, and class, guide you through any missing details, and prepare a verified booking request.
+            </p>
+
+            <div class="starter-prompts">
+              <span class="starter-label">Try an example request:</span>
+              <div class="starter-chips">
+                <button type="button" class="starter-chip" data-query="Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC.">
+                  <span class="chip-dot"></span>
+                  <span>"Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC."</span>
+                </button>
+                <button type="button" class="starter-chip" data-query="I want to travel from Chennai to Bangalore tomorrow.">
+                  <span class="chip-dot"></span>
+                  <span>"I want to travel from Chennai to Bangalore tomorrow."</span>
+                </button>
+                <button type="button" class="starter-chip" data-query="Book me a sleeper train from Madurai to Chennai for 3 passengers.">
+                  <span class="chip-dot"></span>
+                  <span>"Book me a sleeper train from Madurai to Chennai for 3 passengers."</span>
+                </button>
+              </div>
             </div>
           </div>
+
+          <!-- Message bubbles will be appended dynamically here -->
         </div>
 
-        <!-- Dynamic Contextual Suggestions / Quick Chips -->
-        <div id="quick-suggestions" class="quick-suggestions">
-          <span class="suggestions-label">Quick suggestions:</span>
-          <div id="chips-container" class="chips-container">
-            <button type="button" class="chip-action" data-msg="Book a train from Chennai to Coimbatore tomorrow for 2 people in 3AC.">Full Request</button>
-            <button type="button" class="chip-action" data-msg="Book a train from Chennai to Coimbatore tomorrow.">Missing Passengers & Class</button>
-            <button type="button" class="chip-action" data-msg="Book a train to Coimbatore tomorrow.">Missing Source</button>
+        <!-- Typing / Processing Indicator -->
+        <div id="agent-typing" class="agent-typing" style="display: none;" aria-live="polite">
+          <div class="typing-pill">
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-dot"></span>
+            <span class="typing-text">AURA is analyzing request...</span>
           </div>
         </div>
 
-        <!-- Chat Input Form -->
-        <form id="chat-form" class="chat-input-area">
-          <textarea
-            id="user-input"
-            rows="2"
-            placeholder="Type your railway request or reply..."
-            autocomplete="off"
-          ></textarea>
-          <div class="chat-controls">
-            <button type="submit" id="send-btn" class="btn btn-primary">Send</button>
+        <!-- Contextual Quick Replies Bar -->
+        <div id="quick-replies-bar" class="quick-replies-bar" style="display: none;">
+          <span class="quick-label">Suggested replies:</span>
+          <div id="quick-replies-chips" class="quick-chips-group"></div>
+        </div>
+
+        <!-- Composer Form -->
+        <form id="composer-form" class="composer-container" aria-label="Compose Message">
+          <div class="composer-input-wrap">
+            <textarea
+              id="composer-input"
+              rows="2"
+              placeholder="Type your railway request or reply (e.g., 'Book a train to Coimbatore tomorrow')..."
+              aria-label="Your request"
+              autocomplete="off"
+            ></textarea>
+            <div class="composer-footer">
+              <span class="key-hint">Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line</span>
+              <button type="submit" id="btn-send" class="btn btn-primary" aria-label="Send message">
+                <span>Send</span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="m22 2-7 20-4-9-9-4Z"/>
+                  <path d="M22 2 11 13"/>
+                </svg>
+              </button>
+            </div>
           </div>
         </form>
       </section>
 
-      <!-- Right Column: Live Booking Task State -->
-      <section class="card state-card">
-        <div class="state-header">
-          <h2>Booking Task State</h2>
-          <span id="task-status-badge" class="badge badge-collecting">Collecting Info</span>
+      <!-- RIGHT / SIDEBAR: Live Agent Workflow & State Visualizer -->
+      <aside class="panel inspector-panel" aria-label="Agent Workflow Inspector">
+        <!-- 1. Workflow Stepper -->
+        <div class="card stage-stepper-card">
+          <div class="stepper-header">
+            <h3 class="card-subtitle">WORKFLOW PROGRESS</h3>
+            <span id="progress-percent" class="progress-pill">0%</span>
+          </div>
+
+          <div class="progress-bar-track">
+            <div id="progress-bar-fill" class="progress-bar-fill" style="width: 0%;"></div>
+          </div>
+
+          <div class="workflow-steps">
+            <div id="step-node-1" class="step-node active">
+              <div class="step-indicator">
+                <span class="step-number">01</span>
+                <span class="step-check">&check;</span>
+              </div>
+              <div class="step-content">
+                <span class="step-title">Collecting Details</span>
+                <span class="step-caption">NLU extraction</span>
+              </div>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <div id="step-node-2" class="step-node">
+              <div class="step-indicator">
+                <span class="step-number">02</span>
+                <span class="step-check">&check;</span>
+              </div>
+              <div class="step-content">
+                <span class="step-title">Train Search</span>
+                <span class="step-caption">Mock schedules</span>
+              </div>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <div id="step-node-3" class="step-node">
+              <div class="step-indicator">
+                <span class="step-number">03</span>
+                <span class="step-check">&check;</span>
+              </div>
+              <div class="step-content">
+                <span class="step-title">Final Review</span>
+                <span class="step-caption">Availability & fare</span>
+              </div>
+            </div>
+
+            <div class="step-connector"></div>
+
+            <div id="step-node-4" class="step-node">
+              <div class="step-indicator">
+                <span class="step-number">04</span>
+                <span class="step-check">&check;</span>
+              </div>
+              <div class="step-content">
+                <span class="step-title">Mock Booking</span>
+                <span class="step-caption">Ticket reference</span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div class="task-id-bar">
-          <span class="meta-label">Task ID:</span>
-          <span id="task-id-display" class="meta-value">Not Started</span>
+        <!-- 2. Current Action Card -->
+        <div class="card current-action-card">
+          <div class="action-top">
+            <span class="card-subtitle">CURRENT ACTION</span>
+            <span id="action-badge" class="pulse-badge">IDLE</span>
+          </div>
+          <div id="current-action-label" class="current-action-text">Waiting for initial request</div>
         </div>
 
-        <!-- Journey Parameters Table -->
-        <div class="state-details">
-          <div class="state-row">
-            <span class="field-label">From (Source):</span>
-            <span id="state-source" class="field-value null-value">null</span>
+        <!-- 3. Live Booking State -->
+        <div class="card booking-state-card">
+          <div class="card-header-row">
+            <h3 class="card-subtitle">LIVE BOOKING REQUEST</h3>
+            <span id="booking-validity-tag" class="validity-tag incomplete">Incomplete</span>
           </div>
-          <div class="state-row">
-            <span class="field-label">To (Destination):</span>
-            <span id="state-destination" class="field-value null-value">null</span>
+
+          <div class="route-display" id="route-banner" style="display: none;">
+            <div class="station-chip from-chip" id="banner-source">Chennai</div>
+            <div class="route-arrow" aria-hidden="true">&rarr;</div>
+            <div class="station-chip to-chip" id="banner-destination">Coimbatore</div>
           </div>
-          <div class="state-row">
-            <span class="field-label">Date:</span>
-            <span id="state-date" class="field-value null-value">null</span>
-          </div>
-          <div class="state-row">
-            <span class="field-label">Time Preference:</span>
-            <span id="state-time" class="field-value null-value">null</span>
-          </div>
-          <div class="state-row">
-            <span class="field-label">Passengers:</span>
-            <span id="state-passengers" class="field-value null-value">null</span>
-          </div>
-          <div class="state-row">
-            <span class="field-label">Travel Class:</span>
-            <span id="state-class" class="field-value null-value">null</span>
+
+          <div class="entity-list">
+            <div class="entity-row" id="row-source">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">From (Origin)</span>
+              </div>
+              <span class="field-val not-set" id="val-source">Not provided</span>
+            </div>
+
+            <div class="entity-row" id="row-destination">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">To (Destination)</span>
+              </div>
+              <span class="field-val not-set" id="val-destination">Not provided</span>
+            </div>
+
+            <div class="entity-row" id="row-date">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Date</span>
+              </div>
+              <span class="field-val not-set" id="val-date">Not provided</span>
+            </div>
+
+            <div class="entity-row" id="row-time">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Time Preference</span>
+              </div>
+              <span class="field-val not-set" id="val-time">Not specified</span>
+            </div>
+
+            <div class="entity-row" id="row-passengers">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Passengers</span>
+              </div>
+              <span class="field-val not-set" id="val-passengers">Not provided</span>
+            </div>
+
+            <div class="entity-row" id="row-class">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Class</span>
+              </div>
+              <span class="field-val not-set" id="val-class">Not provided</span>
+            </div>
+
+            <div class="entity-row" id="row-train">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Selected Train</span>
+              </div>
+              <span class="field-val not-set" id="val-train">Not selected</span>
+            </div>
+
+            <div class="entity-row" id="row-fare">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Total Fare</span>
+              </div>
+              <span class="field-val not-set" id="val-fare">Not calculated</span>
+            </div>
+
+            <div class="entity-row" id="row-reference">
+              <div class="field-meta">
+                <span class="check-icon">&cir;</span>
+                <span class="field-name">Mock Reference</span>
+              </div>
+              <span class="field-val not-set" id="val-reference">Pending</span>
+            </div>
           </div>
         </div>
 
-        <!-- Missing Information Notice -->
-        <div id="missing-box" class="missing-box">
-          <span class="missing-title">Missing Information:</span>
-          <div id="missing-tags" class="missing-tags">
-            <span class="tag">source</span>
-            <span class="tag">destination</span>
-            <span class="tag">date</span>
-            <span class="tag">passengers</span>
-            <span class="tag">class</span>
+        <!-- 4. Agent Activity Timeline -->
+        <div class="card activity-timeline-card">
+          <div class="card-header-row">
+            <h3 class="card-subtitle">WORKFLOW ACTIVITY</h3>
+            <span class="activity-counter" id="activity-count">0 events</span>
           </div>
+
+          <ol id="activity-list" class="timeline-list" aria-label="Activity History">
+            <li class="timeline-item timeline-empty">
+              <span class="timeline-marker empty-marker"></span>
+              <div class="timeline-text">Awaiting journey request</div>
+            </li>
+          </ol>
         </div>
 
-        <!-- Next Required Action -->
-        <div class="action-box">
-          <span class="action-label">Agent Next Action:</span>
-          <span id="state-action" class="action-value">request_source</span>
-        </div>
-
-        <!-- Collapsible Raw JSON Task State -->
-        <details class="json-details">
-          <summary>Live Task JSON</summary>
-          <pre id="state-json">{ "status": "uninitialized" }</pre>
+        <!-- 5. Technical JSON Inspector (Collapsible) -->
+        <details class="card inspector-details">
+          <summary class="details-summary">
+            <span>Live Task State JSON</span>
+            <span class="details-hint">Inspect Raw</span>
+          </summary>
+          <pre id="raw-task-json" class="json-code">{ "status": "uninitialized" }</pre>
         </details>
-      </section>
+      </aside>
     </main>
 
-    <footer class="app-footer">
-      <p>AURA Prototype &bull; Phase 2: Autonomous Agent &amp; Simulated Booking Workflow</p>
+    <!-- Global App Footer -->
+    <footer class="app-footer" role="contentinfo">
+      <div class="footer-left">
+        <strong>AURA</strong> &bull; Autonomous User Request Agent (Phase 4 Railway Workflow)
+      </div>
+      <div class="footer-right">
+        <span class="simulated-badge">&bull; MOCK RAILWAY PROVIDER &bull; Simulation only — no real railway ticket is booked</span>
+      </div>
     </footer>
   </div>
 
