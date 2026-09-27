@@ -128,6 +128,16 @@ document.addEventListener('DOMContentLoaded', () => {
   function initEventListeners() {
     initCalendar();
 
+    // Composer focus / blur to gently dim background environment during input
+    if (composerInput) {
+      composerInput.addEventListener('focus', () => {
+        document.body.classList.add('composer-focused');
+      });
+      composerInput.addEventListener('blur', () => {
+        document.body.classList.remove('composer-focused');
+      });
+    }
+
     // Composer Submission
     composerForm.addEventListener('submit', (e) => {
       e.preventDefault();

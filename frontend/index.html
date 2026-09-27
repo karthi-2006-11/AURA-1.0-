@@ -10,6 +10,198 @@
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
+  <!-- Animated Railway Environment Background (Subtle AI Transit Simulation) -->
+  <div class="railway-background-env" aria-hidden="true">
+    <!-- Ambient Glow Layers -->
+    <div class="bg-ambient-glow glow-1"></div>
+    <div class="bg-ambient-glow glow-2"></div>
+    <div class="bg-ambient-glow glow-3"></div>
+
+    <!-- Technical Map Coordinate Grid -->
+    <div class="bg-technical-grid"></div>
+
+    <!-- Scalable Vector Railway Environment Canvas -->
+    <svg class="railway-vector-canvas" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+      <defs>
+        <linearGradient id="trainBeamGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="var(--accent-cyan)" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="var(--accent-cyan)" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+
+      <!-- 1. Route Network Lines -->
+      <g class="bg-route-network">
+        <path class="route-line trunk-1" d="M -100 240 L 420 240 L 780 380 L 1260 380 L 1700 290" />
+        <path class="route-line trunk-2" d="M -100 680 L 360 680 L 640 520 L 1120 520 L 1700 640" />
+        <path class="route-line branch-1" d="M 280 -60 L 420 240 L 360 680 L 520 1060" />
+        <path class="route-line branch-2" d="M 1120 -60 L 1120 520 L 1260 380 L 1380 1060" />
+        <path class="route-line diagonal-connector" d="M 120 120 L 780 380 L 640 520 L 1480 820" />
+      </g>
+
+      <!-- 2. Railway Tracks -->
+      <g class="bg-railway-tracks">
+        <line class="track-rail rail-top" x1="-200" y1="236" x2="1800" y2="236" />
+        <line class="track-rail rail-bot" x1="-200" y1="244" x2="1800" y2="244" />
+        <line class="track-ties" x1="-200" y1="240" x2="1800" y2="240" stroke-dasharray="2, 16" stroke-width="8" />
+
+        <line class="track-rail rail-top" x1="-200" y1="516" x2="1800" y2="516" />
+        <line class="track-rail rail-bot" x1="-200" y1="524" x2="1800" y2="524" />
+        <line class="track-ties" x1="-200" y1="520" x2="1800" y2="520" stroke-dasharray="2, 16" stroke-width="8" />
+
+        <line class="track-rail rail-top" x1="-200" y1="756" x2="1800" y2="756" />
+        <line class="track-rail rail-bot" x1="-200" y1="764" x2="1800" y2="764" />
+        <line class="track-ties" x1="-200" y1="760" x2="1800" y2="760" stroke-dasharray="2, 16" stroke-width="8" />
+      </g>
+
+      <!-- 3. Station Nodes -->
+      <g class="bg-station-nodes">
+        <g class="station-node node-pulse-1" transform="translate(420, 240)">
+          <circle class="station-halo" r="16" />
+          <circle class="station-outer" r="8" />
+          <circle class="station-inner" r="4" />
+        </g>
+        <g class="station-node node-pulse-2" transform="translate(780, 380)">
+          <circle class="station-halo" r="14" />
+          <circle class="station-outer" r="7" />
+          <circle class="station-inner" r="3" />
+        </g>
+        <g class="station-node node-pulse-3" transform="translate(640, 520)">
+          <circle class="station-halo" r="18" />
+          <circle class="station-outer" r="9" />
+          <circle class="station-inner" r="4.5" />
+        </g>
+        <g class="station-node node-pulse-1" transform="translate(1120, 520)">
+          <circle class="station-halo" r="15" />
+          <circle class="station-outer" r="7.5" />
+          <circle class="station-inner" r="3.5" />
+        </g>
+        <g class="station-node node-pulse-2" transform="translate(1260, 380)">
+          <circle class="station-halo" r="14" />
+          <circle class="station-outer" r="6.5" />
+          <circle class="station-inner" r="3" />
+        </g>
+
+        <circle class="waypoint-node" cx="200" cy="240" r="3.5" />
+        <circle class="waypoint-node" cx="950" cy="380" r="3.5" />
+        <circle class="waypoint-node" cx="240" cy="680" r="3.5" />
+        <circle class="waypoint-node" cx="880" cy="520" r="3.5" />
+        <circle class="waypoint-node" cx="1450" cy="520" r="3.5" />
+      </g>
+
+      <!-- 4. Railway Signals -->
+      <g class="bg-signals">
+        <g class="signal-mast" transform="translate(390, 218)">
+          <line x1="0" y1="0" x2="0" y2="18" stroke="var(--signal-pole-color)" stroke-width="1.5"/>
+          <rect x="-3" y="-8" width="6" height="10" rx="2" fill="var(--signal-housing-color)"/>
+          <circle class="signal-lamp lamp-green" cx="0" cy="-3" r="2.2" />
+        </g>
+        <g class="signal-mast" transform="translate(670, 498)">
+          <line x1="0" y1="0" x2="0" y2="18" stroke="var(--signal-pole-color)" stroke-width="1.5"/>
+          <rect x="-3" y="-8" width="6" height="10" rx="2" fill="var(--signal-housing-color)"/>
+          <circle class="signal-lamp lamp-amber" cx="0" cy="-3" r="2.2" />
+        </g>
+        <g class="signal-mast" transform="translate(1090, 498)">
+          <line x1="0" y1="0" x2="0" y2="18" stroke="var(--signal-pole-color)" stroke-width="1.5"/>
+          <rect x="-3" y="-8" width="6" height="10" rx="2" fill="var(--signal-housing-color)"/>
+          <circle class="signal-lamp lamp-green" cx="0" cy="-3" r="2.2" />
+        </g>
+      </g>
+
+      <!-- 5. Data Flow Packets -->
+      <g class="bg-data-particles">
+        <circle class="data-particle particle-1" r="2.5" />
+        <circle class="data-particle particle-2" r="2" />
+        <circle class="data-particle particle-3" r="2.5" />
+        <circle class="data-particle particle-4" r="2" />
+        <circle class="data-particle particle-5" r="2.5" />
+        <circle class="data-particle particle-6" r="2" />
+      </g>
+
+      <!-- 6. Moving Train Silhouettes (3 Distinct Designs) -->
+      <!-- Train 1: Sleek Aerodynamic Express Train on Track 1 (y: 240) -->
+      <g class="train-unit train-express" id="train-track-1">
+        <polygon class="train-headlight-cone" points="160,-8 280,-20 280,4 160,-2" fill="url(#trainBeamGrad)" />
+        <path class="train-body-shape" d="M 0,-14 L 130,-14 Q 155,-14 162,-4 L 162,-1 L 0,-1 Z" />
+        <rect class="train-window" x="18" y="-11" width="18" height="4" rx="1" />
+        <rect class="train-window" x="42" y="-11" width="18" height="4" rx="1" />
+        <rect class="train-window" x="66" y="-11" width="18" height="4" rx="1" />
+        <rect class="train-window" x="90" y="-11" width="18" height="4" rx="1" />
+        <path class="train-window nose-win" d="M 114,-11 L 138,-11 Q 146,-11 150,-7 L 114,-7 Z" />
+        <rect class="train-body-shape" x="-115" y="-14" width="110" height="13" rx="2" />
+        <rect class="train-window" x="-105" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-83" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-61" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-39" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-17" y="-11" width="8" height="4" rx="1" />
+        <rect class="train-body-shape" x="-230" y="-14" width="110" height="13" rx="2" />
+        <rect class="train-window" x="-220" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-198" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-176" y="-11" width="16" height="4" rx="1" />
+        <rect class="train-window" x="-154" y="-11" width="16" height="4" rx="1" />
+        <circle class="train-wheel" cx="25" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="45" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="130" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="150" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-90" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-70" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-20" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-205" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-185" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-135" cy="0" r="2.5" />
+      </g>
+
+      <!-- Train 2: Intercity Passenger Transit Train on Track 2 (y: 520) -->
+      <g class="train-unit train-passenger" id="train-track-2">
+        <polygon class="train-headlight-cone" points="140,-8 250,-18 250,2 140,-2" fill="url(#trainBeamGrad)" />
+        <path class="train-body-shape" d="M 0,-15 L 120,-15 Q 138,-15 142,-3 L 142,-1 L 0,-1 Z" />
+        <path class="train-pantograph" d="M 30,-15 L 42,-22 L 54,-15 M 36,-19 L 48,-19" stroke="var(--train-body-color)" stroke-width="1.2" fill="none" />
+        <rect class="train-window" x="20" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="40" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="60" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="80" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="100" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-body-shape" x="-105" y="-15" width="100" height="14" rx="2" />
+        <rect class="train-window" x="-95" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-75" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-55" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-35" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-15" y="-12" width="6" height="5" rx="1" />
+        <rect class="train-body-shape" x="-210" y="-15" width="100" height="14" rx="2" />
+        <rect class="train-window" x="-200" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-180" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-160" y="-12" width="14" height="5" rx="1" />
+        <rect class="train-window" x="-140" y="-12" width="14" height="5" rx="1" />
+        <circle class="train-wheel" cx="30" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="115" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-75" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-20" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-180" cy="0" r="2.5" />
+        <circle class="train-wheel" cx="-125" cy="0" r="2.5" />
+      </g>
+
+      <!-- Train 3: Rapid Metro Shuttle on Lower Track (y: 760) -->
+      <g class="train-unit train-metro" id="train-track-3">
+        <polygon class="train-headlight-cone" points="110,-7 200,-16 200,2 110,-2" fill="url(#trainBeamGrad)" />
+        <rect class="train-body-shape" x="0" y="-13" width="110" height="12" rx="3" />
+        <rect class="train-window" x="12" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="30" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="48" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="66" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="84" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-body-shape" x="-95" y="-13" width="90" height="12" rx="3" />
+        <rect class="train-window" x="-85" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="-67" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="-49" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="-31" y="-10" width="12" height="4" rx="1" />
+        <rect class="train-window" x="-13" y="-10" width="4" height="4" rx="1" />
+        <circle class="train-wheel" cx="25" cy="0" r="2" />
+        <circle class="train-wheel" cx="85" cy="0" r="2" />
+        <circle class="train-wheel" cx="-70" cy="0" r="2" />
+        <circle class="train-wheel" cx="-20" cy="0" r="2" />
+      </g>
+    </svg>
+  </div>
+
   <div class="app-shell">
     <!-- Top Header (Floating Premium AI Navbar, 68px) -->
     <header class="app-header" role="banner">

@@ -77,6 +77,23 @@
   /* Background Glow */
   --bg-glow-1: rgba(37, 99, 235, 0.07);
   --bg-glow-2: rgba(56, 189, 248, 0.05);
+
+  /* Railway Background Environment Tokens */
+  --bg-railway-opacity: 0.12;
+  --track-rail-color: rgba(56, 189, 248, 0.12);
+  --track-sleeper-color: rgba(56, 189, 248, 0.08);
+  --route-line-color: rgba(56, 189, 248, 0.13);
+  --station-outer-color: rgba(56, 189, 248, 0.38);
+  --station-inner-color: #38bdf8;
+  --station-halo-color: rgba(56, 189, 248, 0.16);
+  --train-body-color: rgba(15, 23, 42, 0.88);
+  --train-body-stroke: rgba(56, 189, 248, 0.3);
+  --train-window-color: rgba(56, 189, 248, 0.45);
+  --train-opacity: 0.10;
+  --particle-color: #38bdf8;
+  --grid-line-color: rgba(255, 255, 255, 0.025);
+  --signal-pole-color: rgba(255, 255, 255, 0.2);
+  --signal-housing-color: #0d1322;
 }
 
 [data-theme="light"] {
@@ -147,6 +164,23 @@
   /* Background Glow */
   --bg-glow-1: rgba(2, 132, 199, 0.04);
   --bg-glow-2: rgba(99, 102, 241, 0.03);
+
+  /* Railway Background Environment Tokens */
+  --bg-railway-opacity: 0.07;
+  --track-rail-color: rgba(37, 99, 235, 0.08);
+  --track-sleeper-color: rgba(37, 99, 235, 0.04);
+  --route-line-color: rgba(14, 165, 233, 0.09);
+  --station-outer-color: rgba(14, 165, 233, 0.3);
+  --station-inner-color: #0284c7;
+  --station-halo-color: rgba(14, 165, 233, 0.12);
+  --train-body-color: rgba(15, 23, 42, 0.85);
+  --train-body-stroke: rgba(14, 165, 233, 0.25);
+  --train-window-color: rgba(14, 165, 233, 0.5);
+  --train-opacity: 0.06;
+  --particle-color: #0284c7;
+  --grid-line-color: rgba(15, 23, 42, 0.025);
+  --signal-pole-color: rgba(15, 23, 42, 0.25);
+  --signal-housing-color: #ffffff;
 }
 
 /* Constants across themes */
@@ -194,6 +228,8 @@ body {
 }
 
 .app-shell {
+  position: relative;
+  z-index: 2;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -3050,7 +3086,431 @@ kbd {
 }
 
 /* ==========================================================================
-   17. PRINT STYLESHEET (CLEAN TICKET PRINTING / PDF EXPORT)
+   17. RAILWAY ANIMATED BACKGROUND ENVIRONMENT
+   ========================================================================== */
+
+.railway-background-env {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none !important;
+  user-select: none !important;
+  z-index: 0;
+  overflow: hidden;
+  transition: opacity 0.4s ease;
+}
+
+/* Subtle focus dimming when user types */
+body.composer-focused .railway-background-env {
+  opacity: 0.35;
+}
+
+/* 1. Ambient Glow Orbs */
+.bg-ambient-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  pointer-events: none;
+  animation: ambientFloat 26s ease-in-out infinite alternate;
+}
+
+.glow-1 {
+  width: 550px;
+  height: 450px;
+  top: -80px;
+  left: 8%;
+  background: radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, rgba(37, 99, 235, 0.02) 65%, transparent 100%);
+  animation-duration: 24s;
+}
+
+.glow-2 {
+  width: 650px;
+  height: 500px;
+  bottom: 5%;
+  right: 5%;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.06) 0%, rgba(56, 189, 248, 0.02) 65%, transparent 100%);
+  animation-duration: 30s;
+  animation-delay: -8s;
+}
+
+.glow-3 {
+  width: 480px;
+  height: 400px;
+  top: 42%;
+  left: 45%;
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.05) 0%, rgba(30, 58, 138, 0.01) 70%, transparent 100%);
+  animation-duration: 36s;
+  animation-delay: -16s;
+}
+
+[data-theme="light"] .glow-1 {
+  background: radial-gradient(circle, rgba(2, 132, 199, 0.05) 0%, rgba(37, 99, 235, 0.01) 65%, transparent 100%);
+}
+
+[data-theme="light"] .glow-2 {
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.04) 0%, rgba(2, 132, 199, 0.01) 65%, transparent 100%);
+}
+
+[data-theme="light"] .glow-3 {
+  background: radial-gradient(circle, rgba(14, 165, 233, 0.03) 0%, transparent 70%);
+}
+
+@keyframes ambientFloat {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(30px, 20px, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-20px, -24px, 0) scale(0.95);
+  }
+}
+
+/* 2. Technical Map Coordinate Grid */
+.bg-technical-grid {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line-color) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, transparent 88%);
+  -webkit-mask-image: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.85) 0%, transparent 88%);
+}
+
+/* 3. Scalable Vector Canvas */
+.railway-vector-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: var(--bg-railway-opacity);
+  will-change: opacity;
+}
+
+/* 4. Route Network Lines */
+.route-line {
+  stroke: var(--route-line-color);
+  stroke-width: 1.5;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.trunk-1, .trunk-2 {
+  stroke-dasharray: 6 10;
+  animation: routeDashFlow 45s linear infinite;
+}
+
+.branch-1, .branch-2, .diagonal-connector {
+  stroke-dasharray: 4 12;
+  animation: routeDashFlow 60s linear infinite reverse;
+}
+
+@keyframes routeDashFlow {
+  to {
+    stroke-dashoffset: -320;
+  }
+}
+
+/* 5. Railway Tracks */
+.track-rail {
+  stroke: var(--track-rail-color);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.track-ties {
+  stroke: var(--track-sleeper-color);
+  stroke-linecap: butt;
+  fill: none;
+}
+
+/* 6. Station Nodes & Waypoints */
+.station-node {
+  transform-origin: center;
+}
+
+.station-outer {
+  stroke: var(--station-outer-color);
+  stroke-width: 1.5;
+  fill: var(--bg-panel);
+}
+
+.station-inner {
+  fill: var(--station-inner-color);
+}
+
+.station-halo {
+  fill: var(--station-halo-color);
+  transform-origin: center;
+  animation: stationPulse 6s ease-in-out infinite;
+}
+
+.node-pulse-1 .station-halo { animation-delay: 0s; }
+.node-pulse-2 .station-halo { animation-delay: 1.8s; }
+.node-pulse-3 .station-halo { animation-delay: 3.6s; }
+
+.waypoint-node {
+  fill: var(--station-outer-color);
+  opacity: 0.6;
+}
+
+@keyframes stationPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.6);
+    opacity: 0.75;
+  }
+}
+
+/* 7. Railway Signals */
+.signal-mast line {
+  stroke: var(--signal-pole-color);
+  stroke-width: 1.5;
+}
+
+.signal-mast rect {
+  fill: var(--signal-housing-color);
+  stroke: var(--signal-pole-color);
+  stroke-width: 0.8;
+}
+
+.signal-lamp {
+  filter: drop-shadow(0 0 3px currentColor);
+}
+
+.lamp-green {
+  fill: #10b981;
+  color: #10b981;
+  animation: signalBlink 8s ease-in-out infinite;
+}
+
+.lamp-amber {
+  fill: #f59e0b;
+  color: #f59e0b;
+  animation: signalBlink 10s ease-in-out infinite reverse;
+}
+
+@keyframes signalBlink {
+  0%, 82%, 100% {
+    opacity: 0.85;
+  }
+  90% {
+    opacity: 0.2;
+  }
+}
+
+/* 8. Data Flow Particles */
+.data-particle {
+  fill: var(--particle-color);
+  filter: drop-shadow(0 0 3px var(--particle-color));
+}
+
+.particle-1 {
+  animation: particleStream1 20s linear infinite;
+}
+
+.particle-2 {
+  animation: particleStream2 26s linear infinite;
+  animation-delay: -8s;
+}
+
+.particle-3 {
+  animation: particleStream1 22s linear infinite;
+  animation-delay: -11s;
+}
+
+.particle-4 {
+  animation: particleStream3 30s linear infinite;
+  animation-delay: -5s;
+}
+
+.particle-5 {
+  animation: particleStream2 25s linear infinite;
+  animation-delay: -16s;
+}
+
+.particle-6 {
+  animation: particleStream3 32s linear infinite;
+  animation-delay: -21s;
+}
+
+@keyframes particleStream1 {
+  0% {
+    transform: translate3d(-100px, 240px, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.8;
+  }
+  95% {
+    opacity: 0.8;
+  }
+  100% {
+    transform: translate3d(1700px, 290px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes particleStream2 {
+  0% {
+    transform: translate3d(-100px, 680px, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.75;
+  }
+  95% {
+    opacity: 0.75;
+  }
+  100% {
+    transform: translate3d(1700px, 640px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes particleStream3 {
+  0% {
+    transform: translate3d(120px, 120px, 0);
+    opacity: 0;
+  }
+  5% {
+    opacity: 0.7;
+  }
+  95% {
+    opacity: 0.7;
+  }
+  100% {
+    transform: translate3d(1480px, 820px, 0);
+    opacity: 0;
+  }
+}
+
+/* 9. Moving Train Silhouettes */
+.train-unit {
+  will-change: transform;
+}
+
+.train-body-shape {
+  fill: var(--train-body-color);
+  stroke: var(--train-body-stroke);
+  stroke-width: 1;
+}
+
+.train-window {
+  fill: var(--train-window-color);
+}
+
+.train-wheel {
+  fill: var(--train-body-stroke);
+}
+
+.train-pantograph {
+  stroke: var(--train-body-stroke);
+}
+
+.train-headlight-cone {
+  mix-blend-mode: screen;
+}
+
+/* Staggered Train Motion Paths */
+#train-track-1 {
+  animation: moveTrainTrack1 56s linear infinite;
+  animation-delay: -14s;
+}
+
+#train-track-2 {
+  animation: moveTrainTrack2 84s linear infinite;
+  animation-delay: -42s;
+}
+
+#train-track-3 {
+  animation: moveTrainTrack3 108s linear infinite;
+  animation-delay: -70s;
+}
+
+@keyframes moveTrainTrack1 {
+  0% {
+    transform: translate3d(-350px, 240px, 0);
+  }
+  100% {
+    transform: translate3d(1950px, 240px, 0);
+  }
+}
+
+@keyframes moveTrainTrack2 {
+  0% {
+    transform: translate3d(-400px, 520px, 0);
+  }
+  100% {
+    transform: translate3d(1950px, 520px, 0);
+  }
+}
+
+@keyframes moveTrainTrack3 {
+  0% {
+    transform: translate3d(-300px, 760px, 0);
+  }
+  100% {
+    transform: translate3d(1950px, 760px, 0);
+  }
+}
+
+/* 10. Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .bg-ambient-glow,
+  .trunk-1,
+  .trunk-2,
+  .branch-1,
+  .branch-2,
+  .diagonal-connector,
+  .station-halo,
+  .lamp-green,
+  .lamp-amber,
+  .data-particle,
+  .train-unit {
+    animation: none !important;
+  }
+
+  #train-track-1 {
+    transform: translate3d(240px, 240px, 0) !important;
+  }
+
+  #train-track-2 {
+    transform: translate3d(920px, 520px, 0) !important;
+  }
+
+  #train-track-3 {
+    transform: translate3d(1380px, 760px, 0) !important;
+  }
+}
+
+/* 11. Mobile Responsiveness */
+@media (max-width: 768px) {
+  #train-track-3 {
+    display: none;
+  }
+  .bg-technical-grid {
+    background-size: 48px 48px;
+  }
+  .railway-vector-canvas {
+    opacity: calc(var(--bg-railway-opacity) * 0.75);
+  }
+}
+
+/* ==========================================================================
+   18. PRINT STYLESHEET (CLEAN TICKET PRINTING / PDF EXPORT)
    ========================================================================== */
 
 @media print {
@@ -3062,6 +3522,7 @@ kbd {
     margin: 0 !important;
   }
 
+  .railway-background-env,
   .app-header,
   .app-sidebar,
   .sidebar,
