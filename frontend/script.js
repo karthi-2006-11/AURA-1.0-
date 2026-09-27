@@ -156,30 +156,10 @@ document.addEventListener('DOMContentLoaded', () => {
   function initCalendar() {
     if (!auraCalendar) return;
 
-    if (btnOpenDatePicker) {
-      btnOpenDatePicker.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleCalendar(btnOpenDatePicker);
-      });
-    }
-
-    if (valDate) {
-      valDate.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleCalendar(btnOpenDatePicker || valDate);
-      });
-    }
-
-    if (rowDate) {
-      rowDate.addEventListener('click', (e) => {
-        if (e.target.closest('#btn-open-date-picker')) return;
-        toggleCalendar(btnOpenDatePicker || rowDate);
-      });
-    }
-
     if (calPrevMonth) {
       calPrevMonth.addEventListener('click', (e) => {
         e.stopPropagation();
+        e.preventDefault();
         changeCalendarMonth(-1);
       });
     }
@@ -187,16 +167,40 @@ document.addEventListener('DOMContentLoaded', () => {
     if (calNextMonth) {
       calNextMonth.addEventListener('click', (e) => {
         e.stopPropagation();
+        e.preventDefault();
         changeCalendarMonth(1);
       });
     }
 
-    // Dismiss on click outside
+    // Document-level event delegation for all date buttons (Trip Overview and dynamically rendered Journey Review cards)
     document.addEventListener('click', (e) => {
-      if (!isCalendarOpen) return;
-      if (auraCalendar.contains(e.target)) return;
-      if (activeCalendarTrigger && (activeCalendarTrigger.contains(e.target) || activeCalendarTrigger === e.target)) return;
-      closeCalendar();
+      const trigger = e.target.closest('#btn-open-date-picker, .btn-edit-date-review, #val-date, #row-date');
+      if (trigger) {
+        // If clicking inside the calendar itself, ignore
+        if (auraCalendar.contains(e.target)) return;
+
+        e.stopPropagation();
+        e.preventDefault();
+
+        const resolvedTrigger = trigger.closest('.btn-edit-date-review') ||
+                                trigger.closest('#btn-open-date-picker') ||
+                                btnOpenDatePicker ||
+                                trigger;
+
+        if (isCalendarOpen && activeCalendarTrigger === resolvedTrigger) {
+          closeCalendar();
+        } else {
+          openDatePicker(resolvedTrigger);
+        }
+        return;
+      }
+
+      // Dismiss on click outside
+      if (isCalendarOpen) {
+        if (auraCalendar.contains(e.target)) return;
+        if (activeCalendarTrigger && (activeCalendarTrigger.contains(e.target) || activeCalendarTrigger === e.target)) return;
+        closeCalendar();
+      }
     });
 
     // Dismiss on Escape key
@@ -216,8 +220,12 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isCalendarOpen && activeCalendarTrigger === triggerEl) {
       closeCalendar();
     } else {
-      openCalendar(triggerEl);
+      openDatePicker(triggerEl);
     }
+  }
+
+  function openDatePicker(triggerEl) {
+    openCalendar(triggerEl);
   }
 
   function openCalendar(triggerEl) {
@@ -225,8 +233,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     activeCalendarTrigger = triggerEl || btnOpenDatePicker || rowDate;
 
-    // Determine initial month and selected date
-    const existingDateRaw = (currentBookingState && currentBookingState.date) || (valDate && !valDate.classList.contains('not-set') ? valDate.textContent : null);
+    // Determine initial month and selected date safely without undeclared variables
+    let existingDateRaw = null;
+    if (selectedJourneyDate && !isNaN(selectedJourneyDate.getTime())) {
+      existingDateRaw = toDateInputValue(selectedJourneyDate);
+    } else if (valDate && !valDate.classList.contains('not-set') && valDate.textContent.trim() !== '—' && valDate.textContent.trim() !== 'Not provided') {
+      existingDateRaw = valDate.textContent.trim();
+    }
+
     const parsedExisting = parseJourneyDate(existingDateRaw);
     const now = new Date();
 
@@ -240,12 +254,14 @@ document.addEventListener('DOMContentLoaded', () => {
       calViewMonth = now.getMonth();
     }
 
-    renderCalendarGrid();
-
-    // Display calendar
+    // 1. Make visible first so layout and dimensions are active and measurable
     auraCalendar.style.display = 'block';
     isCalendarOpen = true;
 
+    // 2. Render calendar grid for current view year/month
+    renderCalendarGrid();
+
+    // 3. Position calendar accurately based on measured dimensions
     positionCalendar(activeCalendarTrigger);
 
     window.addEventListener('scroll', onCalendarViewportEvent, true);
@@ -678,7 +694,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.querySelector('.btn-edit-date-review')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      openCalendar(e.currentTarget);
+      e.preventDefault();
+      openDatePicker(e.currentTarget);
     });
 
     card.querySelector('.btn-confirm-action').addEventListener('click', () => {
@@ -884,7 +901,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     card.querySelector('.btn-edit-date-review')?.addEventListener('click', (e) => {
       e.stopPropagation();
-      openCalendar(e.currentTarget);
+      e.preventDefault();
+      openDatePicker(e.currentTarget);
     });
 
     card.querySelector('.btn-confirm-final').addEventListener('click', () => {
