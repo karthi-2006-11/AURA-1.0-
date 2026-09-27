@@ -6,6 +6,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   // Session State
   let currentTaskId = null;
+  let currentNextAction = null;
+  let currentStatus = null;
   let isProcessing = false;
 
   // DOM Elements: Header & Controls
@@ -47,6 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const valDestination = document.getElementById('val-destination');
   const rowDate = document.getElementById('row-date');
   const valDate = document.getElementById('val-date');
+  const journeyDatePicker = document.getElementById('journey-date-picker');
+  const btnOpenDatePicker = document.getElementById('btn-open-date-picker');
   const rowTime = document.getElementById('row-time');
   const valTime = document.getElementById('val-time');
   const rowPassengers = document.getElementById('row-passengers');
@@ -107,6 +111,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function initEventListeners() {
+    initDatePicker();
+
     // Composer Submission
     composerForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -131,6 +137,67 @@ document.addEventListener('DOMContentLoaded', () => {
         if (query) sendMessage(query);
       });
     });
+  }
+
+  function initDatePicker() {
+    if (!journeyDatePicker) return;
+    const today = new Date();
+    journeyDatePicker.min = toDateInputValue(today);
+
+    if (btnOpenDatePicker) {
+      btnOpenDatePicker.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openDatePicker();
+      });
+    }
+
+    if (valDate) {
+      valDate.addEventListener('click', () => {
+        openDatePicker();
+      });
+    }
+
+    journeyDatePicker.addEventListener('change', (e) => {
+      const chosenIso = e.target.value;
+      if (!chosenIso) return;
+      onDatePicked(chosenIso);
+    });
+  }
+
+  function openDatePicker() {
+    if (!journeyDatePicker) return;
+    try {
+      if (typeof journeyDatePicker.showPicker === 'function') {
+        journeyDatePicker.showPicker();
+      } else {
+        journeyDatePicker.focus();
+        journeyDatePicker.click();
+      }
+    } catch (err) {
+      journeyDatePicker.focus();
+      journeyDatePicker.click();
+    }
+  }
+
+  function onDatePicked(chosenIso) {
+    const chosenDate = parseJourneyDate(chosenIso);
+    if (!chosenDate) return;
+
+    // Immediately update visible formatted date in Trip Overview
+    const formatted = formatJourneyDate(chosenIso);
+    valDate.textContent = formatted;
+    valDate.classList.remove('not-set');
+    if (rowDate) rowDate.classList.add('collected');
+
+    // Agent date representation (e.g. "28th September 2026")
+    const agentDateStr = formatDateForAgent(chosenDate);
+
+    // If waiting for date, send agentDateStr directly; otherwise send "Book train for <date>"
+    if (currentNextAction === 'request_date') {
+      sendMessage(agentDateStr);
+    } else {
+      sendMessage(`Book train for ${agentDateStr}`);
+    }
   }
 
   /**
@@ -190,6 +257,8 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function handleAgentResponse(data) {
     currentTaskId = data.task_id;
+    currentNextAction = data.next_action;
+    currentStatus = data.status;
     sessionTag.textContent = `Task: ${data.task_id.substring(0, 11)}`;
 
     // 1. Render Agent Response Bubble or Specialized Card
@@ -278,7 +347,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const source = b.source || 'Unspecified';
     const dest = b.destination || 'Unspecified';
-    const date = b.date ? capitalize(b.date) : 'Not specified';
+    const date = b.date ? formatJourneyDate(b.date) : 'Not specified';
     const passengers = b.passengers ? `${b.passengers} ${b.passengers === 1 ? 'Passenger' : 'Passengers'}` : '1 Passenger';
     const travelClass = b.class || 'Not specified';
     const time = b.time_preference ? capitalize(b.time_preference) : 'Anytime';
@@ -289,14 +358,31 @@ document.addEventListener('DOMContentLoaded', () => {
         <span class="meta-tag">Awaiting Confirmation</span>
       </div>
       <div class="route-summary-box">
-        <div class="route-loc">${escapeHtml(source)}</div>
+        <div class="route-loc-item">
+          <span class="route-loc-lbl">From</span>
+          <div class="route-loc">${escapeHtml(source)}</div>
+        </div>
         <div class="route-dir-arrow">&rarr;</div>
-        <div class="route-loc">${escapeHtml(dest)}</div>
+        <div class="route-loc-item">
+          <span class="route-loc-lbl">To</span>
+          <div class="route-loc">${escapeHtml(dest)}</div>
+        </div>
       </div>
       <div class="confirm-details-grid">
-        <div class="confirm-field">
-          <span class="confirm-field-lbl">Date</span>
-          <span class="confirm-field-val">${escapeHtml(date)}</span>
+        <div class="confirm-field confirm-field-wide">
+          <span class="confirm-field-lbl">Journey Date</span>
+          <div class="confirm-field-date-row">
+            <span class="confirm-field-val">${escapeHtml(date)}</span>
+            <button type="button" class="btn-edit-date-review" aria-label="Change journey date" title="Change journey date">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                <line x1="16" x2="16" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="2" y2="6"/>
+                <line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>
+              <span>Change</span>
+            </button>
+          </div>
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Time Preference</span>
@@ -320,6 +406,8 @@ document.addEventListener('DOMContentLoaded', () => {
         </button>
       </div>
     `;
+
+    card.querySelector('.btn-edit-date-review')?.addEventListener('click', openDatePicker);
 
     card.querySelector('.btn-confirm-action').addEventListener('click', () => {
       sendMessage('confirm');
@@ -351,7 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="status-body-text">
           ${escapeHtml(message)}
         </div>
-        <span class="status-simulated-note">&bull; Simulated confirmation &bull; Actual railway booking is not connected in this prototype.</span>
       `;
     } else {
       card.innerHTML = `
@@ -385,8 +472,8 @@ document.addEventListener('DOMContentLoaded', () => {
     card.className = 'trains-card';
     card.innerHTML = `
       <div class="trains-header">
-        <span class="trains-title">&bull; Available Trains (Mock Provider)</span>
-        <span class="meta-tag">Simulation Schedules</span>
+        <span class="trains-title">&bull; Available Trains</span>
+        <span class="meta-tag">Direct Trains</span>
       </div>
       <div class="trains-list"></div>
     `;
@@ -451,62 +538,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const passengers = b.passengers || 1;
     const farePerPerson = t.fare || 850;
     const totalFare = farePerPerson * passengers;
+    const formattedDate = formatJourneyDate(b.date || t.date || 'tomorrow');
 
     card.innerHTML = `
       <div class="confirm-card-header">
-        <span class="confirm-title" style="color: var(--accent-cyan);">&bull; Final Booking Review</span>
-        <span class="meta-tag" style="background: rgba(245,158,11,0.15); color: #fbbf24; border-color: rgba(245,158,11,0.3);">Mock Provider</span>
+        <span class="confirm-title">REVIEW YOUR JOURNEY</span>
+        <span class="meta-tag">Final Step</span>
       </div>
 
       <div class="route-summary-box">
-        <div class="route-loc">${escapeHtml(t.source || b.source || 'Origin')}</div>
+        <div class="route-loc-item">
+          <span class="route-loc-lbl">From</span>
+          <div class="route-loc">${escapeHtml(t.source || b.source || 'Origin')}</div>
+        </div>
         <div class="route-dir-arrow">&rarr;</div>
-        <div class="route-loc">${escapeHtml(t.destination || b.destination || 'Destination')}</div>
+        <div class="route-loc-item">
+          <span class="route-loc-lbl">To</span>
+          <div class="route-loc">${escapeHtml(t.destination || b.destination || 'Destination')}</div>
+        </div>
       </div>
 
       <div class="confirm-details-grid">
+        <div class="confirm-field confirm-field-wide">
+          <span class="confirm-field-lbl">Journey Date</span>
+          <div class="confirm-field-date-row">
+            <span class="confirm-field-val">${escapeHtml(formattedDate)}</span>
+            <button type="button" class="btn-edit-date-review" aria-label="Change journey date" title="Change journey date">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                <line x1="16" x2="16" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="2" y2="6"/>
+                <line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>
+              <span>Change</span>
+            </button>
+          </div>
+        </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Selected Train</span>
-          <span class="confirm-field-val" style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.82rem;">${escapeHtml(t.train_number)} - ${escapeHtml(t.train_name)}</span>
+          <span class="confirm-field-val" style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.85rem;">${escapeHtml(t.train_number)} - ${escapeHtml(t.train_name)}</span>
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Schedule</span>
           <span class="confirm-field-val">${escapeHtml(t.departure_time || '08:00')} &rarr; ${escapeHtml(t.arrival_time || '16:00')}</span>
         </div>
         <div class="confirm-field">
-          <span class="confirm-field-lbl">Date & Class</span>
-          <span class="confirm-field-val">${escapeHtml(capitalize(b.date || 'Tomorrow'))} &bull; ${escapeHtml(t.class || b.class || '3A')}</span>
+          <span class="confirm-field-lbl">Passengers</span>
+          <span class="confirm-field-val">${passengers}</span>
         </div>
         <div class="confirm-field">
-          <span class="confirm-field-lbl">Passengers</span>
-          <span class="confirm-field-val">${passengers} ${passengers === 1 ? 'Passenger' : 'Passengers'}</span>
+          <span class="confirm-field-lbl">Class</span>
+          <span class="confirm-field-val">${escapeHtml(t.class || b.class || '3A')}</span>
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Availability</span>
-          <span class="confirm-field-val" style="color: #34d399;">${escapeHtml(avail.status || 'AVAILABLE')} (${avail.seats || 42} seats)</span>
+          <span class="confirm-field-val" style="color: var(--success-text);">${escapeHtml(avail.status || 'Available')} (${avail.seats || 42} seats)</span>
         </div>
         <div class="confirm-field">
-          <span class="confirm-field-lbl">Total Estimated Fare</span>
-          <span class="confirm-field-val" style="color: #34d399; font-size: 1rem;">₹${totalFare}</span>
-        </div>
-      </div>
-
-      <div class="simulation-disclaimer-box">
-        <span style="font-size: 1.1rem; line-height: 1;">⚠️</span>
-        <div>
-          <strong>MOCK SIMULATION NOTICE:</strong> This is a simulated booking via MockRailwayProvider. No real payment or IRCTC ticket will be issued.
+          <span class="confirm-field-lbl">Estimated Fare</span>
+          <span class="confirm-field-val" style="color: var(--success-text); font-size: 1.05rem;">₹${totalFare}</span>
         </div>
       </div>
 
       <div class="confirm-actions">
-        <button type="button" class="btn btn-success btn-sm btn-confirm-final" style="flex: 1;">
-          Confirm Mock Booking
+        <button type="button" class="btn btn-success btn-confirm-final" style="flex: 1;">
+          Confirm Booking
         </button>
         <button type="button" class="btn btn-danger btn-sm btn-cancel-final">
           Cancel
         </button>
       </div>
     `;
+
+    card.querySelector('.btn-edit-date-review')?.addEventListener('click', openDatePicker);
 
     card.querySelector('.btn-confirm-final').addEventListener('click', () => {
       sendMessage('confirm');
@@ -528,6 +632,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const card = document.createElement('div');
     card.className = 'mock-ticket-card';
+    const formattedDate = formatJourneyDate(result.date);
 
     card.innerHTML = `
       <div class="ticket-header">
@@ -537,9 +642,9 @@ document.addEventListener('DOMContentLoaded', () => {
             <path d="M4 10h16"/>
             <path d="M12 4v16"/>
           </svg>
-          <span>MOCK RAILWAY BOARDING PASS</span>
+          <span>DIGITAL BOARDING PASS</span>
         </div>
-        <span class="ticket-status-pill">SIMULATION CONFIRMED</span>
+        <span class="ticket-status-pill">CONFIRMED</span>
       </div>
 
       <div class="ticket-body">
@@ -549,15 +654,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="ticket-pnr-val">${escapeHtml(result.booking_reference)}</div>
           </div>
           <div style="text-align: right;">
-            <div class="ticket-pnr-lbl">Mock PNR</div>
+            <div class="ticket-pnr-lbl">PNR Number</div>
             <div style="font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: #7dd3fc;">${escapeHtml(result.pnr || result.booking_reference)}</div>
           </div>
         </div>
 
         <div class="route-summary-box" style="margin-bottom: 0;">
-          <div class="route-loc">${escapeHtml(result.source)}</div>
+          <div class="route-loc-item">
+            <span class="route-loc-lbl">From</span>
+            <div class="route-loc">${escapeHtml(result.source)}</div>
+          </div>
           <div class="route-dir-arrow">&rarr;</div>
-          <div class="route-loc">${escapeHtml(result.destination)}</div>
+          <div class="route-loc-item">
+            <span class="route-loc-lbl">To</span>
+            <div class="route-loc">${escapeHtml(result.destination)}</div>
+          </div>
         </div>
 
         <div class="confirm-details-grid" style="margin-bottom: 0;">
@@ -567,22 +678,22 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
           <div class="confirm-field">
             <span class="confirm-field-lbl">Date & Class</span>
-            <span class="confirm-field-val">${escapeHtml(capitalize(result.date))} &bull; ${escapeHtml(result.class)}</span>
+            <span class="confirm-field-val">${escapeHtml(formattedDate)} &bull; ${escapeHtml(result.class)}</span>
           </div>
           <div class="confirm-field">
             <span class="confirm-field-lbl">Passengers</span>
             <span class="confirm-field-val">${result.passengers} Passenger(s)</span>
           </div>
           <div class="confirm-field">
-            <span class="confirm-field-lbl">Total Mock Fare</span>
-            <span class="confirm-field-val" style="color: #34d399; font-size: 1rem;">₹${result.total_fare}</span>
+            <span class="confirm-field-lbl">Total Fare</span>
+            <span class="confirm-field-val" style="color: var(--success-text); font-size: 1rem;">₹${result.total_fare}</span>
           </div>
         </div>
 
         <div class="ticket-divider"></div>
 
-        <div class="ticket-disclaimer-box">
-          ${escapeHtml(result.disclaimer || 'MOCK RAILWAY PROVIDER — Simulation only, no real railway ticket is booked.')}
+        <div style="font-size: 0.74rem; color: var(--text-muted); text-align: center;">
+          Prototype Reservation &bull; Booking Reference: ${escapeHtml(result.booking_reference)}
         </div>
 
         <div style="text-align: center; margin-top: 4px;">
@@ -636,7 +747,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Individual parameter rows
     updateEntityRow(rowSource, valSource, b.source);
     updateEntityRow(rowDestination, valDestination, b.destination);
-    updateEntityRow(rowDate, valDate, b.date ? capitalize(b.date) : null);
+    if (b.date) {
+      updateEntityRow(rowDate, valDate, formatJourneyDate(b.date));
+      const parsed = parseJourneyDate(b.date);
+      if (parsed && journeyDatePicker) {
+        journeyDatePicker.value = toDateInputValue(parsed);
+      }
+    } else {
+      updateEntityRow(rowDate, valDate, null);
+      if (journeyDatePicker) journeyDatePicker.value = '';
+    }
     updateEntityRow(rowTime, valTime, b.time_preference ? capitalize(b.time_preference) : null);
     updateEntityRow(rowPassengers, valPassengers, b.passengers ? `${b.passengers} ${b.passengers === 1 ? 'person' : 'people'}` : null);
     updateEntityRow(rowClass, valClass, b.class);
@@ -952,7 +1072,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     currentTaskId = null;
+    currentNextAction = null;
+    currentStatus = null;
     sessionTag.textContent = 'Session: Idle';
+
+    if (journeyDatePicker) {
+      journeyDatePicker.value = '';
+      journeyDatePicker.min = toDateInputValue(new Date());
+    }
 
     // Clear chat stream and restore empty state
     chatStream.innerHTML = '';
@@ -1025,5 +1152,95 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!text) return '';
     const escaped = escapeHtml(text);
     return escaped.replace(/\n/g, '<br>');
+  }
+
+  /**
+   * Reusable Date Parser for Journey Dates
+   * Resolves relative expressions ('today', 'tomorrow', 'day after tomorrow')
+   * and explicit calendar dates into local Date objects.
+   */
+  function parseJourneyDate(raw) {
+    if (!raw || typeof raw !== 'string') return null;
+    const clean = raw.trim().toLowerCase();
+    const now = new Date();
+    const currentYear = now.getFullYear();
+    const currentMonth = now.getMonth();
+    const currentDate = now.getDate();
+
+    if (clean === 'today') {
+      return new Date(currentYear, currentMonth, currentDate);
+    }
+    if (clean === 'tomorrow') {
+      return new Date(currentYear, currentMonth, currentDate + 1);
+    }
+    if (clean === 'day after tomorrow') {
+      return new Date(currentYear, currentMonth, currentDate + 2);
+    }
+
+    // ISO format: YYYY-MM-DD
+    const isoMatch = clean.match(/^(\d{4})-(\d{1,2})-(\d{1,2})$/);
+    if (isoMatch) {
+      return new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
+    }
+
+    // DD/MM/YYYY or DD-MM-YYYY
+    const numMatch = clean.match(/^(\d{1,2})[-/.](\d{1,2})[-/.](\d{4})$/);
+    if (numMatch) {
+      return new Date(parseInt(numMatch[3], 10), parseInt(numMatch[2], 10) - 1, parseInt(numMatch[1], 10));
+    }
+
+    // Verbal date: e.g. '25th March', '28th September 2026'
+    const months = ['january','february','march','april','may','june','july','august','september','october','november','december'];
+    const monthAbbrs = ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+    const verbalMatch = clean.match(/^(\d{1,2})(?:st|nd|rd|th)?\s+([a-z]+)(?:\s+(\d{4}))?$/);
+    if (verbalMatch) {
+      const day = parseInt(verbalMatch[1], 10);
+      const mStr = verbalMatch[2];
+      let mIdx = months.indexOf(mStr);
+      if (mIdx === -1) mIdx = monthAbbrs.indexOf(mStr.slice(0, 3));
+      if (mIdx !== -1) {
+        let year = verbalMatch[3] ? parseInt(verbalMatch[3], 10) : currentYear;
+        return new Date(year, mIdx, day);
+      }
+    }
+
+    const d = new Date(raw);
+    if (!isNaN(d.getTime())) return d;
+    return null;
+  }
+
+  /**
+   * ONE Reusable Journey Date Formatter
+   * Produces polished calendar date format: "Monday, September 28, 2026"
+   */
+  function formatJourneyDate(raw) {
+    if (!raw) return 'Not provided';
+    const d = parseJourneyDate(raw);
+    if (!d || isNaN(d.getTime())) return capitalize(raw);
+    const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+  }
+
+  function toDateInputValue(d) {
+    if (!d || isNaN(d.getTime())) return '';
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function formatDateForAgent(d) {
+    if (!d || isNaN(d.getTime())) return 'tomorrow';
+    const day = d.getDate();
+    const suffix = getOrdinalSuffix(day);
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    return `${day}${suffix} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  }
+
+  function getOrdinalSuffix(n) {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return s[(v - 20) % 10] || s[v] || s[0];
   }
 });

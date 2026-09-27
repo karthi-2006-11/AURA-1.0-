@@ -67,18 +67,6 @@
       </div>
     </header>
 
-    <!-- Mock Provider Warning Banner -->
-    <div class="mock-provider-banner" role="status" aria-label="Mock Provider Notice">
-      <div class="banner-left">
-        <span class="mock-chip">MOCK RAILWAY PROVIDER</span>
-        <span class="mock-banner-text">Simulation only — no real railway ticket is booked. Authorized B2B/PSP Architecture Prototype.</span>
-      </div>
-      <div class="banner-right">
-        <span class="mock-dot-pulse"></span>
-        <span class="mock-mode-label">Mock Sandbox Active</span>
-      </div>
-    </div>
-
     <!-- Main Workspace Layout -->
     <main class="workspace-grid" role="main">
       <!-- LEFT / MAIN: Conversation & Request Area -->
@@ -302,12 +290,23 @@
               <span class="field-val not-set" id="val-destination">Not provided</span>
             </div>
 
-            <div class="entity-row" id="row-date">
+            <div class="entity-row date-entity-row" id="row-date">
               <div class="field-meta">
                 <span class="check-icon">&cir;</span>
                 <span class="field-name">Date</span>
               </div>
-              <span class="field-val not-set" id="val-date">Not provided</span>
+              <div class="date-picker-wrap">
+                <span class="field-val not-set" id="val-date">Not provided</span>
+                <button type="button" id="btn-open-date-picker" class="btn-date-picker" aria-label="Select journey date" title="Select journey date">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                    <line x1="16" x2="16" y1="2" y2="6"/>
+                    <line x1="8" x2="8" y1="2" y2="6"/>
+                    <line x1="3" x2="21" y1="10" y2="10"/>
+                  </svg>
+                </button>
+                <input type="date" id="journey-date-picker" class="journey-date-input" aria-label="Choose travel date">
+              </div>
             </div>
 
             <div class="entity-row" id="row-time">

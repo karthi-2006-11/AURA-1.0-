@@ -10,6 +10,8 @@
 
 :root,
 [data-theme="dark"] {
+  color-scheme: dark;
+
   /* Surface & Canvas Hierarchy */
   --bg-app: #080c14;
   --bg-panel: #0d1322;
@@ -78,6 +80,8 @@
 }
 
 [data-theme="light"] {
+  color-scheme: light;
+
   /* Surface & Canvas Hierarchy */
   --bg-app: #f8fafc;
   --bg-panel: #ffffff;
@@ -898,6 +902,27 @@ body {
   color: var(--text-primary);
 }
 
+.route-loc-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.route-loc-lbl {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.5px;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+}
+
+.route-code {
+  font-size: 1.15rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
 .route-dir-arrow {
   color: var(--accent-cyan);
   font-size: 1.25rem;
@@ -932,6 +957,43 @@ body {
   font-size: 0.92rem;
   font-weight: 700;
   color: var(--text-primary);
+}
+
+.confirm-field-wide {
+  grid-column: 1 / -1;
+}
+
+.confirm-field-date-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-edit-date-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background-color: rgba(56, 189, 248, 0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.28);
+  border-radius: var(--radius-xs);
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+.btn-edit-date-review:hover {
+  background-color: rgba(56, 189, 248, 0.22);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-edit-date-review:active {
+  transform: translateY(0);
 }
 
 .confirm-actions {
@@ -1751,6 +1813,59 @@ kbd {
   color: var(--text-muted);
   font-weight: 400;
   font-style: italic;
+}
+
+/* Date picker controls in trip overview */
+.date-picker-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  max-width: 70%;
+  justify-content: flex-end;
+}
+
+.date-picker-wrap .field-val {
+  text-align: right;
+  font-size: 0.82rem;
+  line-height: 1.25;
+}
+
+.journey-date-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 28px;
+  height: 28px;
+  opacity: 0;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.btn-date-picker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(56, 189, 248, 0.1);
+  color: var(--accent-cyan);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  border-radius: var(--radius-xs);
+  padding: 4px 6px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.btn-date-picker:hover {
+  background-color: rgba(56, 189, 248, 0.22);
+  border-color: var(--accent-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-date-picker:active {
+  transform: translateY(0);
 }
 
 /* 4. Activity Timeline */
