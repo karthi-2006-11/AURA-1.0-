@@ -1,0 +1,696 @@
+{
+  "description": "AURA Phase 5 Deterministic Evaluation Dataset",
+  "version": "1.0.0",
+  "categories": [
+    "complete_request",
+    "incomplete_request",
+    "contextual_short_response",
+    "invalid_input",
+    "workflow_and_railway"
+  ],
+  "cases": [
+    {
+      "id": "NLU-A01",
+      "category": "complete_request",
+      "input": "Book a train from Chennai to Coimbatore tomorrow for 2 people in 3AC.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "date": "tomorrow",
+        "time_preference": null,
+        "passengers": 2,
+        "class": "3A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A02",
+      "category": "complete_request",
+      "input": "Book me a train from Madurai to Chennai tomorrow evening for one passenger in sleeper.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Madurai",
+        "destination": "Chennai",
+        "date": "tomorrow",
+        "time_preference": "evening",
+        "passengers": 1,
+        "class": "SL",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A03",
+      "category": "complete_request",
+      "input": "Need a train from Bangalore to Chennai day after tomorrow for 3 passengers in 2AC.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Bangalore",
+        "destination": "Chennai",
+        "date": "day after tomorrow",
+        "time_preference": null,
+        "passengers": 3,
+        "class": "2A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A04",
+      "category": "complete_request",
+      "input": "Please reserve a train from Coimbatore to Chennai tomorrow morning for 4 adults in chair car.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Coimbatore",
+        "destination": "Chennai",
+        "date": "tomorrow",
+        "time_preference": "morning",
+        "passengers": 4,
+        "class": "CC",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A05",
+      "category": "complete_request",
+      "input": "I want to travel from Chennai to Bangalore today night for two people in first ac.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Bangalore",
+        "date": "today",
+        "time_preference": "night",
+        "passengers": 2,
+        "class": "1A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A06",
+      "category": "complete_request",
+      "input": "Find a train from Salem to Chennai tomorrow for 1 person in 3A",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Salem",
+        "destination": "Chennai",
+        "date": "tomorrow",
+        "time_preference": null,
+        "passengers": 1,
+        "class": "3A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A07",
+      "category": "complete_request",
+      "input": "Get me a train from Mumbai to Pune tomorrow afternoon for five passengers in second seating.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Mumbai",
+        "destination": "Pune",
+        "date": "tomorrow",
+        "time_preference": "afternoon",
+        "passengers": 5,
+        "class": "2S",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A08",
+      "category": "complete_request",
+      "input": "Search train tickets from New Delhi to Mumbai on 25th March for 2 passengers in 2A.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "New Delhi",
+        "destination": "Mumbai",
+        "date": "25th March",
+        "time_preference": null,
+        "passengers": 2,
+        "class": "2A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A09",
+      "category": "complete_request",
+      "input": "book train from chennai to coimbatore tomorrow for 2 people in 3ac",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "date": "tomorrow",
+        "time_preference": null,
+        "passengers": 2,
+        "class": "3A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A10",
+      "category": "complete_request",
+      "input": "BOOK A TRAIN FROM MADURAI TO CHENNAI TOMORROW FOR 1 PASSENGER IN SLEEPER",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Madurai",
+        "destination": "Chennai",
+        "date": "tomorrow",
+        "time_preference": null,
+        "passengers": 1,
+        "class": "SL",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A11",
+      "category": "complete_request",
+      "input": "Can you book a train from Trichy to Chennai tomorrow evening for 2 persons in 3A?",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Trichy",
+        "destination": "Chennai",
+        "date": "tomorrow",
+        "time_preference": "evening",
+        "passengers": 2,
+        "class": "3A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A12",
+      "category": "complete_request",
+      "input": "Reserve train seats from Hyderabad to Vijayawada on 15 April for 3 adults in CC.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Hyderabad",
+        "destination": "Vijayawada",
+        "date": "15 April",
+        "time_preference": null,
+        "passengers": 3,
+        "class": "CC",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A13",
+      "category": "complete_request",
+      "input": "Need train tickets from Chennai to Tirupati tomorrow morning for 2 people in 2S",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Tirupati",
+        "date": "tomorrow",
+        "time_preference": "morning",
+        "passengers": 2,
+        "class": "2S",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A14",
+      "category": "complete_request",
+      "input": "Book me a sleeper train from Bangalore to Mysore tomorrow night for 6 passengers.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Bangalore",
+        "destination": "Mysore",
+        "date": "tomorrow",
+        "time_preference": "night",
+        "passengers": 6,
+        "class": "SL",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A15",
+      "category": "complete_request",
+      "input": "Book a train from Chennai to Coimbatore on 2026-05-10 for 2 people in 3AC.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "date": "2026-05-10",
+        "time_preference": null,
+        "passengers": 2,
+        "class": "3A",
+        "valid": true
+      }
+    },
+    {
+      "id": "NLU-A16",
+      "category": "complete_request",
+      "input": "Travel from Delhi to Jaipur tomorrow evening for 1 passenger in executive chair car.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Delhi",
+        "destination": "Jaipur",
+        "date": "tomorrow",
+        "time_preference": "evening",
+        "passengers": 1,
+        "class": "EC",
+        "valid": true
+      }
+    },
+
+    {
+      "id": "NLU-B01",
+      "category": "incomplete_request",
+      "input": "Book a train to Coimbatore.",
+      "expected": {
+        "intent": "train_booking",
+        "source": null,
+        "destination": "Coimbatore",
+        "date": null,
+        "missing_fields": ["source", "date", "passengers", "class"],
+        "expected_action": "request_source"
+      }
+    },
+    {
+      "id": "NLU-B02",
+      "category": "incomplete_request",
+      "input": "Need a train from Chennai.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": null,
+        "date": null,
+        "missing_fields": ["destination", "date", "passengers", "class"],
+        "expected_action": "request_destination"
+      }
+    },
+    {
+      "id": "NLU-B03",
+      "category": "incomplete_request",
+      "input": "Book me a train tomorrow.",
+      "expected": {
+        "intent": "train_booking",
+        "source": null,
+        "destination": null,
+        "date": "tomorrow",
+        "missing_fields": ["source", "destination", "passengers", "class"],
+        "expected_action": "request_source"
+      }
+    },
+    {
+      "id": "NLU-B04",
+      "category": "incomplete_request",
+      "input": "Train from Chennai to Coimbatore.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "date": null,
+        "missing_fields": ["date", "passengers", "class"],
+        "expected_action": "request_date"
+      }
+    },
+    {
+      "id": "NLU-B05",
+      "category": "incomplete_request",
+      "input": "Book a train from Chennai to Bangalore tomorrow.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Bangalore",
+        "date": "tomorrow",
+        "missing_fields": ["passengers", "class"],
+        "expected_action": "request_passengers"
+      }
+    },
+    {
+      "id": "NLU-B06",
+      "category": "incomplete_request",
+      "input": "I want to travel from Madurai to Chennai for 2 people.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Madurai",
+        "destination": "Chennai",
+        "date": null,
+        "passengers": 2,
+        "missing_fields": ["date", "class"],
+        "expected_action": "request_date"
+      }
+    },
+    {
+      "id": "NLU-B07",
+      "category": "incomplete_request",
+      "input": "Book a sleeper train from Salem to Chennai.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Salem",
+        "destination": "Chennai",
+        "date": null,
+        "class": "SL",
+        "missing_fields": ["date", "passengers"],
+        "expected_action": "request_date"
+      }
+    },
+    {
+      "id": "NLU-B08",
+      "category": "incomplete_request",
+      "input": "Train tickets to Bangalore tomorrow evening.",
+      "expected": {
+        "intent": "train_booking",
+        "source": null,
+        "destination": "Bangalore",
+        "date": "tomorrow",
+        "missing_fields": ["source", "passengers", "class"],
+        "expected_action": "request_source"
+      }
+    },
+    {
+      "id": "NLU-B09",
+      "category": "incomplete_request",
+      "input": "Reserve 3 seats from Chennai to Coimbatore.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "date": null,
+        "passengers": 3,
+        "missing_fields": ["date", "class"],
+        "expected_action": "request_date"
+      }
+    },
+    {
+      "id": "NLU-B10",
+      "category": "incomplete_request",
+      "input": "Need a train from Madurai to Chennai tomorrow in 3AC.",
+      "expected": {
+        "intent": "train_booking",
+        "source": "Madurai",
+        "destination": "Chennai",
+        "date": "tomorrow",
+        "class": "3A",
+        "missing_fields": ["passengers"],
+        "expected_action": "request_passengers"
+      }
+    },
+
+    {
+      "id": "CTX-C01",
+      "category": "contextual_short_response",
+      "context_question": "request_passengers",
+      "input": "2",
+      "expected": {
+        "field": "passengers",
+        "value": 2
+      }
+    },
+    {
+      "id": "CTX-C02",
+      "category": "contextual_short_response",
+      "context_question": "request_passengers",
+      "input": "one passenger",
+      "expected": {
+        "field": "passengers",
+        "value": 1
+      }
+    },
+    {
+      "id": "CTX-C03",
+      "category": "contextual_short_response",
+      "context_question": "request_passengers",
+      "input": "3 adults",
+      "expected": {
+        "field": "passengers",
+        "value": 3
+      }
+    },
+    {
+      "id": "CTX-C04",
+      "category": "contextual_short_response",
+      "context_question": "request_class",
+      "input": "3AC",
+      "expected": {
+        "field": "class",
+        "value": "3A"
+      }
+    },
+    {
+      "id": "CTX-C05",
+      "category": "contextual_short_response",
+      "context_question": "request_class",
+      "input": "sleeper",
+      "expected": {
+        "field": "class",
+        "value": "SL"
+      }
+    },
+    {
+      "id": "CTX-C06",
+      "category": "contextual_short_response",
+      "context_question": "request_class",
+      "input": "Chair Car",
+      "expected": {
+        "field": "class",
+        "value": "CC"
+      }
+    },
+    {
+      "id": "CTX-C07",
+      "category": "contextual_short_response",
+      "context_question": "request_class",
+      "input": "2A",
+      "expected": {
+        "field": "class",
+        "value": "2A"
+      }
+    },
+    {
+      "id": "CTX-C08",
+      "category": "contextual_short_response",
+      "context_question": "request_source",
+      "input": "Chennai",
+      "expected": {
+        "field": "source",
+        "value": "Chennai"
+      }
+    },
+    {
+      "id": "CTX-C09",
+      "category": "contextual_short_response",
+      "context_question": "request_destination",
+      "input": "Coimbatore",
+      "expected": {
+        "field": "destination",
+        "value": "Coimbatore"
+      }
+    },
+    {
+      "id": "CTX-C10",
+      "category": "contextual_short_response",
+      "context_question": "request_date",
+      "input": "tomorrow",
+      "expected": {
+        "field": "date",
+        "value": "tomorrow"
+      }
+    },
+    {
+      "id": "CTX-C11",
+      "category": "contextual_short_response",
+      "context_question": "request_date",
+      "input": "day after tomorrow",
+      "expected": {
+        "field": "date",
+        "value": "day after tomorrow"
+      }
+    },
+
+    {
+      "id": "INV-D01",
+      "category": "invalid_input",
+      "input": "Hello",
+      "expected": {
+        "intent": "unknown",
+        "valid": false
+      }
+    },
+    {
+      "id": "INV-D02",
+      "category": "invalid_input",
+      "input": "What is the weather in Chennai?",
+      "expected": {
+        "intent": "unknown",
+        "valid": false
+      }
+    },
+    {
+      "id": "INV-D03",
+      "category": "invalid_input",
+      "input": "Book a luxury hotel in Goa.",
+      "expected": {
+        "intent": "unknown",
+        "valid": false
+      }
+    },
+    {
+      "id": "INV-D04",
+      "category": "invalid_input",
+      "input": "",
+      "expected": {
+        "intent": "unknown",
+        "valid": false
+      }
+    },
+    {
+      "id": "INV-D05",
+      "category": "invalid_input",
+      "input": "123456",
+      "expected": {
+        "intent": "unknown",
+        "valid": false
+      }
+    },
+    {
+      "id": "INV-D06",
+      "category": "invalid_input",
+      "input": "Order a pizza for dinner tonight",
+      "expected": {
+        "intent": "unknown",
+        "valid": false
+      }
+    },
+
+    {
+      "id": "WKF-E01",
+      "category": "workflow_and_railway",
+      "description": "Initial journey confirmation transitions to confirmed and searches trains",
+      "initial_state": "ready_for_confirmation",
+      "input": "confirm",
+      "expected": {
+        "status": "confirmed",
+        "next_action": "booking_ready",
+        "has_available_trains": true
+      }
+    },
+    {
+      "id": "WKF-E02",
+      "category": "workflow_and_railway",
+      "description": "User cancellation transitions task to cancelled",
+      "initial_state": "ready_for_confirmation",
+      "input": "cancel",
+      "expected": {
+        "status": "cancelled",
+        "next_action": "none"
+      }
+    },
+    {
+      "id": "WKF-E03",
+      "category": "workflow_and_railway",
+      "description": "Train selection by number sets selected_train and requests final confirmation",
+      "initial_state": "booking_ready",
+      "input": "12673",
+      "expected": {
+        "status": "booking_ready",
+        "next_action": "request_final_confirmation",
+        "selected_train_number": "12673",
+        "selected_train_name": "Cheran Express"
+      }
+    },
+    {
+      "id": "WKF-E04",
+      "category": "workflow_and_railway",
+      "description": "Train selection by name sets selected_train",
+      "initial_state": "booking_ready",
+      "input": "Kovai Express",
+      "expected": {
+        "status": "booking_ready",
+        "next_action": "request_final_confirmation",
+        "selected_train_number": "12675"
+      }
+    },
+    {
+      "id": "WKF-E05",
+      "category": "workflow_and_railway",
+      "description": "Invalid train selection prompts user to select a valid train option",
+      "initial_state": "booking_ready",
+      "input": "99999",
+      "expected": {
+        "status": "confirmed",
+        "next_action": "booking_ready",
+        "selected_train": null
+      }
+    },
+    {
+      "id": "WKF-E06",
+      "category": "workflow_and_railway",
+      "description": "Final confirmation generates mock booking reference AURA-MOCK-XXXXXX",
+      "initial_state": "booking_ready_selected",
+      "input": "confirm",
+      "expected": {
+        "status": "booking_confirmed",
+        "next_action": "none",
+        "mock_reference_prefix": "AURA-MOCK-"
+      }
+    },
+    {
+      "id": "WKF-E07",
+      "category": "workflow_and_railway",
+      "description": "Duplicate booking attempt after confirmation is blocked",
+      "initial_state": "booking_confirmed",
+      "input": "book again",
+      "expected": {
+        "status": "booking_confirmed",
+        "next_action": "none",
+        "blocked": true
+      }
+    },
+    {
+      "id": "WKF-E08",
+      "category": "workflow_and_railway",
+      "description": "Direct MockRailwayProvider search returns realistic trains with mock flags",
+      "query": {
+        "source": "Chennai",
+        "destination": "Coimbatore",
+        "date": "tomorrow",
+        "class": "3A",
+        "passengers": 2
+      },
+      "expected": {
+        "min_trains": 2,
+        "mock": true,
+        "provider": "mock"
+      }
+    },
+    {
+      "id": "WKF-E09",
+      "category": "workflow_and_railway",
+      "description": "Seat availability verification returns seats and quota status",
+      "query": {
+        "train_number": "12673",
+        "class": "3A"
+      },
+      "expected": {
+        "status": "AVAILABLE",
+        "min_seats": 1,
+        "mock": true
+      }
+    },
+    {
+      "id": "WKF-E10",
+      "category": "workflow_and_railway",
+      "description": "Cancellation during train selection moves task to cancelled",
+      "initial_state": "booking_ready",
+      "input": "cancel",
+      "expected": {
+        "status": "cancelled",
+        "next_action": "none"
+      }
+    },
+    {
+      "id": "WKF-E11",
+      "category": "workflow_and_railway",
+      "description": "Direct MockRailwayProvider booking calculates fare correctly and includes disclaimer",
+      "query": {
+        "fare": 850,
+        "passengers": 3
+      },
+      "expected": {
+        "total_fare": 2550,
+        "status": "CONFIRMED",
+        "mock": true,
+        "disclaimer_contains": "MOCK RAILWAY PROVIDER"
+      }
+    }
+  ]
+}

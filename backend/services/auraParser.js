@@ -63,7 +63,7 @@ function formatStationName(name) {
   if (!name) return null;
   const cleaned = name
     .trim()
-    .replace(/^[,.\s]+|[,.\s]+$/g, '')
+    .replace(/^[,.!?\s]+|[,.!?\s]+$/g, '')
     .replace(/\s+/g, ' ');
 
   if (!cleaned) return null;
@@ -145,7 +145,7 @@ function extractStations(text) {
 
   // Pattern 1: "from [Source] to [Destination]"
   // e.g. "train from Chennai to Coimbatore tomorrow"
-  const fromToMatch = text.match(/\bfrom\s+([a-zA-Z\s]+?)\s+to\s+([a-zA-Z\s]+?)(?=$|\s+(?:tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
+  const fromToMatch = text.match(/\bfrom\s+([a-zA-Z\s]+?)\s*[.,!?]?\s+to\s+([a-zA-Z\s]+?)(?=$|\s*[.,!?]|\s+(?:tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
   if (fromToMatch) {
     source = cleanStationCandidate(fromToMatch[1]);
     destination = cleanStationCandidate(fromToMatch[2]);
@@ -154,7 +154,7 @@ function extractStations(text) {
 
   // Pattern 2: "to [Destination] from [Source]"
   // e.g. "train to Coimbatore from Chennai tomorrow"
-  const toFromMatch = text.match(/\bto\s+([a-zA-Z\s]+?)\s+from\s+([a-zA-Z\s]+?)(?=$|\s+(?:tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
+  const toFromMatch = text.match(/\bto\s+([a-zA-Z\s]+?)\s*[.,!?]?\s+from\s+([a-zA-Z\s]+?)(?=$|\s*[.,!?]|\s+(?:tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
   if (toFromMatch) {
     destination = cleanStationCandidate(toFromMatch[1]);
     source = cleanStationCandidate(toFromMatch[2]);
@@ -163,14 +163,14 @@ function extractStations(text) {
 
   // Pattern 3: Destination only: "to [Destination]"
   // e.g. "Book a train to Coimbatore tomorrow"
-  const toOnlyMatch = text.match(/\bto\s+([a-zA-Z\s]+?)(?=$|\s+(?:tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
+  const toOnlyMatch = text.match(/\bto\s+([a-zA-Z\s]+?)(?=$|\s*[.,!?]|\s+(?:tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
   if (toOnlyMatch) {
     destination = cleanStationCandidate(toOnlyMatch[1]);
   }
 
   // Pattern 4: Source only: "from [Source]"
   // e.g. "Book a train from Chennai tomorrow"
-  const fromOnlyMatch = text.match(/\bfrom\s+([a-zA-Z\s]+?)(?=$|\s+(?:to|tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
+  const fromOnlyMatch = text.match(/\bfrom\s+([a-zA-Z\s]+?)(?=$|\s*[.,!?]|\s+(?:to|tomorrow|today|day after tomorrow|yesterday|morning|afternoon|evening|night|for|in|on|at|with|by|\d|[.,!?]))/i);
   if (fromOnlyMatch) {
     source = cleanStationCandidate(fromOnlyMatch[1]);
   }

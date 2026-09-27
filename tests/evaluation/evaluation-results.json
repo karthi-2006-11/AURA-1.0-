@@ -1,0 +1,292 @@
+{
+  "project": "AURA",
+  "phase": 5,
+  "evaluation_type": "prototype_evaluation",
+  "timestamp": "2026-09-27T06:08:54.136Z",
+  "dataset": {
+    "total_cases": 54,
+    "categories": {
+      "complete_request": 16,
+      "incomplete_request": 10,
+      "contextual_short_response": 11,
+      "invalid_input": 6,
+      "workflow_and_railway": 11
+    }
+  },
+  "nlu": {
+    "intent_accuracy": 100,
+    "source_accuracy": 100,
+    "destination_accuracy": 100,
+    "date_accuracy": 100,
+    "passenger_accuracy": 100,
+    "class_accuracy": 100,
+    "time_preference_accuracy": 100,
+    "overall_accuracy": 100,
+    "raw_counts": {
+      "intent": {
+        "correct": 32,
+        "total": 32
+      },
+      "source": {
+        "correct": 26,
+        "total": 26
+      },
+      "destination": {
+        "correct": 26,
+        "total": 26
+      },
+      "date": {
+        "correct": 26,
+        "total": 26
+      },
+      "passengers": {
+        "correct": 18,
+        "total": 18
+      },
+      "class": {
+        "correct": 18,
+        "total": 18
+      },
+      "time_preference": {
+        "correct": 16,
+        "total": 16
+      },
+      "overall_complete": {
+        "correct": 16,
+        "total": 16
+      }
+    },
+    "failures": []
+  },
+  "agent": {
+    "successful_workflows": 26,
+    "total_workflows": 26,
+    "success_rate": 100,
+    "categories": {
+      "missing_field_detection": {
+        "total": 10,
+        "passed": 10
+      },
+      "contextual_resolution": {
+        "total": 11,
+        "passed": 11
+      },
+      "multi_turn_progression": {
+        "total": 1,
+        "passed": 1
+      },
+      "confirmation_handling": {
+        "total": 1,
+        "passed": 1
+      },
+      "cancellation_handling": {
+        "total": 2,
+        "passed": 2
+      },
+      "state_persistence": {
+        "total": 1,
+        "passed": 1
+      }
+    }
+  },
+  "railway_workflow": {
+    "successful_tests": 12,
+    "total_tests": 12,
+    "success_rate": 100,
+    "tests": [
+      {
+        "name": "1. Train Search: Valid Route Query",
+        "status": "PASS"
+      },
+      {
+        "name": "2. Train Matching: Seeded Express Route",
+        "status": "PASS"
+      },
+      {
+        "name": "3. Train Search: Algorithmic Dynamic Fallback",
+        "status": "PASS"
+      },
+      {
+        "name": "4. Train Selection: Valid Train Number",
+        "status": "PASS"
+      },
+      {
+        "name": "5. Train Selection: Invalid Train Rejection",
+        "status": "PASS"
+      },
+      {
+        "name": "6. Availability Verification: Seat Quotas",
+        "status": "PASS"
+      },
+      {
+        "name": "7. Fare Calculation: Passenger Multiplier",
+        "status": "PASS"
+      },
+      {
+        "name": "8. Booking Preparation: Missing Data Validation",
+        "status": "PASS"
+      },
+      {
+        "name": "9. Mock Booking: Execution and Status",
+        "status": "PASS"
+      },
+      {
+        "name": "10. Booking Reference Format: AURA-MOCK-XXXXXX",
+        "status": "PASS"
+      },
+      {
+        "name": "11. Duplicate Booking Prevention: Re-booking Blocked",
+        "status": "PASS"
+      },
+      {
+        "name": "12. Simulation Notice: Prominent Disclaimer Verification",
+        "status": "PASS"
+      }
+    ]
+  },
+  "error_handling": {
+    "passed": 13,
+    "total": 13,
+    "success_rate": 100,
+    "cases": [
+      {
+        "name": "1. Missing Task ID on /api/trains/select",
+        "status": "PASS"
+      },
+      {
+        "name": "2. Non-existent Task ID on /api/trains/select",
+        "status": "PASS"
+      },
+      {
+        "name": "3. Missing Train Number on /api/trains/select",
+        "status": "PASS"
+      },
+      {
+        "name": "4. Missing Source on /api/trains/search",
+        "status": "PASS"
+      },
+      {
+        "name": "5. Missing Destination on /api/trains/search",
+        "status": "PASS"
+      },
+      {
+        "name": "6. Missing Date on /api/trains/search",
+        "status": "PASS"
+      },
+      {
+        "name": "7. Non-existent Train Selection on /api/trains/select",
+        "status": "PASS"
+      },
+      {
+        "name": "8. Missing Task ID on /api/agent/book",
+        "status": "PASS"
+      },
+      {
+        "name": "9. Non-existent Task ID on /api/agent/book",
+        "status": "PASS"
+      },
+      {
+        "name": "10. Booking before Selecting Train on /api/agent/book",
+        "status": "PASS"
+      },
+      {
+        "name": "11. Duplicate Booking Blocked on /api/agent/book",
+        "status": "PASS"
+      },
+      {
+        "name": "12. Malformed Empty Message Handling on /api/agent/message",
+        "status": "PASS"
+      },
+      {
+        "name": "13. Explicit Cancellation Handling",
+        "status": "PASS"
+      }
+    ]
+  },
+  "end_to_end": {
+    "successful_scenarios": 5,
+    "total_scenarios": 5,
+    "success_rate": 100,
+    "scenarios": [
+      {
+        "name": "Scenario 1: Complete Journey (Query -> Review -> Search -> Select -> Avail -> Final Confirm -> Mock Ticket)",
+        "status": "PASS"
+      },
+      {
+        "name": "Scenario 2: Incomplete Request Resolution (Clarifications -> Complete Flow)",
+        "status": "PASS"
+      },
+      {
+        "name": "Scenario 3: User Cancellation (Request Review -> Cancel)",
+        "status": "PASS"
+      },
+      {
+        "name": "Scenario 4: Invalid Train Selection Recovery (Invalid Train -> Reprompt -> Valid Selection -> Success)",
+        "status": "PASS"
+      },
+      {
+        "name": "Scenario 5: Duplicate Booking Attempt (Confirmed Session -> Re-booking Prevented)",
+        "status": "PASS"
+      }
+    ]
+  },
+  "regression": {
+    "passed": 37,
+    "total": 37,
+    "status": "VERIFIED"
+  },
+  "performance": {
+    "benchmark_scope": "LOCAL PROTOTYPE PERFORMANCE",
+    "iterations_per_op": 100,
+    "summary": {
+      "average_ms": 0.0039,
+      "median_ms": 0.0034,
+      "min_ms": 0.0009,
+      "max_ms": 0.0452
+    },
+    "operations": {
+      "nlu_parsing": {
+        "iterations": 100,
+        "average_ms": 0.0033,
+        "median_ms": 0.0032,
+        "min_ms": 0.0031,
+        "max_ms": 0.005
+      },
+      "agent_message_processing": {
+        "iterations": 100,
+        "average_ms": 0.0122,
+        "median_ms": 0.0105,
+        "min_ms": 0.0097,
+        "max_ms": 0.0452
+      },
+      "train_search": {
+        "iterations": 100,
+        "average_ms": 0.002,
+        "median_ms": 0.0015,
+        "min_ms": 0.001,
+        "max_ms": 0.0152
+      },
+      "train_selection": {
+        "iterations": 100,
+        "average_ms": 0.0012,
+        "median_ms": 0.0011,
+        "min_ms": 0.001,
+        "max_ms": 0.004
+      },
+      "availability_check": {
+        "iterations": 100,
+        "average_ms": 0.0014,
+        "median_ms": 0.001,
+        "min_ms": 0.0009,
+        "max_ms": 0.0118
+      },
+      "mock_booking": {
+        "iterations": 100,
+        "average_ms": 0.0033,
+        "median_ms": 0.003,
+        "min_ms": 0.0027,
+        "max_ms": 0.0111
+      }
+    }
+  }
+}
