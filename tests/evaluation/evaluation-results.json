@@ -2,7 +2,7 @@
   "project": "AURA",
   "phase": 5,
   "evaluation_type": "prototype_evaluation",
-  "timestamp": "2026-09-27T06:08:54.136Z",
+  "timestamp": "2026-09-27T06:22:49.433Z",
   "dataset": {
     "total_cases": 54,
     "categories": {
@@ -239,53 +239,53 @@
     "benchmark_scope": "LOCAL PROTOTYPE PERFORMANCE",
     "iterations_per_op": 100,
     "summary": {
-      "average_ms": 0.0039,
-      "median_ms": 0.0034,
+      "average_ms": 0.0041,
+      "median_ms": 0.0035,
       "min_ms": 0.0009,
-      "max_ms": 0.0452
+      "max_ms": 0.0567
     },
     "operations": {
       "nlu_parsing": {
         "iterations": 100,
-        "average_ms": 0.0033,
-        "median_ms": 0.0032,
+        "average_ms": 0.0041,
+        "median_ms": 0.0033,
         "min_ms": 0.0031,
-        "max_ms": 0.005
+        "max_ms": 0.0567
       },
       "agent_message_processing": {
         "iterations": 100,
-        "average_ms": 0.0122,
-        "median_ms": 0.0105,
+        "average_ms": 0.0127,
+        "median_ms": 0.0113,
         "min_ms": 0.0097,
-        "max_ms": 0.0452
+        "max_ms": 0.0512
       },
       "train_search": {
         "iterations": 100,
-        "average_ms": 0.002,
-        "median_ms": 0.0015,
+        "average_ms": 0.0019,
+        "median_ms": 0.0014,
         "min_ms": 0.001,
-        "max_ms": 0.0152
+        "max_ms": 0.0172
       },
       "train_selection": {
         "iterations": 100,
         "average_ms": 0.0012,
         "median_ms": 0.0011,
         "min_ms": 0.001,
-        "max_ms": 0.004
+        "max_ms": 0.0038
       },
       "availability_check": {
         "iterations": 100,
-        "average_ms": 0.0014,
+        "average_ms": 0.0012,
         "median_ms": 0.001,
         "min_ms": 0.0009,
-        "max_ms": 0.0118
+        "max_ms": 0.0084
       },
       "mock_booking": {
         "iterations": 100,
-        "average_ms": 0.0033,
+        "average_ms": 0.0034,
         "median_ms": 0.003,
-        "min_ms": 0.0027,
-        "max_ms": 0.0111
+        "min_ms": 0.0028,
+        "max_ms": 0.0164
       }
     }
   }
