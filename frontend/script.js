@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // DOM Elements: Header & Controls
   const btnNewRequest = document.getElementById('btn-new-request');
   const sessionTag = document.getElementById('session-tag');
+  const themeToggle = document.getElementById('theme-toggle');
 
   // DOM Elements: Chat Area
   const chatStream = document.getElementById('chat-stream');
@@ -65,7 +66,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const rawTaskJson = document.getElementById('raw-task-json');
 
   // --- INITIALIZATION ---
+  initTheme();
   initEventListeners();
+
+  function initTheme() {
+    const savedTheme = localStorage.getItem('aura-theme');
+    let currentTheme = 'dark';
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+      currentTheme = savedTheme;
+    } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+      currentTheme = 'light';
+    }
+    applyTheme(currentTheme);
+
+    if (themeToggle) {
+      themeToggle.addEventListener('click', () => {
+        const activeTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        const nextTheme = activeTheme === 'dark' ? 'light' : 'dark';
+        applyTheme(nextTheme);
+        localStorage.setItem('aura-theme', nextTheme);
+      });
+    }
+
+    if (window.matchMedia) {
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!localStorage.getItem('aura-theme')) {
+          applyTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+    }
+  }
+
+  function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    if (themeToggle) {
+      const isDark = theme === 'dark';
+      themeToggle.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+      themeToggle.setAttribute('title', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+    }
+  }
 
   function initEventListeners() {
     // Composer Submission

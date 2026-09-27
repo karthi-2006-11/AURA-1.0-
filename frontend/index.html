@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="app-shell">
@@ -32,6 +32,29 @@
           <span class="status-dot"></span>
           <span class="status-text">Agent Online</span>
         </div>
+
+        <!-- Light / Dark Mode Toggle Button -->
+        <button id="theme-toggle" class="btn-theme-toggle" aria-label="Toggle color theme" title="Toggle theme">
+          <span class="theme-icon sun-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="4"/>
+              <path d="M12 2v2"/>
+              <path d="M12 20v2"/>
+              <path d="m4.93 4.93 1.41 1.41"/>
+              <path d="m17.66 17.66 1.41 1.41"/>
+              <path d="M2 12h2"/>
+              <path d="M20 12h2"/>
+              <path d="m6.34 17.66-1.41 1.41"/>
+              <path d="m19.07 4.93-1.41 1.41"/>
+            </svg>
+          </span>
+          <span class="theme-icon moon-icon" aria-hidden="true">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+            </svg>
+          </span>
+        </button>
+
         <button id="btn-new-request" class="btn btn-secondary btn-sm" aria-label="Start new booking request">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
@@ -72,32 +95,60 @@
         <div id="chat-stream" class="chat-stream" role="log" aria-live="polite">
           <!-- Empty State (Shown initially before conversation begins) -->
           <div id="empty-state" class="empty-state-card">
-            <div class="empty-icon-wrap" aria-hidden="true">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="16" height="16" x="4" y="4" rx="2"/>
-                <path d="M4 10h16"/>
-                <path d="M12 4v16"/>
-              </svg>
+            <div class="empty-hero-badge">
+              <span class="hero-sparkle" aria-hidden="true">&#10024;</span>
+              <span>AI RAILWAY ASSISTANT</span>
             </div>
-            <h3 class="empty-title">Your Railway Journey Assistant</h3>
+            <h3 class="empty-title">Tell AURA where you want to go.</h3>
             <p class="empty-desc">
-              Describe your journey in natural language. AURA will understand the route, date, passengers, and class, guide you through any missing details, and prepare a verified booking request.
+              Describe your journey in natural language. AURA extracts stations, dates, classes, and passengers, checks live mock train availability, and organizes your booking.
             </p>
 
             <div class="starter-prompts">
-              <span class="starter-label">Try an example request:</span>
+              <span class="starter-label">Try an example journey request:</span>
               <div class="starter-chips">
                 <button type="button" class="starter-chip" data-query="Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC.">
-                  <span class="chip-dot"></span>
-                  <span>"Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC."</span>
+                  <div class="chip-icon-wrap" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/>
+                      <line x1="4" x2="4" y1="22" y2="15"/>
+                    </svg>
+                  </div>
+                  <div class="chip-content">
+                    <span class="chip-query">"Book me a train from Chennai to Coimbatore tomorrow evening for 2 people in 3AC."</span>
+                    <span class="chip-meta">Full journey with passengers &amp; class</span>
+                  </div>
+                  <span class="chip-arrow" aria-hidden="true">&rarr;</span>
                 </button>
+
                 <button type="button" class="starter-chip" data-query="I want to travel from Chennai to Bangalore tomorrow.">
-                  <span class="chip-dot"></span>
-                  <span>"I want to travel from Chennai to Bangalore tomorrow."</span>
+                  <div class="chip-icon-wrap" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div class="chip-content">
+                    <span class="chip-query">"I want to travel from Chennai to Bangalore tomorrow."</span>
+                    <span class="chip-meta">Route &amp; date &bull; AURA will ask missing fields</span>
+                  </div>
+                  <span class="chip-arrow" aria-hidden="true">&rarr;</span>
                 </button>
+
                 <button type="button" class="starter-chip" data-query="Book me a sleeper train from Madurai to Chennai for 3 passengers.">
-                  <span class="chip-dot"></span>
-                  <span>"Book me a sleeper train from Madurai to Chennai for 3 passengers."</span>
+                  <div class="chip-icon-wrap" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                      <circle cx="9" cy="7" r="4"/>
+                      <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                      <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                  </div>
+                  <div class="chip-content">
+                    <span class="chip-query">"Book me a sleeper train from Madurai to Chennai for 3 passengers."</span>
+                    <span class="chip-meta">Sleeper class with passenger count</span>
+                  </div>
+                  <span class="chip-arrow" aria-hidden="true">&rarr;</span>
                 </button>
               </div>
             </div>
@@ -133,7 +184,7 @@
               autocomplete="off"
             ></textarea>
             <div class="composer-footer">
-              <span class="key-hint">Press <kbd>Enter</kbd> to send, <kbd>Shift+Enter</kbd> for new line</span>
+              <span class="key-hint">Press <kbd>Enter</kbd> to send &bull; <kbd>Shift+Enter</kbd> for new line</span>
               <button type="submit" id="btn-send" class="btn btn-primary" aria-label="Send message">
                 <span>Send</span>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -146,7 +197,7 @@
         </form>
       </section>
 
-      <!-- RIGHT / SIDEBAR: Live Agent Workflow & State Visualizer -->
+      <!-- RIGHT / SIDEBAR: Live Agent Workflow & Trip Overview -->
       <aside class="panel inspector-panel" aria-label="Agent Workflow Inspector">
         <!-- 1. Workflow Stepper -->
         <div class="card stage-stepper-card">
@@ -193,7 +244,7 @@
               </div>
               <div class="step-content">
                 <span class="step-title">Final Review</span>
-                <span class="step-caption">Availability & fare</span>
+                <span class="step-caption">Availability &amp; fare</span>
               </div>
             </div>
 
@@ -221,10 +272,10 @@
           <div id="current-action-label" class="current-action-text">Waiting for initial request</div>
         </div>
 
-        <!-- 3. Live Booking State -->
+        <!-- 3. Live Booking State / Trip Overview -->
         <div class="card booking-state-card">
           <div class="card-header-row">
-            <h3 class="card-subtitle">LIVE BOOKING REQUEST</h3>
+            <h3 class="card-subtitle">TRIP OVERVIEW</h3>
             <span id="booking-validity-tag" class="validity-tag incomplete">Incomplete</span>
           </div>
 

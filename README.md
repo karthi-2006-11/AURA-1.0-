@@ -87,7 +87,7 @@ For complete technical specifications, see [`docs/architecture.md`](docs/archite
 ---
 
 ## 7. Technology Stack
-- **Frontend**: HTML5, Modern CSS3 (Custom Properties, Glassmorphism, CSS Grid/Flexbox), Vanilla JavaScript (ES6+). Zero frontend frameworks.
+- **Frontend**: HTML5, Modern CSS3 (Dual-Theme Light/Dark Design Tokens, Glassmorphism, CSS Grid/Flexbox), Vanilla JavaScript (ES6+). Zero frontend frameworks or external runtime bundles.
 - **Backend**: Node.js (v18+), Express.js (`express: ^4.21.2`). Zero external runtime dependencies.
 - **NLU & Agent**: Custom deterministic regex tokenizers and state machine controllers in pure JavaScript.
 - **Provider Layer**: Interface-driven simulation service (`mockRailwayProvider.js`).
@@ -388,7 +388,8 @@ Latency measured using Node.js `perf_hooks` (100 iterations per operation under 
 | **Phase 3** | Premium UI + Live Agent Visualization | *(included in Phase 4)* | Modern technical UI, stepper, inspector |
 | **Phase 4** | Permitted Railway Booking Integration | `9051e67` | Mock railway provider & booking simulation |
 | **Phase 5** | Testing, Evaluation & Measurement | `8b3d929` | 54-case evaluation suite & benchmarking |
-| **Phase 6** | Final Prototype & IEEE Documentation | *(pending final checkpoint)* | Complete technical documentation & IEEE paper material |
+| **Phase 6** | Final Prototype & IEEE Documentation | `d8f3fda` | Complete technical documentation & IEEE paper material |
+| **Post-Phase 6** | Premium UI & Theme Toggle Enhancement | *(working tree)* | Linear/Vercel SaaS aesthetic, dual light/dark theme, hero empty state |
 
 For full lifecycle details, refer to [`docs/final-project-status.md`](docs/final-project-status.md).
 
