@@ -150,13 +150,19 @@
           <!-- Message bubbles & interactive cards will be appended dynamically here -->
         </div>
 
-        <!-- Typing / Processing Indicator -->
-        <div id="agent-typing" class="agent-typing" style="display: none;" aria-live="polite">
-          <div class="typing-pill">
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-dot"></span>
-            <span class="typing-text">AURA is analyzing request...</span>
+        <!-- Premium AURA Processing Indicator -->
+        <div id="agent-typing" class="agent-typing" style="display: none;" aria-live="polite" aria-label="AURA is processing">
+          <div class="agent-processing-card">
+            <div class="processing-header">
+              <span class="processing-pulse-node" aria-hidden="true"></span>
+              <span class="processing-author">AURA</span>
+              <div class="typing-dots-wave" aria-hidden="true">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+              </div>
+            </div>
+            <div class="typing-text" id="agent-typing-text">Searching railway services...</div>
           </div>
         </div>
 

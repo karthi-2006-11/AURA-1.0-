@@ -512,8 +512,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Hide empty state on first interaction
-    if (emptyState && emptyState.style.display !== 'none') {
-      emptyState.style.display = 'none';
+    if (emptyState) {
+      emptyState.classList.add('is-hidden');
+      emptyState.style.setProperty('display', 'none', 'important');
     }
 
     // Render User Bubble
@@ -575,6 +576,7 @@ document.addEventListener('DOMContentLoaded', () => {
       renderAgentMessage(data.message);
       renderTrainSearchResults(data.available_trains);
     } else if (data.status === 'ready_for_confirmation') {
+      if (data.message) renderAgentMessage(data.message);
       renderConfirmationCard(data.booking);
     } else {
       renderAgentMessage(data.message);
@@ -600,43 +602,70 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
-   * Renders a user message bubble
+   * Technical status indicator pill in chat stream
+   */
+  function renderSystemStatus(text, type = 'info') {
+    const pill = document.createElement('div');
+    pill.className = `system-status-pill status-${type}`;
+    let iconSvg = '';
+    if (type === 'success' || text.startsWith('✓')) {
+      iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg>`;
+    } else {
+      iconSvg = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 18 15 12 9 6"/></svg>`;
+    }
+    pill.innerHTML = `
+      <span class="pill-icon">${iconSvg}</span>
+      <span class="pill-text">${escapeHtml(text)}</span>
+    `;
+    chatStream.appendChild(pill);
+    scrollChatToBottom(false);
+  }
+
+  /**
+   * Renders a user message bubble (Right-aligned, blue/cyan gradient, high contrast)
    */
   function renderUserMessage(text) {
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble user-message';
     bubble.innerHTML = `
-      <div class="bubble-header">
-        <span class="bubble-time">${getCurrentTimeString()}</span>
-        <span class="author-badge">You</span>
+      <div class="user-card-inner">
+        <div class="bubble-body">${escapeHtml(text)}</div>
+        <div class="user-card-footer">
+          <span class="bubble-time">${getCurrentTimeString()}</span>
+          <span class="user-check-icon" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+          </span>
+        </div>
       </div>
-      <div class="bubble-body">${escapeHtml(text)}</div>
     `;
     chatStream.appendChild(bubble);
-    scrollChatToBottom();
+    scrollChatToBottom(true);
   }
 
   /**
-   * Renders an agent message bubble
+   * Renders an agent message card (AURA System Card with glowing node, metadata & high readability)
    */
-  function renderAgentMessage(text) {
+  function renderAgentMessage(text, metaTag = null) {
     const bubble = document.createElement('div');
     bubble.className = 'chat-bubble agent-message';
+    const tagHtml = metaTag ? `<span class="agent-tag-badge">${escapeHtml(metaTag)}</span>` : '';
     bubble.innerHTML = `
-      <div class="bubble-header">
-        <span class="author-badge">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="10"/>
-            <path d="m10 15 5-3-5-3v6Z"/>
-          </svg>
-          AURA Agent
-        </span>
-        <span class="bubble-time">${getCurrentTimeString()}</span>
+      <div class="agent-card-inner">
+        <div class="agent-card-header">
+          <div class="agent-identity">
+            <span class="agent-glow-node" aria-hidden="true"></span>
+            <span class="agent-name">AURA</span>
+            ${tagHtml}
+          </div>
+          <span class="bubble-time">${getCurrentTimeString()}</span>
+        </div>
+        <div class="bubble-body">${formatAgentText(text)}</div>
       </div>
-      <div class="bubble-body">${formatAgentText(text)}</div>
     `;
     chatStream.appendChild(bubble);
-    scrollChatToBottom();
+    scrollChatToBottom(true);
   }
 
   /**
@@ -652,21 +681,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const passengers = b.passengers ? `${b.passengers} ${b.passengers === 1 ? 'Passenger' : 'Passengers'}` : '1 Passenger';
     const travelClass = b.class || 'Not specified';
     const time = b.time_preference ? capitalize(b.time_preference) : 'Anytime';
+    const srcMeta = getStationMeta(source);
+    const dstMeta = getStationMeta(dest);
 
     card.innerHTML = `
       <div class="confirm-card-header">
-        <span class="confirm-title">&bull; Journey Review</span>
+        <div class="confirm-header-left">
+          <span class="confirm-pulse-dot"></span>
+          <span class="confirm-title">JOURNEY REVIEW</span>
+        </div>
         <span class="meta-tag">Awaiting Confirmation</span>
       </div>
       <div class="route-summary-box">
         <div class="route-loc-item">
-          <span class="route-loc-lbl">From</span>
+          <span class="route-loc-lbl">Origin</span>
           <div class="route-loc">${escapeHtml(source)}</div>
+          <span class="route-sub-code">${escapeHtml(srcMeta.code)}</span>
         </div>
-        <div class="route-dir-arrow">&rarr;</div>
-        <div class="route-loc-item">
-          <span class="route-loc-lbl">To</span>
+        <div class="route-dir-arrow-wrap">
+          <span class="route-dir-line"></span>
+          <svg class="route-arrow-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="route-loc-item route-loc-right">
+          <span class="route-loc-lbl">Destination</span>
           <div class="route-loc">${escapeHtml(dest)}</div>
+          <span class="route-sub-code">${escapeHtml(dstMeta.code)}</span>
         </div>
       </div>
       <div class="confirm-details-grid">
@@ -694,16 +736,27 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="confirm-field-val">${escapeHtml(passengers)}</span>
         </div>
         <div class="confirm-field">
-          <span class="confirm-field-lbl">Class</span>
+          <span class="confirm-field-lbl">Travel Class</span>
           <span class="confirm-field-val">${escapeHtml(travelClass)}</span>
+        </div>
+        <div class="confirm-field">
+          <span class="confirm-field-lbl">Quota</span>
+          <span class="confirm-field-val">General (GN)</span>
         </div>
       </div>
       <div class="confirm-actions">
-        <button type="button" class="btn btn-success btn-sm btn-confirm-action" style="flex: 1;">
-          Confirm Request
+        <button type="button" class="btn btn-success btn-confirm-action" style="flex: 1;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Confirm Request</span>
         </button>
         <button type="button" class="btn btn-danger btn-sm btn-cancel-action">
-          Cancel
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="6"/>
+          </svg>
+          <span>Cancel</span>
         </button>
       </div>
     `;
@@ -723,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chatStream.appendChild(card);
-    scrollChatToBottom();
+    scrollChatToBottom(true, card);
   }
 
   /**
@@ -773,12 +826,18 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTrainSearchResults(trains) {
     if (!trains || trains.length === 0) return;
 
+    renderSystemStatus(`Found ${trains.length} available railway services for your route`, 'info');
+
     const card = document.createElement('div');
     card.className = 'trains-card';
     card.innerHTML = `
       <div class="trains-header">
-        <span class="trains-title">&bull; Available Trains</span>
-        <span class="meta-tag">Direct Trains</span>
+        <div class="trains-title-group">
+          <span class="trains-glow-dot"></span>
+          <span class="trains-title">AVAILABLE SERVICES</span>
+          <span class="trains-count-badge">${trains.length} DIRECT</span>
+        </div>
+        <span class="meta-tag">Fastest &bull; Direct</span>
       </div>
       <div class="trains-list"></div>
     `;
@@ -791,6 +850,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const seatsText = t.seats ? `${t.seats} seats` : 'Available';
       const statusText = t.status || 'AVAILABLE';
+      const depTime = t.departure_time || t.departure || '08:00';
+      const arrTime = t.arrival_time || t.arrival || '15:30';
+      const srcCode = (t.source && t.source.length <= 4) ? t.source.toUpperCase() : (getStationMeta(t.source).code || 'MAS');
+      const dstCode = (t.destination && t.destination.length <= 4) ? t.destination.toUpperCase() : (getStationMeta(t.destination).code || 'CBE');
+      const travelClass = t.class || '3A';
 
       item.innerHTML = `
         <div class="train-main-row">
@@ -798,23 +862,45 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="train-num">${escapeHtml(t.train_number)}</span>
             <span class="train-name">${escapeHtml(t.train_name)}</span>
           </div>
-          <span class="train-fare">₹${t.fare || 850} <small style="font-size:0.68rem; color:var(--text-muted);">/ person</small></span>
-        </div>
-        <div class="train-schedule-row">
-          <div class="train-timing">
-            <span class="train-time">${t.departure_time || '08:00'}</span>
-            <span style="color:var(--text-muted);">&rarr;</span>
-            <span class="train-time">${t.arrival_time || '15:30'}</span>
+          <div class="train-fare-wrap">
+            <span class="train-fare">₹${t.fare || 850}</span>
+            <span class="train-fare-sub">/ person</span>
           </div>
-          <span class="train-duration">${t.duration || '7h 30m'}</span>
         </div>
+        
+        <div class="train-route-schedule">
+          <div class="schedule-station dep">
+            <span class="schedule-time">${escapeHtml(depTime)}</span>
+            <span class="schedule-code">${escapeHtml(srcCode)}</span>
+          </div>
+
+          <div class="schedule-track-line">
+            <span class="schedule-duration">${escapeHtml(t.duration || '7h 30m')}</span>
+            <div class="track-line-visual">
+              <span class="track-dot start"></span>
+              <span class="track-bar"></span>
+              <span class="track-dot end"></span>
+            </div>
+            <span class="track-type">Direct Express</span>
+          </div>
+
+          <div class="schedule-station arr">
+            <span class="schedule-time">${escapeHtml(arrTime)}</span>
+            <span class="schedule-code">${escapeHtml(dstCode)}</span>
+          </div>
+        </div>
+
         <div class="train-bottom-row">
           <div class="train-chips">
-            <span class="chip-class">${escapeHtml(t.class || '3A')}</span>
+            <span class="chip-class">${escapeHtml(travelClass)}</span>
             <span class="chip-avail">&bull; ${escapeHtml(statusText)} (${escapeHtml(seatsText)})</span>
           </div>
           <button type="button" class="btn-select-train" data-train="${escapeHtml(t.train_number)}">
-            Select Train
+            <span>Select Train</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
           </button>
         </div>
       `;
@@ -827,7 +913,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chatStream.appendChild(card);
-    scrollChatToBottom();
+    scrollChatToBottom(true, card);
   }
 
   /**
@@ -844,22 +930,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const farePerPerson = t.fare || 850;
     const totalFare = farePerPerson * passengers;
     const formattedDate = formatJourneyDate(b.date || t.date || 'tomorrow');
+    const srcMeta = getStationMeta(t.source || b.source || 'Origin');
+    const dstMeta = getStationMeta(t.destination || b.destination || 'Destination');
 
     card.innerHTML = `
       <div class="confirm-card-header">
-        <span class="confirm-title">REVIEW YOUR JOURNEY</span>
-        <span class="meta-tag">Final Step</span>
+        <div class="confirm-header-left">
+          <span class="confirm-pulse-dot review-accent"></span>
+          <span class="confirm-title">FINAL BOOKING REVIEW</span>
+        </div>
+        <span class="meta-tag">Action Required</span>
       </div>
 
       <div class="route-summary-box">
         <div class="route-loc-item">
-          <span class="route-loc-lbl">From</span>
+          <span class="route-loc-lbl">Origin</span>
           <div class="route-loc">${escapeHtml(t.source || b.source || 'Origin')}</div>
+          <span class="route-sub-code">${escapeHtml(srcMeta.code)}</span>
         </div>
-        <div class="route-dir-arrow">&rarr;</div>
-        <div class="route-loc-item">
-          <span class="route-loc-lbl">To</span>
+        <div class="route-dir-arrow-wrap">
+          <span class="route-dir-line"></span>
+          <svg class="route-arrow-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </div>
+        <div class="route-loc-item route-loc-right">
+          <span class="route-loc-lbl">Destination</span>
           <div class="route-loc">${escapeHtml(t.destination || b.destination || 'Destination')}</div>
+          <span class="route-sub-code">${escapeHtml(dstMeta.code)}</span>
         </div>
       </div>
 
@@ -881,15 +980,15 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Selected Train</span>
-          <span class="confirm-field-val" style="color: var(--accent-cyan); font-family: var(--font-mono); font-size: 0.85rem;">${escapeHtml(t.train_number)} - ${escapeHtml(t.train_name)}</span>
+          <span class="confirm-field-val highlight-mono">${escapeHtml(t.train_number)} - ${escapeHtml(t.train_name)}</span>
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Schedule</span>
-          <span class="confirm-field-val">${escapeHtml(t.departure_time || '08:00')} &rarr; ${escapeHtml(t.arrival_time || '16:00')}</span>
+          <span class="confirm-field-val">${escapeHtml(t.departure_time || t.departure || '08:00')} &rarr; ${escapeHtml(t.arrival_time || t.arrival || '16:00')}</span>
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Passengers</span>
-          <span class="confirm-field-val">${passengers}</span>
+          <span class="confirm-field-val">${passengers} ${passengers === 1 ? 'Passenger' : 'Passengers'}</span>
         </div>
         <div class="confirm-field">
           <span class="confirm-field-lbl">Class</span>
@@ -900,17 +999,24 @@ document.addEventListener('DOMContentLoaded', () => {
           <span class="confirm-field-val" style="color: var(--success-text);">${escapeHtml(avail.status || 'Available')} (${avail.seats || 42} seats)</span>
         </div>
         <div class="confirm-field">
-          <span class="confirm-field-lbl">Estimated Fare</span>
-          <span class="confirm-field-val" style="color: var(--success-text); font-size: 1.05rem;">₹${totalFare}</span>
+          <span class="confirm-field-lbl">Estimated Total Fare</span>
+          <span class="confirm-field-val" style="color: var(--success-text); font-size: 1.15rem; font-weight: 800;">₹${totalFare}</span>
         </div>
       </div>
 
       <div class="confirm-actions">
         <button type="button" class="btn btn-success btn-confirm-final" style="flex: 1;">
-          Confirm Booking
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Confirm Booking</span>
         </button>
         <button type="button" class="btn btn-danger btn-sm btn-cancel-final">
-          Cancel
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="6"/>
+          </svg>
+          <span>Cancel</span>
         </button>
       </div>
     `;
@@ -930,7 +1036,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chatStream.appendChild(card);
-    scrollChatToBottom();
+    scrollChatToBottom(true, card);
   }
 
   /**
@@ -1867,7 +1973,8 @@ document.addEventListener('DOMContentLoaded', () => {
     chatStream.innerHTML = '';
     if (emptyState) {
       chatStream.appendChild(emptyState);
-      emptyState.style.display = 'block';
+      emptyState.classList.remove('is-hidden');
+      emptyState.style.removeProperty('display');
     }
 
     // Reset UI panels
@@ -1898,18 +2005,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- HELPER UTILITIES ---
 
-  function setProcessing(processing) {
+  function setProcessing(processing, activityText = null) {
     isProcessing = processing;
     btnSend.disabled = processing;
     agentTyping.style.display = processing ? 'block' : 'none';
+    const typingText = document.getElementById('agent-typing-text');
+    if (typingText) {
+      if (activityText) {
+        typingText.textContent = activityText;
+      } else {
+        if (currentNextAction === 'request_confirmation' || currentNextAction === 'search_trains') {
+          typingText.textContent = 'Searching railway services...';
+        } else if (currentNextAction === 'request_final_confirmation' || currentStatus === 'booking_ready') {
+          typingText.textContent = 'Preparing booking summary...';
+        } else if (currentNextAction === 'confirm_booking') {
+          typingText.textContent = 'Issuing digital reservation...';
+        } else {
+          typingText.textContent = 'Understanding request...';
+        }
+      }
+    }
     if (processing) {
-      scrollChatToBottom();
+      scrollChatToBottom(true);
     }
   }
 
-  function scrollChatToBottom() {
+  function scrollChatToBottom(force = true, targetElement = null) {
     requestAnimationFrame(() => {
-      chatStream.scrollTop = chatStream.scrollHeight;
+      if (!chatStream) return;
+      if (targetElement) {
+        const elTop = targetElement.offsetTop - chatStream.offsetTop;
+        const elHeight = targetElement.offsetHeight;
+        const viewportHeight = chatStream.clientHeight;
+
+        if (elHeight <= viewportHeight) {
+          const desiredScroll = (elTop + elHeight + 20) - viewportHeight;
+          chatStream.scrollTo({
+            top: Math.max(0, desiredScroll),
+            behavior: 'smooth'
+          });
+        } else {
+          chatStream.scrollTo({
+            top: Math.max(0, elTop - 16),
+            behavior: 'smooth'
+          });
+        }
+        return;
+      }
+      const scrollGap = chatStream.scrollHeight - (chatStream.scrollTop + chatStream.clientHeight);
+      if (force || scrollGap < 120) {
+        chatStream.scrollTo({
+          top: chatStream.scrollHeight,
+          behavior: 'smooth'
+        });
+      }
     });
   }
 
