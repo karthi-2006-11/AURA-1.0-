@@ -1720,39 +1720,9 @@ body {
    DEDICATED FINAL BOOKING CONFIRMATION STATE (body.booking-complete)
    ========================================================================== */
 
-body.booking-complete .workspace-grid {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: flex-start !important;
-  max-width: 960px !important;
-  margin: 0 auto !important;
-  width: 100% !important;
-}
-
-body.booking-complete .inspector-panel,
-body.booking-complete .composer-container,
 body.booking-complete #quick-replies-bar,
-body.booking-complete #agent-typing,
-body.booking-complete .chat-bubble,
-body.booking-complete .mock-provider-banner {
+body.booking-complete #agent-typing {
   display: none !important;
-}
-
-body.booking-complete .conversation-panel {
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  width: 100% !important;
-  height: auto !important;
-  min-height: unset !important;
-  overflow: visible !important;
-}
-
-body.booking-complete .chat-stream {
-  padding: 10px 0 40px !important;
-  overflow: visible !important;
-  align-items: center !important;
-  width: 100% !important;
 }
 
 body.booking-complete .aura-booking-success-view {
@@ -1761,7 +1731,7 @@ body.booking-complete .aura-booking-success-view {
   align-items: center;
   width: 100%;
   max-width: 860px;
-  margin: 0 auto;
+  margin: 16px auto 0;
   animation: slideUpFadeIn 0.35s ease-out;
 }
 

@@ -66,6 +66,8 @@ document.addEventListener('DOMContentLoaded', () => {
   let calViewMonth = new Date().getMonth();
   let selectedJourneyDate = null;
   let lastSelectedTrain = null;
+  let isBookingInProgress = false;
+  let bookingSuccessHandled = false;
   const rowTime = document.getElementById('row-time');
   const valTime = document.getElementById('val-time');
   const rowPassengers = document.getElementById('row-passengers');
@@ -517,6 +519,17 @@ document.addEventListener('DOMContentLoaded', () => {
       emptyState.style.setProperty('display', 'none', 'important');
     }
 
+    // Intercept final booking confirmation to execute streamlined booking flow
+    if ((currentNextAction === 'request_final_confirmation' || currentStatus === 'booking_ready') && lastSelectedTrain) {
+      const lower = message.toLowerCase().trim();
+      if (['confirm', 'confirm booking', 'proceed', 'yes', 'confirm mock booking', 'book it'].includes(lower)) {
+        const activeReviewCard = document.querySelector('.final-review-card:last-of-type');
+        executeFinalBooking(activeReviewCard, { task_id: currentTaskId });
+        composerInput.value = '';
+        return;
+      }
+    }
+
     // Render User Bubble
     renderUserMessage(message);
     composerInput.value = '';
@@ -565,8 +578,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 1. Render Agent Response Bubble or Specialized Card
     if (data.booking_result) {
-      document.body.classList.add('booking-complete');
-      renderMockTicketCard(data.booking_result, data.selected_train || lastSelectedTrain, data.booking);
+      handleBookingSuccess(data);
+      return;
     } else if (data.status === 'cancelled') {
       renderFinalStatusBanner('cancelled', data.message);
     } else if ((data.next_action === 'request_final_confirmation' || data.status === 'booking_ready') && data.selected_train) {
@@ -937,7 +950,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="confirm-card-header">
         <div class="confirm-header-left">
           <span class="confirm-pulse-dot review-accent"></span>
-          <span class="confirm-title">FINAL BOOKING REVIEW</span>
+          <span class="confirm-title">REVIEW YOUR JOURNEY</span>
         </div>
         <span class="meta-tag">Action Required</span>
       </div>
@@ -1028,7 +1041,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     card.querySelector('.btn-confirm-final').addEventListener('click', () => {
-      sendMessage('confirm');
+      executeFinalBooking(card, data);
     });
 
     card.querySelector('.btn-cancel-final').addEventListener('click', () => {
@@ -1037,6 +1050,140 @@ document.addEventListener('DOMContentLoaded', () => {
 
     chatStream.appendChild(card);
     scrollChatToBottom(true, card);
+  }
+
+  /**
+   * Executes streamlined final booking: triggers compact processing, calls booking API,
+   * and transitions directly to the final e-ticket.
+   */
+  async function executeFinalBooking(card, data) {
+    if (isBookingInProgress || bookingSuccessHandled || document.querySelector('.aura-eticket-card')) {
+      return;
+    }
+    isBookingInProgress = true;
+
+    // 1. Lock review card actions to preserve history and prevent duplicate clicks
+    if (card) {
+      const confirmBtn = card.querySelector('.btn-confirm-final');
+      const cancelBtn = card.querySelector('.btn-cancel-final');
+      const editDateBtn = card.querySelector('.btn-edit-date-review');
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.classList.add('is-confirmed');
+        confirmBtn.innerHTML = `
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          <span>Confirmed</span>
+        `;
+      }
+      if (cancelBtn) cancelBtn.style.display = 'none';
+      if (editDateBtn) editDateBtn.style.display = 'none';
+    }
+
+    quickRepliesBar.style.display = 'none';
+    renderUserMessage('Confirm Booking');
+    setProcessing(true, 'Confirming your railway reservation...');
+
+    try {
+      const response = await fetch('/api/agent/book', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ task_id: currentTaskId })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Server returned error status ${response.status}`);
+      }
+
+      const resData = await response.json();
+      handleBookingSuccess(resData);
+    } catch (err) {
+      console.error('Booking execution error:', err);
+      setProcessing(false);
+      renderBookingFailure(err.message);
+    } finally {
+      isBookingInProgress = false;
+    }
+  }
+
+  /**
+   * Primary booking result handler: renders exactly one confirmation status pill,
+   * one small conversational agent message, and immediately displays the AURA E-Ticket.
+   */
+  function handleBookingSuccess(data) {
+    if (bookingSuccessHandled || document.querySelector('.aura-eticket-card')) {
+      return;
+    }
+    bookingSuccessHandled = true;
+
+    document.body.classList.add('booking-complete');
+    setProcessing(false);
+
+    // 1. Exactly ONE Centered Status Indicator Pill: ✓ Reservation confirmed
+    renderSystemStatus('Reservation confirmed', 'success');
+
+    // 2. Exactly ONE Small Conversational AURA message
+    renderAgentMessage("Your reservation is confirmed. I've prepared your electronic reservation slip below.");
+
+    // 3. Immediately render ONE Final AURA E-Ticket
+    renderMockTicketCard(data.booking_result, data.selected_train || lastSelectedTrain, data.booking);
+
+    // 4. Update Right Journey Panel & Workflow Stepper (Compact)
+    currentStatus = 'booking_confirmed';
+    currentNextAction = 'none';
+    renderBookingState(data.booking, data.missing_fields, 'booking_confirmed', data.selected_train || lastSelectedTrain, data.booking_result);
+    renderWorkflow('booking_confirmed', 'none', data.selected_train || lastSelectedTrain);
+    renderAgentStatus('booking_confirmed', 'none');
+    if (data.activity) {
+      renderActivity(data.activity, 'booking_confirmed', 'none');
+    }
+    quickRepliesBar.style.display = 'none';
+    quickRepliesChips.innerHTML = '';
+
+    // 5. Update raw JSON
+    rawTaskJson.textContent = JSON.stringify(data, null, 2);
+
+    // 6. Scroll smoothly so the e-ticket is immediately visible as the primary result
+    const ticketDoc = document.getElementById('aura-eticket-document') || document.querySelector('.aura-eticket-card');
+    if (ticketDoc) {
+      scrollChatToBottom(true, ticketDoc);
+    } else {
+      scrollChatToBottom(true);
+    }
+  }
+
+  /**
+   * Renders booking failure card with retry action
+   */
+  function renderBookingFailure(errorMsg) {
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble agent-message';
+    bubble.innerHTML = `
+      <div class="agent-card-inner">
+        <div class="agent-card-header">
+          <div class="agent-identity">
+            <span class="agent-glow-node" style="background: #f43f5e; box-shadow: 0 0 10px #f43f5e;" aria-hidden="true"></span>
+            <span class="agent-name">AURA</span>
+            <span class="agent-tag-badge" style="color: #fb7185; border-color: rgba(244, 63, 94, 0.3);">Booking Notice</span>
+          </div>
+          <span class="bubble-time">${getCurrentTimeString()}</span>
+        </div>
+        <div class="bubble-body" style="color: #fda4af;">
+          Reservation could not be completed. ${escapeHtml(errorMsg || 'Please try again.')}
+          <div style="margin-top: 12px;">
+            <button type="button" class="btn btn-secondary btn-sm" id="btn-retry-booking">Try Again</button>
+          </div>
+        </div>
+      </div>
+    `;
+    bubble.querySelector('#btn-retry-booking')?.addEventListener('click', () => {
+      const activeReviewCard = document.querySelector('.final-review-card:last-of-type');
+      executeFinalBooking(activeReviewCard, { task_id: currentTaskId });
+    });
+    chatStream.appendChild(bubble);
+    scrollChatToBottom(true, bubble);
   }
 
   /**
@@ -1224,6 +1371,7 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   function renderMockTicketCard(result, selectedTrain = null, booking = null) {
     if (!result) return;
+    if (document.querySelector('.aura-eticket-card')) return;
 
     const wrapper = document.createElement('div');
     wrapper.className = 'aura-booking-success-view';
@@ -1284,19 +1432,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
 
     wrapper.innerHTML = `
-      <!-- 1. FINAL CONFIRMATION HERO -->
-      <div class="confirmation-hero">
-        <div class="hero-check-circle" aria-hidden="true">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"/>
-          </svg>
-        </div>
-        <div class="hero-eyebrow">JOURNEY CONFIRMED</div>
-        <h1 class="hero-main-title">Your railway journey is ready.</h1>
-        <p class="hero-sub-title">Your AURA reservation reference has been generated.</p>
-      </div>
-
-      <!-- 2. THE COMPLETE AURA E-TICKET DOCUMENT (760-900PX, CENTERED) -->
+      <!-- THE COMPLETE AURA E-TICKET DOCUMENT (760-900PX, CENTERED) -->
       <div class="aura-eticket-card mock-ticket-card" id="aura-eticket-document">
         <!-- Header -->
         <div class="eticket-header">
@@ -1483,7 +1619,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
             <path d="M8 16H3v5"/>
           </svg>
-          Start New Journey
+          Book Another Journey
         </button>
 
         <button type="button" class="btn btn-secondary btn-ticket-action" id="btn-print-eticket">
@@ -1528,7 +1664,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     chatStream.appendChild(wrapper);
-    scrollChatToBottom();
+    scrollChatToBottom(true, wrapper);
   }
 
   /**
@@ -1628,7 +1764,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Validity Tag
     if (status === 'booking_confirmed') {
       bookingValidityTag.className = 'validity-tag complete';
-      bookingValidityTag.textContent = 'Booked (Mock)';
+      bookingValidityTag.textContent = 'BOOKING CONFIRMED';
     } else if (status === 'confirmed' || status === 'booking_ready') {
       bookingValidityTag.className = 'validity-tag complete';
       bookingValidityTag.textContent = 'Trains Loaded';
@@ -1677,10 +1813,14 @@ document.addEventListener('DOMContentLoaded', () => {
         tripDateDisplay.classList.remove('has-val');
       }
 
-      const passCount = (b && b.passengers) ? b.passengers : 1;
-      const passText = `${passCount} ${passCount === 1 ? 'passenger' : 'passengers'}`;
-      const clsText = (b && b.class) ? b.class : 'Any class';
-      tripMetaInfo.textContent = `${passText} · ${clsText}`;
+      if (status === 'booking_confirmed') {
+        tripMetaInfo.textContent = '✓ Reservation confirmed';
+      } else {
+        const passCount = (b && b.passengers) ? b.passengers : 1;
+        const passText = `${passCount} ${passCount === 1 ? 'passenger' : 'passengers'}`;
+        const clsText = (b && b.class) ? b.class : 'Any class';
+        tripMetaInfo.textContent = `${passText} · ${clsText}`;
+      }
     }
   }
 
@@ -1747,6 +1887,11 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (status === 'cancelled') {
       progressPercent.textContent = 'Cancelled';
       progressBarFill.style.width = '0%';
+    }
+
+    const step4Label = stepNode4 ? stepNode4.querySelector('.step-node-label') : null;
+    if (step4Label) {
+      step4Label.textContent = (status === 'booking_confirmed') ? 'CONFIRMED' : 'CONFIRM';
     }
   }
 
@@ -1939,6 +2084,8 @@ document.addEventListener('DOMContentLoaded', () => {
     currentNextAction = null;
     currentStatus = null;
     lastSelectedTrain = null;
+    isBookingInProgress = false;
+    bookingSuccessHandled = false;
     sessionTag.textContent = 'Session: Idle';
 
     const tripStationFrom = document.getElementById('trip-station-from');
