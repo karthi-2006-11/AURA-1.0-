@@ -1145,13 +1145,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Update raw JSON
     rawTaskJson.textContent = JSON.stringify(data, null, 2);
 
-    // 6. Scroll smoothly so the e-ticket is immediately visible as the primary result
-    const ticketDoc = document.getElementById('aura-eticket-document') || document.querySelector('.aura-eticket-card');
-    if (ticketDoc) {
-      scrollChatToBottom(true, ticketDoc);
-    } else {
-      scrollChatToBottom(true);
-    }
+    // 6. Scroll smoothly so the standalone e-ticket is immediately visible as the primary result
+    scrollChatToBottom(false);
+    setTimeout(() => {
+      const standaloneSection = document.getElementById('eticket-standalone-section');
+      if (standaloneSection) {
+        standaloneSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 150);
   }
 
   /**
@@ -1663,8 +1664,16 @@ document.addEventListener('DOMContentLoaded', () => {
       window.print();
     });
 
-    chatStream.appendChild(wrapper);
-    scrollChatToBottom(true, wrapper);
+    const standaloneContainer = document.getElementById('eticket-standalone-container');
+    const standaloneSection = document.getElementById('eticket-standalone-section');
+
+    if (standaloneContainer) {
+      standaloneContainer.innerHTML = '';
+      standaloneContainer.appendChild(wrapper);
+    }
+    if (standaloneSection) {
+      standaloneSection.style.display = 'flex';
+    }
   }
 
   /**
@@ -2067,6 +2076,13 @@ document.addEventListener('DOMContentLoaded', () => {
    */
   async function resetConversation() {
     document.body.classList.remove('booking-complete');
+
+    // Clean up standalone e-ticket result section
+    const standaloneSection = document.getElementById('eticket-standalone-section');
+    const standaloneContainer = document.getElementById('eticket-standalone-container');
+    if (standaloneContainer) standaloneContainer.innerHTML = '';
+    if (standaloneSection) standaloneSection.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 
     if (currentTaskId) {
       try {

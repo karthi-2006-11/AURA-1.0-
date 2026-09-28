@@ -1725,13 +1725,118 @@ body.booking-complete #agent-typing {
   display: none !important;
 }
 
+/* Standalone E-Ticket Result Section (Outside Chat Workspace) */
+.eticket-standalone-section {
+  width: 100%;
+  margin-top: 32px;
+  margin-bottom: 40px;
+  animation: slideUpFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.standalone-result-banner {
+  width: 100%;
+  max-width: 860px;
+  margin: 0 auto 18px auto;
+  padding: 14px 22px;
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(52, 211, 153, 0.32);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border-radius: 14px;
+  display: flex;
+  box-shadow: 0 10px 30px -8px rgba(0, 0, 0, 0.3);
+}
+
+.standalone-banner-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: 16px;
+}
+
+.standalone-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #34d399;
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 0.88rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.standalone-check-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.22);
+  color: #34d399;
+  border: 1px solid rgba(52, 211, 153, 0.45);
+}
+
+.standalone-banner-desc {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+[data-theme="light"] .standalone-result-banner {
+  background: rgba(16, 185, 129, 0.08);
+  border-color: rgba(16, 185, 129, 0.35);
+  box-shadow: 0 10px 30px -8px rgba(15, 23, 42, 0.08);
+}
+
+[data-theme="light"] .standalone-status-pill {
+  color: #059669;
+}
+
+[data-theme="light"] .standalone-check-icon {
+  background: rgba(16, 185, 129, 0.15);
+  color: #059669;
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+[data-theme="light"] .standalone-banner-desc {
+  color: #64748b;
+}
+
+.eticket-standalone-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 640px) {
+  .eticket-standalone-section {
+    margin-top: 20px;
+    margin-bottom: 24px;
+    padding: 0 4px;
+  }
+  .standalone-banner-inner {
+    flex-direction: column;
+    text-align: center;
+    gap: 6px;
+  }
+}
+
+.aura-booking-success-view,
 body.booking-complete .aura-booking-success-view {
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   max-width: 860px;
-  margin: 16px auto 0;
+  margin: 0 auto;
   animation: slideUpFadeIn 0.35s ease-out;
 }
 
@@ -4522,6 +4627,19 @@ textarea#composer-input::placeholder {
   #quick-replies-bar,
   #agent-typing {
     display: none !important;
+  }
+
+  .workspace-grid,
+  .standalone-result-banner {
+    display: none !important;
+  }
+
+  .eticket-standalone-section,
+  .eticket-standalone-container {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .app-container,
