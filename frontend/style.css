@@ -1717,6 +1717,249 @@ body {
 }
 
 /* ==========================================================================
+   AURA INTELLIGENT THINKING & PROCESSING CARD
+   ========================================================================== */
+
+.aura-thinking-card {
+  width: 100%;
+  max-width: 580px;
+  margin: 8px 0;
+  padding: 14px 18px;
+  background: rgba(10, 22, 44, 0.65);
+  border: 1px solid rgba(56, 189, 248, 0.22);
+  border-radius: 18px;
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  box-shadow: 0 10px 28px -6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  animation: chatEntrance 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  transition: all 0.25s ease;
+}
+
+[data-theme="light"] .aura-thinking-card {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(2, 132, 199, 0.22);
+  box-shadow: 0 10px 28px -6px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.thinking-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .thinking-card-header {
+  border-bottom-color: rgba(0, 0, 0, 0.06);
+}
+
+.thinking-header-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.thinking-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-cyan);
+  box-shadow: 0 0 10px var(--accent-cyan);
+  animation: subtlePulse 1.8s infinite ease-in-out;
+  flex-shrink: 0;
+}
+
+.thinking-pulse-dot.success {
+  background: #34d399;
+  box-shadow: 0 0 10px #34d399;
+  animation: none;
+}
+
+.thinking-card-title {
+  font-family: var(--font-sans);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-cyan);
+}
+
+[data-theme="light"] .thinking-card-title {
+  color: var(--accent-blue);
+}
+
+.thinking-phase-badge {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 2px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+[data-theme="light"] .thinking-phase-badge {
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+  color: #64748b;
+}
+
+/* Items List */
+.thinking-items-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+}
+
+@media (max-width: 520px) {
+  .thinking-items-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}
+
+.thinking-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: all 0.25s ease;
+}
+
+[data-theme="light"] .thinking-item {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: rgba(0, 0, 0, 0.06);
+}
+
+.thinking-item.done {
+  border-color: rgba(52, 211, 153, 0.25);
+  background: rgba(16, 185, 129, 0.05);
+}
+
+.thinking-item.active {
+  border-color: rgba(56, 189, 248, 0.35);
+  background: rgba(56, 189, 248, 0.07);
+}
+
+.thinking-item.pending {
+  opacity: 0.55;
+}
+
+.thinking-item-icon {
+  font-size: 0.78rem;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-top: 1px;
+  flex-shrink: 0;
+}
+
+.thinking-item.done .thinking-item-icon {
+  color: #34d399;
+}
+
+.thinking-item.active .thinking-item-icon {
+  color: var(--accent-cyan);
+}
+
+.thinking-item.pending .thinking-item-icon {
+  color: var(--text-muted);
+}
+
+.thinking-item-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.thinking-item-label {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.thinking-item-val {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.thinking-item.pending .thinking-item-val {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+/* Progress track for Finding Trains & Booking Processing */
+.thinking-progress-track {
+  width: 100%;
+  height: 4px;
+  border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.08);
+  margin-top: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+[data-theme="light"] .thinking-progress-track {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.thinking-progress-bar {
+  height: 100%;
+  width: 50%;
+  border-radius: var(--radius-full);
+  background: var(--accent-gradient);
+  position: relative;
+  animation: progressShimmer 1.4s infinite linear;
+}
+
+@keyframes progressShimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(250%); }
+}
+
+@keyframes subtlePulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.25); opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .thinking-pulse-dot,
+  .thinking-progress-bar {
+    animation: none !important;
+  }
+}
+
+.thinking-status-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.thinking-status-row.success {
+  color: #34d399;
+  font-weight: 600;
+}
+
+[data-theme="light"] .thinking-status-row.success {
+  color: #059669;
+}
+
+/* ==========================================================================
    DEDICATED FINAL BOOKING CONFIRMATION STATE (body.booking-complete)
    ========================================================================== */
 

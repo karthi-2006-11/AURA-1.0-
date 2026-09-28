@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentStatus = null;
   let isProcessing = false;
 
+  // Conversational & Thinking UX State
+  let previousBookingState = null;
+  let lastUserMessageText = '';
+
   // DOM Elements: Header & Controls
   const btnNewRequest = document.getElementById('btn-new-request');
   const sessionTag = document.getElementById('session-tag');
@@ -508,6 +512,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const message = (manualText !== null ? manualText : composerInput.value).trim();
     if (!message) return;
 
+    lastUserMessageText = message;
+
     if (message.toLowerCase() === 'reset' || message.toLowerCase() === 'new request') {
       resetConversation();
       return;
@@ -564,6 +570,332 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /**
+   * Generates natural, context-aware conversational AURA responses with acknowledgments
+   */
+  function generateContextualAuraMessage(data, prevBooking, lastUserMsg) {
+    if (!data) return "How may I assist with your railway travel today?";
+    const b = data.booking || {};
+    const prev = prevBooking || {};
+
+    if (data.status === 'cancelled') {
+      return "Your booking request has been cancelled. You can start a new request anytime.";
+    }
+
+    if (data.booking_result) {
+      return "Your reservation is confirmed. I've prepared your electronic reservation slip below.";
+    }
+
+    if ((data.next_action === 'request_final_confirmation' || data.status === 'booking_ready') && data.selected_train) {
+      const train = data.selected_train;
+      return `I've selected **${train.train_number} - ${train.train_name}** for you. Please review your journey details below before we proceed with the reservation.`;
+    }
+
+    if (data.available_trains && data.available_trains.length > 0 && !data.selected_train) {
+      return `I found ${data.available_trains.length} available direct services for your route. Please select your preferred train below to proceed.`;
+    }
+
+    if (data.status === 'ready_for_confirmation') {
+      const dateStr = b.date ? formatJourneyDate(b.date) : 'the selected date';
+      const pax = b.passengers || 1;
+      const paxStr = `${pax} ${pax === 1 ? 'passenger' : 'passengers'}`;
+      const cls = b.class || '3A';
+      return `I have all your journey details ready: **${b.source}** to **${b.destination}** on **${dateStr}** for ${paxStr} in ${cls}. Please review and confirm below so I can search available trains for you.`;
+    }
+
+    // Status: collecting_information (Multi-turn conversations)
+    // 1. Detect what changed / was provided in this turn
+    const newlyAdded = [];
+    if (b.source && b.source !== prev.source) {
+      newlyAdded.push({ field: 'source', label: `Departure station set to **${b.source}**` });
+    }
+    if (b.destination && b.destination !== prev.destination) {
+      newlyAdded.push({ field: 'destination', label: `Destination set to **${b.destination}**` });
+    }
+    if (b.date && b.date !== prev.date) {
+      newlyAdded.push({ field: 'date', label: `Travel date noted for **${formatJourneyDate(b.date)}**` });
+    }
+    if (b.passengers && b.passengers !== prev.passengers) {
+      const pCount = b.passengers;
+      newlyAdded.push({ field: 'passengers', label: `${pCount} ${pCount === 1 ? 'passenger' : 'passengers'} noted` });
+    }
+    if (b.class && b.class !== prev.class) {
+      newlyAdded.push({ field: 'class', label: `${b.class} class selected` });
+    }
+
+    // Acknowledgment text
+    let acknowledgment = '';
+    if (newlyAdded.length === 1) {
+      acknowledgment = newlyAdded[0].label + '.';
+    } else if (newlyAdded.length > 1) {
+      if (b.source && b.destination && (!prev.source || !prev.destination)) {
+        acknowledgment = `Got it, **${b.source}** to **${b.destination}**.`;
+      } else {
+        acknowledgment = newlyAdded.map(item => item.label).join(', ') + '.';
+      }
+    }
+
+    // 2. Next question based on next_action
+    let nextQuestion = '';
+    switch (data.next_action) {
+      case 'request_source':
+        nextQuestion = "Where will you be departing from?";
+        break;
+      case 'request_destination':
+        nextQuestion = "Where would you like to travel?";
+        break;
+      case 'request_date':
+        nextQuestion = "When would you like to travel? (e.g. today, tomorrow, or choose a date)";
+        break;
+      case 'request_passengers':
+        nextQuestion = "How many passengers will be traveling?";
+        break;
+      case 'request_class':
+        nextQuestion = "Which class would you prefer: Sleeper (SL), 3rd AC (3A), 2nd AC (2A), or 1st AC (1A)?";
+        break;
+      default:
+        nextQuestion = data.message || "Please provide your travel details.";
+        break;
+    }
+
+    // First turn special cases (if no prevBooking yet)
+    if (!prev.source && !prev.destination && !prev.date && !prev.passengers && !prev.class) {
+      if (b.source && !b.destination) {
+        return `I have set **${b.source}** as your departure station. Where would you like to travel?`;
+      }
+      if (b.source && b.destination && !b.date) {
+        return `Got it, **${b.source}** to **${b.destination}**. When would you like to travel?`;
+      }
+      if (b.source && b.destination && b.date && !b.passengers) {
+        return `Traveling from **${b.source}** to **${b.destination}** on **${formatJourneyDate(b.date)}**. How many passengers will be traveling?`;
+      }
+      if (b.source && b.destination && b.date && b.passengers && !b.class) {
+        const p = b.passengers;
+        return `${p} ${p === 1 ? 'passenger' : 'passengers'} noted. Which class would you prefer: Sleeper (SL), 3rd AC (3A), 2nd AC (2A), or 1st AC (1A)?`;
+      }
+    }
+
+    if (acknowledgment) {
+      return `${acknowledgment} ${nextQuestion}`;
+    }
+
+    return nextQuestion;
+  }
+
+  /**
+   * Renders the AURA Thinking / Understanding journey parameters checklist card
+   */
+  function renderJourneyUnderstandingCard(booking = {}, missingFields = [], nextAction = null, isComplete = false) {
+    const b = booking || {};
+    const card = document.createElement('div');
+    card.className = 'aura-thinking-card';
+
+    // Route
+    const hasRoute = Boolean(b.source && b.destination);
+    const routeActive = !hasRoute && (nextAction === 'request_source' || nextAction === 'request_destination');
+    const routeState = (hasRoute || isComplete) ? 'done' : (routeActive ? 'active' : 'pending');
+    const routeIcon = (hasRoute || isComplete) ? '✓' : (routeActive ? '●' : '○');
+    let routeVal = 'Origin & Destination';
+    if (hasRoute || isComplete) {
+      routeVal = `${b.source || 'Origin'} → ${b.destination || 'Destination'}`;
+    } else if (b.source) {
+      routeVal = `From ${b.source}`;
+    } else if (b.destination) {
+      routeVal = `To ${b.destination}`;
+    }
+
+    // Date
+    const hasDate = Boolean(b.date);
+    const dateActive = !hasDate && nextAction === 'request_date';
+    const dateState = (hasDate || isComplete) ? 'done' : (dateActive ? 'active' : 'pending');
+    const dateIcon = (hasDate || isComplete) ? '✓' : (dateActive ? '●' : '○');
+    const dateVal = (hasDate || isComplete) ? (formatShortJourneyDate(b.date) || 'Selected Date') : 'Travel date';
+
+    // Passengers
+    const hasPax = Boolean(b.passengers);
+    const paxActive = !hasPax && nextAction === 'request_passengers';
+    const paxState = (hasPax || isComplete) ? 'done' : (paxActive ? 'active' : 'pending');
+    const paxIcon = (hasPax || isComplete) ? '✓' : (paxActive ? '●' : '○');
+    const pCount = b.passengers || 1;
+    const paxVal = (hasPax || isComplete) ? `${pCount} ${pCount === 1 ? 'Passenger' : 'Passengers'}` : 'Passenger count';
+
+    // Class
+    const hasClass = Boolean(b.class);
+    const classActive = !hasClass && nextAction === 'request_class';
+    const classState = (hasClass || isComplete) ? 'done' : (classActive ? 'active' : 'pending');
+    const classIcon = (hasClass || isComplete) ? '✓' : (classActive ? '●' : '○');
+    const classVal = (hasClass || isComplete) ? `${b.class || '3A'} Class` : 'Travel class';
+
+    const title = isComplete ? 'JOURNEY PARAMETERS' : 'UNDERSTANDING JOURNEY';
+    const badge = isComplete ? 'Verified' : 'Processing';
+    const dotClass = isComplete ? 'thinking-pulse-dot success' : 'thinking-pulse-dot';
+
+    card.innerHTML = `
+      <div class="thinking-card-header">
+        <div class="thinking-header-left">
+          <span class="${dotClass}" aria-hidden="true"></span>
+          <span class="thinking-card-title">${title}</span>
+        </div>
+        <span class="thinking-phase-badge">${badge}</span>
+      </div>
+      <div class="thinking-items-grid">
+        <div class="thinking-item ${routeState}">
+          <span class="thinking-item-icon" aria-hidden="true">${routeIcon}</span>
+          <div class="thinking-item-content">
+            <span class="thinking-item-label">Route</span>
+            <span class="thinking-item-val" title="${escapeHtml(routeVal)}">${escapeHtml(routeVal)}</span>
+          </div>
+        </div>
+        <div class="thinking-item ${dateState}">
+          <span class="thinking-item-icon" aria-hidden="true">${dateIcon}</span>
+          <div class="thinking-item-content">
+            <span class="thinking-item-label">Travel Date</span>
+            <span class="thinking-item-val" title="${escapeHtml(dateVal)}">${escapeHtml(dateVal)}</span>
+          </div>
+        </div>
+        <div class="thinking-item ${paxState}">
+          <span class="thinking-item-icon" aria-hidden="true">${paxIcon}</span>
+          <div class="thinking-item-content">
+            <span class="thinking-item-label">Passengers</span>
+            <span class="thinking-item-val" title="${escapeHtml(paxVal)}">${escapeHtml(paxVal)}</span>
+          </div>
+        </div>
+        <div class="thinking-item ${classState}">
+          <span class="thinking-item-icon" aria-hidden="true">${classIcon}</span>
+          <div class="thinking-item-content">
+            <span class="thinking-item-label">Class</span>
+            <span class="thinking-item-val" title="${escapeHtml(classVal)}">${escapeHtml(classVal)}</span>
+          </div>
+        </div>
+      </div>
+    `;
+
+    chatStream.appendChild(card);
+    scrollChatToBottom(true, card);
+    return card;
+  }
+
+  /**
+   * Fluid transition sequence from Understanding Journey -> Finding Trains -> Trains Found
+   */
+  function transitionThinkingToFindingTrains(card, trainCount, onComplete) {
+    if (!card) {
+      if (onComplete) onComplete();
+      return;
+    }
+
+    // Step 1: Switch title to FINDING TRAINS with shimmer progress bar
+    setTimeout(() => {
+      const titleEl = card.querySelector('.thinking-card-title');
+      const badgeEl = card.querySelector('.thinking-phase-badge');
+      if (titleEl) titleEl.textContent = 'FINDING TRAINS';
+      if (badgeEl) badgeEl.textContent = 'Searching Network';
+
+      let track = card.querySelector('.thinking-progress-track');
+      if (!track) {
+        track = document.createElement('div');
+        track.className = 'thinking-progress-track';
+        track.innerHTML = '<div class="thinking-progress-bar"></div>';
+        card.appendChild(track);
+      } else {
+        track.style.display = 'block';
+      }
+
+      let statusRow = card.querySelector('.thinking-status-row');
+      if (!statusRow) {
+        statusRow = document.createElement('div');
+        statusRow.className = 'thinking-status-row';
+        card.appendChild(statusRow);
+      }
+      statusRow.className = 'thinking-status-row';
+      statusRow.innerHTML = '<span>Searching live railway network schedules...</span>';
+      scrollChatToBottom(true, card);
+
+      // Step 2: After 350ms, mark as TRAINS FOUND with count
+      setTimeout(() => {
+        const dot = card.querySelector('.thinking-pulse-dot');
+        if (dot) dot.className = 'thinking-pulse-dot success';
+        if (titleEl) {
+          titleEl.textContent = 'TRAINS FOUND';
+          titleEl.style.color = '#34d399';
+        }
+        if (badgeEl) badgeEl.textContent = 'Verified';
+
+        if (track) track.style.display = 'none';
+
+        if (statusRow) {
+          statusRow.className = 'thinking-status-row success';
+          statusRow.innerHTML = `
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Found ${trainCount} matching railway services</span>
+          `;
+        }
+        scrollChatToBottom(true, card);
+
+        if (onComplete) onComplete();
+      }, 350);
+    }, 250);
+  }
+
+  /**
+   * Renders multi-step booking processing card
+   */
+  function renderBookingProcessingCard() {
+    const card = document.createElement('div');
+    card.className = 'aura-thinking-card';
+    card.id = 'booking-processing-card';
+    card.innerHTML = `
+      <div class="thinking-card-header">
+        <div class="thinking-header-left">
+          <span class="thinking-pulse-dot" id="booking-card-dot" aria-hidden="true"></span>
+          <span class="thinking-card-title" id="booking-card-title">PREPARING RESERVATION</span>
+        </div>
+        <span class="thinking-phase-badge" id="booking-card-badge">Confirming</span>
+      </div>
+      <div class="thinking-progress-track" id="booking-card-track">
+        <div class="thinking-progress-bar"></div>
+      </div>
+      <div class="thinking-status-row" id="booking-card-status">
+        <span>Reserving passenger berths with railway system...</span>
+      </div>
+    `;
+    chatStream.appendChild(card);
+    scrollChatToBottom(true, card);
+    return card;
+  }
+
+  /**
+   * Transitions booking processing card to successful confirmation state
+   */
+  function markBookingProcessingSuccess(card) {
+    if (!card) return;
+    const dot = card.querySelector('#booking-card-dot');
+    const title = card.querySelector('#booking-card-title');
+    const badge = card.querySelector('#booking-card-badge');
+    const track = card.querySelector('#booking-card-track');
+    const status = card.querySelector('#booking-card-status');
+
+    if (dot) dot.className = 'thinking-pulse-dot success';
+    if (title) {
+      title.textContent = 'RESERVATION CONFIRMED';
+      title.style.color = '#34d399';
+    }
+    if (badge) badge.textContent = 'Completed';
+    if (track) track.style.display = 'none';
+    if (status) {
+      status.className = 'thinking-status-row success';
+      status.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="20 6 9 17 4 12"/>
+        </svg>
+        <span>Electronic Reservation Slip generated</span>
+      `;
+    }
+    scrollChatToBottom(true, card);
+  }
+
+  /**
    * Processes the structured data payload returned from the backend agent API
    */
   function handleAgentResponse(data) {
@@ -576,23 +908,38 @@ document.addEventListener('DOMContentLoaded', () => {
       lastSelectedTrain = data.selected_train;
     }
 
+    const naturalMessage = generateContextualAuraMessage(data, previousBookingState, lastUserMessageText);
+
     // 1. Render Agent Response Bubble or Specialized Card
     if (data.booking_result) {
       handleBookingSuccess(data);
+      if (data.booking) previousBookingState = Object.assign({}, data.booking);
       return;
     } else if (data.status === 'cancelled') {
-      renderFinalStatusBanner('cancelled', data.message);
+      renderFinalStatusBanner('cancelled', naturalMessage || data.message);
     } else if ((data.next_action === 'request_final_confirmation' || data.status === 'booking_ready') && data.selected_train) {
-      renderAgentMessage(data.message);
+      renderAgentMessage(naturalMessage || data.message);
       renderFinalReviewCard(data);
     } else if (data.available_trains && data.available_trains.length > 0 && !data.selected_train) {
-      renderAgentMessage(data.message);
-      renderTrainSearchResults(data.available_trains);
+      const thinkingCard = renderJourneyUnderstandingCard(data.booking, data.missing_fields, data.next_action, true);
+      transitionThinkingToFindingTrains(thinkingCard, data.available_trains.length, () => {
+        renderAgentMessage(naturalMessage || data.message);
+        renderTrainSearchResults(data.available_trains);
+        renderQuickReplies(data.status, data.next_action, data.available_trains, data.selected_train);
+      });
     } else if (data.status === 'ready_for_confirmation') {
-      if (data.message) renderAgentMessage(data.message);
+      renderJourneyUnderstandingCard(data.booking, data.missing_fields, data.next_action, true);
+      renderAgentMessage(naturalMessage || data.message);
       renderConfirmationCard(data.booking);
     } else {
-      renderAgentMessage(data.message);
+      if (data.booking && (data.booking.source || data.booking.destination || data.booking.date || data.booking.passengers || data.booking.class)) {
+        renderJourneyUnderstandingCard(data.booking, data.missing_fields, data.next_action, false);
+      }
+      renderAgentMessage(naturalMessage || data.message);
+    }
+
+    if (data.booking) {
+      previousBookingState = Object.assign({}, data.booking);
     }
 
     // 2. Render Live Booking State
@@ -607,8 +954,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. Render Activity Timeline
     renderActivity(data.activity, data.status, data.next_action);
 
-    // 6. Render Contextual Quick Replies
-    renderQuickReplies(data.status, data.next_action, data.available_trains, data.selected_train);
+    // 6. Render Contextual Quick Replies (only if not searching trains, which renders in transition callback)
+    if (!data.available_trains || data.available_trains.length === 0 || data.selected_train) {
+      renderQuickReplies(data.status, data.next_action, data.available_trains, data.selected_train);
+    }
 
     // 7. Update Raw JSON
     rawTaskJson.textContent = JSON.stringify(data, null, 2);
@@ -839,7 +1188,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function renderTrainSearchResults(trains) {
     if (!trains || trains.length === 0) return;
 
-    renderSystemStatus(`Found ${trains.length} available railway services for your route`, 'info');
+    if (!document.querySelector('.aura-thinking-card')) {
+      renderSystemStatus(`Found ${trains.length} available railway services for your route`, 'info');
+    }
 
     const card = document.createElement('div');
     card.className = 'trains-card';
@@ -1083,6 +1434,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     quickRepliesBar.style.display = 'none';
     renderUserMessage('Confirm Booking');
+    const bookingThinkingCard = renderBookingProcessingCard();
     setProcessing(true, 'Confirming your railway reservation...');
 
     try {
@@ -1098,9 +1450,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }
 
       const resData = await response.json();
-      handleBookingSuccess(resData);
+      markBookingProcessingSuccess(bookingThinkingCard);
+      setTimeout(() => {
+        handleBookingSuccess(resData);
+      }, 280);
     } catch (err) {
       console.error('Booking execution error:', err);
+      if (bookingThinkingCard) bookingThinkingCard.remove();
       setProcessing(false);
       renderBookingFailure(err.message);
     } finally {
@@ -1121,8 +1477,10 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('booking-complete');
     setProcessing(false);
 
-    // 1. Exactly ONE Centered Status Indicator Pill: ✓ Reservation confirmed
-    renderSystemStatus('Reservation confirmed', 'success');
+    // 1. Exactly ONE Centered Status Indicator Pill if no processing card
+    if (!document.getElementById('booking-processing-card')) {
+      renderSystemStatus('Reservation confirmed', 'success');
+    }
 
     // 2. Exactly ONE Small Conversational AURA message
     renderAgentMessage("Your reservation is confirmed. I've prepared your electronic reservation slip below.");
@@ -2102,6 +2460,8 @@ document.addEventListener('DOMContentLoaded', () => {
     lastSelectedTrain = null;
     isBookingInProgress = false;
     bookingSuccessHandled = false;
+    previousBookingState = null;
+    lastUserMessageText = '';
     sessionTag.textContent = 'Session: Idle';
 
     const tripStationFrom = document.getElementById('trip-station-from');
@@ -2245,7 +2605,17 @@ document.addEventListener('DOMContentLoaded', () => {
   function formatAgentText(text) {
     if (!text) return '';
     const escaped = escapeHtml(text);
-    return escaped.replace(/\n/g, '<br>');
+    return escaped
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+  }
+
+  function formatShortJourneyDate(raw) {
+    if (!raw) return '';
+    const d = parseJourneyDate(raw);
+    if (!d || isNaN(d.getTime())) return capitalize(raw);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`;
   }
 
   /**
