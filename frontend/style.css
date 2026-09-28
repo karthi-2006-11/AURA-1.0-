@@ -12,21 +12,30 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* True Glassmorphic Surfaces - Dark Theme */
+  /* Section 19: Transparent Glass Tokens */
+  --glass-ultra: rgba(255, 255, 255, 0.025);
+  --glass-light: rgba(255, 255, 255, 0.035);
+  --glass-medium: rgba(255, 255, 255, 0.045);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.04);
+
+  /* Transparent Glass Surfaces - Dark Theme */
   --bg-app: transparent;
-  --bg-panel: rgba(5, 15, 35, 0.32);
-  --bg-card: rgba(255, 255, 255, 0.10);
-  --bg-card-hover: rgba(255, 255, 255, 0.14);
-  --bg-elevated: rgba(255, 255, 255, 0.08);
-  --bg-glass: rgba(255, 255, 255, 0.08);
-  --bg-glass-card: rgba(255, 255, 255, 0.10);
-  --bg-glass-subtle: rgba(255, 255, 255, 0.06);
-  --bg-input: rgba(255, 255, 255, 0.08);
+  --bg-panel: rgba(255, 255, 255, 0.025);
+  --bg-card: rgba(255, 255, 255, 0.045);
+  --bg-card-hover: rgba(255, 255, 255, 0.08);
+  --bg-elevated: rgba(255, 255, 255, 0.035);
+  --bg-glass: rgba(255, 255, 255, 0.035);
+  --bg-glass-card: rgba(255, 255, 255, 0.045);
+  --bg-glass-subtle: rgba(255, 255, 255, 0.025);
+  --bg-input: rgba(255, 255, 255, 0.015);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.14);
-  --border-medium: rgba(255, 255, 255, 0.18);
-  --border-strong: rgba(255, 255, 255, 0.24);
+  --border-subtle: rgba(255, 255, 255, 0.10);
+  --border-medium: rgba(255, 255, 255, 0.14);
+  --border-strong: rgba(255, 255, 255, 0.18);
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-glass-strong: rgba(255, 255, 255, 0.18);
   --border-active: #38bdf8;
   --border-focus: #0ea5e9;
 
@@ -87,21 +96,30 @@
 [data-theme="light"] {
   color-scheme: light;
 
-  /* True Glassmorphic Surfaces - Light Theme */
+  /* Section 19: Transparent Glass Tokens - Light Theme */
+  --glass-ultra: rgba(255, 255, 255, 0.10);
+  --glass-light: rgba(255, 255, 255, 0.12);
+  --glass-medium: rgba(255, 255, 255, 0.16);
+  --glass-border: rgba(255, 255, 255, 0.25);
+  --glass-highlight: rgba(255, 255, 255, 0.20);
+
+  /* Transparent Glass Surfaces - Light Theme */
   --bg-app: transparent;
-  --bg-panel: rgba(255, 255, 255, 0.22);
-  --bg-card: rgba(255, 255, 255, 0.32);
-  --bg-card-hover: rgba(255, 255, 255, 0.40);
-  --bg-elevated: rgba(255, 255, 255, 0.25);
-  --bg-glass: rgba(255, 255, 255, 0.26);
-  --bg-glass-card: rgba(255, 255, 255, 0.32);
-  --bg-glass-subtle: rgba(255, 255, 255, 0.18);
-  --bg-input: rgba(255, 255, 255, 0.25);
+  --bg-panel: rgba(255, 255, 255, 0.12);
+  --bg-card: rgba(255, 255, 255, 0.16);
+  --bg-card-hover: rgba(255, 255, 255, 0.22);
+  --bg-elevated: rgba(255, 255, 255, 0.14);
+  --bg-glass: rgba(255, 255, 255, 0.14);
+  --bg-glass-card: rgba(255, 255, 255, 0.16);
+  --bg-glass-subtle: rgba(255, 255, 255, 0.10);
+  --bg-input: rgba(255, 255, 255, 0.05);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.35);
-  --border-medium: rgba(255, 255, 255, 0.45);
-  --border-strong: rgba(255, 255, 255, 0.55);
+  --border-subtle: rgba(255, 255, 255, 0.20);
+  --border-medium: rgba(255, 255, 255, 0.25);
+  --border-strong: rgba(255, 255, 255, 0.35);
+  --border-glass: rgba(255, 255, 255, 0.25);
+  --border-glass-strong: rgba(255, 255, 255, 0.35);
   --border-active: #0284c7;
   --border-focus: #0ea5e9;
 
@@ -227,26 +245,26 @@ body {
   position: sticky;
   top: 12px;
   z-index: 100;
-  background-color: var(--bg-glass);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  background-color: rgba(5, 15, 35, 0.22);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--border-glass);
   border-radius: 20px;
   margin-bottom: 16px;
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.10);
   transition: all var(--transition-normal);
 }
 
 [data-theme="dark"] .app-header {
-  background-color: rgba(5, 15, 35, 0.35);
-  border-color: rgba(255, 255, 255, 0.15);
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  background-color: rgba(5, 15, 35, 0.22);
+  border-color: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.10);
 }
 
 [data-theme="light"] .app-header {
-  background-color: rgba(255, 255, 255, 0.30);
-  border-color: rgba(255, 255, 255, 0.45);
-  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.60);
+  background-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.28);
+  box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.40);
 }
 
 /* Brand Section (Left) */
@@ -621,14 +639,14 @@ body {
 
 .panel {
   background-color: var(--bg-panel);
-  backdrop-filter: blur(24px) saturate(140%);
-  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
   border: 1px solid var(--border-glass);
   border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10);
   transition: all var(--transition-normal);
 }
 
@@ -638,9 +656,9 @@ body {
   align-items: center;
   padding: 14px 22px;
   border-bottom: 1px solid var(--border-subtle);
-  background-color: var(--bg-glass);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background-color: var(--bg-glass-subtle);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
 }
 
 .panel-title-group {
@@ -720,12 +738,12 @@ body {
   max-width: 640px;
   text-align: center;
   padding: 48px 36px;
-  background-color: var(--bg-glass-card);
-  backdrop-filter: blur(28px) saturate(160%);
-  -webkit-backdrop-filter: blur(28px) saturate(160%);
-  border: 1px solid var(--border-glass-strong);
+  background-color: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(10px) saturate(125%);
+  -webkit-backdrop-filter: blur(10px) saturate(125%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-radius: 28px;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
   position: relative;
   overflow: hidden;
   animation: fadeIn 0.4s ease-out;
@@ -736,7 +754,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 35%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 35%);
   pointer-events: none;
   border-radius: inherit;
 }
@@ -2103,13 +2121,13 @@ body.booking-complete .aura-booking-success-view {
 .composer-input-wrap {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-glass);
-  backdrop-filter: blur(24px) saturate(160%);
-  -webkit-backdrop-filter: blur(24px) saturate(160%);
-  border: 1px solid var(--border-glass-strong);
+  background-color: rgba(255, 255, 255, 0.035);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
   border-radius: 24px;
   padding: 14px 18px;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.10);
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
@@ -2120,8 +2138,12 @@ body.booking-complete .aura-booking-success-view {
 
 textarea#composer-input {
   width: 100%;
-  background: transparent;
-  border: none;
+  background: rgba(255, 255, 255, 0.015);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 12px;
+  padding: 8px 12px;
   color: var(--text-primary);
   font-family: var(--font-sans);
   font-size: 0.94rem;
@@ -2164,12 +2186,12 @@ kbd {
    ========================================================================== */
 
 .inspector-panel {
-  background-color: var(--bg-panel);
-  backdrop-filter: blur(26px) saturate(150%);
-  -webkit-backdrop-filter: blur(26px) saturate(150%);
-  border: 1px solid var(--border-glass);
+  background-color: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(8px) saturate(120%);
+  -webkit-backdrop-filter: blur(8px) saturate(120%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10);
   overflow-y: auto;
   gap: 14px;
   padding: 18px;
@@ -2178,13 +2200,13 @@ kbd {
 }
 
 .card {
-  background-color: var(--bg-glass-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-glass);
+  background-color: rgba(255, 255, 255, 0.045);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 18px;
   padding: 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
   transition: all var(--transition-normal);
 }
 
@@ -2679,15 +2701,15 @@ kbd {
   z-index: 10000;
   width: 310px;
   max-width: calc(100vw - 24px);
-  background: var(--bg-panel);
+  background: rgba(13, 19, 34, 0.92);
   border: 1px solid var(--border-medium);
   border-radius: var(--radius-lg);
   box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.65), 0 0 0 1px var(--border-subtle);
   padding: 16px;
   box-sizing: border-box;
   user-select: none;
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   animation: calPopIn 0.16s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -3120,91 +3142,92 @@ body.composer-focused .railway-background-env {
 
 /* 1. Floating Glass Navbar */
 .app-header {
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(5, 15, 35, 0.22) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 20px !important;
-  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
 }
 
 [data-theme="dark"] .app-header {
-  background: rgba(5, 15, 35, 0.35) !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background: rgba(5, 15, 35, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 12px 32px -8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
 }
 
 [data-theme="light"] .app-header {
-  background: rgba(255, 255, 255, 0.30) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.60) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 12px 32px -8px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.40) !important;
 }
 
 /* 2. Main Workspace (Surrounding Hero & Composer) */
 .panel,
 .conversation-panel {
-  background: rgba(255, 255, 255, 0.06) !important;
-  backdrop-filter: blur(24px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  backdrop-filter: blur(8px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 24px !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10) !important;
 }
 
 [data-theme="dark"] .panel,
 [data-theme="dark"] .conversation-panel {
-  background: rgba(5, 15, 35, 0.32) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(2, 10, 25, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
 }
 
 [data-theme="light"] .panel,
 [data-theme="light"] .conversation-panel {
-  background: rgba(255, 255, 255, 0.22) !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.40) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06) !important;
 }
 
 .panel-header {
-  background: rgba(255, 255, 255, 0.04) !important;
-  backdrop-filter: blur(14px) !important;
-  -webkit-backdrop-filter: blur(14px) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.10) !important;
 }
 
 [data-theme="light"] .panel-header {
-  background: rgba(255, 255, 255, 0.20) !important;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22) !important;
 }
 
-/* 3. Hero Card (Real Floating Glass Card) */
+/* 3. Hero Card (Real Thin Transparent Glass Sheet) */
 .empty-state-card {
-  background: rgba(255, 255, 255, 0.10) !important;
-  backdrop-filter: blur(28px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  backdrop-filter: blur(10px) saturate(125%) !important;
+  -webkit-backdrop-filter: blur(10px) saturate(125%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
   border-radius: 28px !important;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
   position: relative !important;
   overflow: hidden !important;
 }
 
 [data-theme="dark"] .empty-state-card {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.20) !important;
-  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.16) !important;
 }
 
 [data-theme="light"] .empty-state-card {
-  background: rgba(255, 255, 255, 0.32) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.50) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.08) !important;
 }
 
-/* Subtle Reflective Glass Highlight */
+/* Reduced Reflection Layer (Max Opacity 0.04) */
 .empty-state-card::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 35%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 35%) !important;
   pointer-events: none;
   border-radius: inherit;
 }
@@ -3225,6 +3248,7 @@ body.composer-focused .railway-background-env {
   border-radius: 9999px;
   margin-bottom: 20px;
   box-shadow: 0 2px 10px rgba(56, 189, 248, 0.15);
+  opacity: 1 !important;
 }
 
 .empty-title {
@@ -3248,15 +3272,15 @@ body.composer-focused .railway-background-env {
   font-size: 1.05rem;
   line-height: 1.55;
   margin-bottom: 32px;
-  opacity: 1 !important;
+  opacity: 0.88 !important;
 }
 
 [data-theme="dark"] .empty-desc {
-  color: rgba(248, 250, 252, 0.85) !important;
+  color: rgba(248, 250, 252, 0.88) !important;
 }
 
 [data-theme="light"] .empty-desc {
-  color: rgba(15, 23, 42, 0.80) !important;
+  color: rgba(15, 23, 42, 0.88) !important;
 }
 
 .popular-label {
@@ -3266,6 +3290,7 @@ body.composer-focused .railway-background-env {
   text-transform: uppercase;
   letter-spacing: 0.8px;
   margin-bottom: 12px;
+  opacity: 1 !important;
 }
 
 [data-theme="dark"] .popular-label {
@@ -3281,10 +3306,10 @@ body.composer-focused .railway-background-env {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.20) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
   border-radius: 9999px !important;
   padding: 9px 18px;
   font-family: var(--font-sans);
@@ -3296,14 +3321,14 @@ body.composer-focused .railway-background-env {
 }
 
 [data-theme="dark"] .starter-chip {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.20) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
   color: #f8fafc !important;
 }
 
 [data-theme="light"] .starter-chip {
-  background: rgba(255, 255, 255, 0.35) !important;
-  border-color: rgba(255, 255, 255, 0.50) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
   color: #0f172a !important;
 }
 
@@ -3319,46 +3344,50 @@ body.composer-focused .railway-background-env {
 .composer-container {
   padding: 16px 24px 22px !important;
   background: transparent !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 [data-theme="light"] .composer-container {
-  border-top: 1px solid rgba(255, 255, 255, 0.30) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.20) !important;
 }
 
 .composer-input-wrap {
   display: flex;
   flex-direction: column;
-  background: rgba(255, 255, 255, 0.08) !important;
-  backdrop-filter: blur(24px) saturate(160%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  backdrop-filter: blur(8px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
   border-radius: 24px !important;
   padding: 14px 18px !important;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.10) !important;
   transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 [data-theme="dark"] .composer-input-wrap {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
+  background: rgba(255, 255, 255, 0.035) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 [data-theme="light"] .composer-input-wrap {
-  background: rgba(255, 255, 255, 0.32) !important;
-  border-color: rgba(255, 255, 255, 0.45) !important;
-  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.50) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
+  box-shadow: 0 15px 40px rgba(15, 23, 42, 0.06) !important;
 }
 
 .composer-input-wrap:focus-within {
   border-color: rgba(56, 189, 248, 0.55) !important;
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 0 0 3px rgba(56, 189, 248, 0.10) !important;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.10), 0 0 0 3px rgba(56, 189, 248, 0.10) !important;
 }
 
 textarea#composer-input {
   width: 100%;
-  background: transparent !important;
-  border: none !important;
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border-radius: 12px !important;
+  padding: 8px 12px !important;
   color: var(--text-primary) !important;
   font-family: var(--font-sans);
   font-size: 0.95rem;
@@ -3374,8 +3403,13 @@ textarea#composer-input::placeholder {
   color: rgba(255, 255, 255, 0.70) !important;
 }
 
+[data-theme="light"] textarea#composer-input {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border-color: rgba(15, 23, 42, 0.08) !important;
+}
+
 [data-theme="light"] textarea#composer-input::placeholder {
-  color: rgba(15, 23, 42, 0.60) !important;
+  color: rgba(15, 23, 42, 0.65) !important;
 }
 
 /* 6. Send Button (Solid Visual Action Point) */
@@ -3399,11 +3433,11 @@ textarea#composer-input::placeholder {
 
 /* 7. Journey Panel (Glass Sidebar) */
 .inspector-panel {
-  background: rgba(255, 255, 255, 0.07) !important;
-  backdrop-filter: blur(26px) saturate(150%) !important;
-  -webkit-backdrop-filter: blur(26px) saturate(150%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18) !important;
+  background: rgba(255, 255, 255, 0.025) !important;
+  backdrop-filter: blur(8px) saturate(120%) !important;
+  -webkit-backdrop-filter: blur(8px) saturate(120%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.10) !important;
   border-radius: 24px !important;
   overflow-y: auto;
   gap: 14px;
@@ -3413,69 +3447,86 @@ textarea#composer-input::placeholder {
 }
 
 [data-theme="dark"] .inspector-panel {
-  background: rgba(5, 15, 35, 0.32) !important;
-  border-color: rgba(255, 255, 255, 0.14) !important;
+  background: rgba(2, 10, 25, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.10) !important;
 }
 
 [data-theme="light"] .inspector-panel {
-  background: rgba(255, 255, 255, 0.22) !important;
-  border-color: rgba(255, 255, 255, 0.35) !important;
-  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.06) !important;
 }
 
 /* 8. Journey Internal Cards (Second Glass Level - Depth) */
 .inspector-panel .card {
-  background: rgba(255, 255, 255, 0.10) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  backdrop-filter: blur(5px) !important;
+  -webkit-backdrop-filter: blur(5px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 18px !important;
   padding: 18px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08) !important;
   transition: all var(--transition-normal);
 }
 
 [data-theme="dark"] .inspector-panel .card {
-  background: rgba(255, 255, 255, 0.10) !important;
-  border-color: rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.045) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
 }
 
 [data-theme="light"] .inspector-panel .card {
-  background: rgba(255, 255, 255, 0.36) !important;
-  border-color: rgba(255, 255, 255, 0.50) !important;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.60) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04) !important;
 }
 
 .compact-route-display {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: var(--radius-md) !important;
 }
 
 [data-theme="light"] .compact-route-display {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border-color: rgba(255, 255, 255, 0.55) !important;
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-color: rgba(255, 255, 255, 0.30) !important;
 }
 
 .inspector-details {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: var(--radius-md) !important;
 }
 
 [data-theme="light"] .inspector-details {
-  background: rgba(255, 255, 255, 0.40) !important;
-  border-color: rgba(255, 255, 255, 0.50) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 /* 9. Mock Provider Banner (Glass with Warning Accent) */
 .mock-provider-banner {
-  background: rgba(245, 158, 11, 0.10) !important;
-  backdrop-filter: blur(16px) saturate(140%) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
-  border: 1px solid rgba(245, 158, 11, 0.28) !important;
+  background: rgba(245, 158, 11, 0.08) !important;
+  backdrop-filter: blur(6px) !important;
+  -webkit-backdrop-filter: blur(6px) !important;
+  border: 1px solid rgba(245, 158, 11, 0.25) !important;
   border-radius: var(--radius-md) !important;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* 10. Change Action Buttons (Solid Prominent State) */
+.btn-trip-change,
+.btn-edit-date-review {
+  background: rgba(14, 165, 233, 0.22) !important;
+  border: 1px solid rgba(56, 189, 248, 0.50) !important;
+  color: #38bdf8 !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+[data-theme="light"] .btn-trip-change,
+[data-theme="light"] .btn-edit-date-review {
+  background: rgba(2, 132, 199, 0.15) !important;
+  border-color: rgba(2, 132, 199, 0.40) !important;
+  color: #0284c7 !important;
 }
 
 /* ==========================================================================
@@ -3484,9 +3535,9 @@ textarea#composer-input::placeholder {
    MUST REMAIN STRICTLY OPAQUE (94–96%) for 100% user readability!
    ========================================================================== */
 
-/* User Message: 95% Opaque Blue */
+/* User Message: 92% Opaque Blue */
 .chat-bubble.user-message .bubble-body {
-  background: rgba(37, 99, 235, 0.95) !important;
+  background: rgba(37, 99, 235, 0.92) !important;
   color: #ffffff !important;
   border: 1px solid rgba(96, 165, 250, 0.40) !important;
   backdrop-filter: none !important;
@@ -3495,7 +3546,7 @@ textarea#composer-input::placeholder {
   box-shadow: 0 4px 18px rgba(37, 99, 235, 0.35) !important;
 }
 
-/* Agent Message: 95% Opaque */
+/* Agent Message: 92–95% Opaque */
 [data-theme="dark"] .chat-bubble.agent-message .bubble-body {
   background: rgba(13, 19, 34, 0.95) !important;
   color: #f8fafc !important;
@@ -3507,7 +3558,7 @@ textarea#composer-input::placeholder {
 }
 
 [data-theme="light"] .chat-bubble.agent-message .bubble-body {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   color: #0f172a !important;
   border: 1px solid rgba(15, 23, 42, 0.12) !important;
   backdrop-filter: none !important;
@@ -3520,7 +3571,7 @@ textarea#composer-input::placeholder {
   opacity: 1 !important;
 }
 
-/* Train Search Results (94–96% Opaque) */
+/* Train Search Results (92–95% Opaque) */
 .trains-card {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
@@ -3534,7 +3585,7 @@ textarea#composer-input::placeholder {
 }
 
 [data-theme="light"] .trains-card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.92) !important;
   border: 1px solid rgba(15, 23, 42, 0.14) !important;
 }
 
@@ -3550,7 +3601,7 @@ textarea#composer-input::placeholder {
   opacity: 1 !important;
 }
 
-/* Confirmation & Final Review Card (95% Opaque) */
+/* Confirmation & Final Review Card (94–95% Opaque) */
 .confirmation-card,
 .final-review-card {
   backdrop-filter: none !important;
@@ -3567,7 +3618,7 @@ textarea#composer-input::placeholder {
 
 [data-theme="light"] .confirmation-card,
 [data-theme="light"] .final-review-card {
-  background: rgba(255, 255, 255, 0.95) !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   border: 1px solid rgba(14, 165, 233, 0.35) !important;
 }
 
