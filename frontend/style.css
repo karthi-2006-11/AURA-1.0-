@@ -12,26 +12,28 @@
 [data-theme="dark"] {
   color-scheme: dark;
 
-  /* Surface & Canvas Hierarchy */
-  --bg-app: #080c14;
-  --bg-panel: rgba(13, 19, 34, 0.88);
-  --bg-card: rgba(18, 27, 45, 0.86);
-  --bg-card-hover: rgba(23, 34, 57, 0.90);
-  --bg-elevated: rgba(26, 39, 66, 0.90);
-  --bg-glass: rgba(13, 19, 34, 0.84);
-  --bg-input: #0f172a;
+  /* True Glassmorphic Surfaces - Dark Theme */
+  --bg-app: transparent;
+  --bg-panel: rgba(5, 15, 35, 0.32);
+  --bg-card: rgba(255, 255, 255, 0.10);
+  --bg-card-hover: rgba(255, 255, 255, 0.14);
+  --bg-elevated: rgba(255, 255, 255, 0.08);
+  --bg-glass: rgba(255, 255, 255, 0.08);
+  --bg-glass-card: rgba(255, 255, 255, 0.10);
+  --bg-glass-subtle: rgba(255, 255, 255, 0.06);
+  --bg-input: rgba(255, 255, 255, 0.08);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.12);
-  --border-medium: rgba(56, 189, 248, 0.28);
+  --border-subtle: rgba(255, 255, 255, 0.14);
+  --border-medium: rgba(255, 255, 255, 0.18);
   --border-strong: rgba(255, 255, 255, 0.24);
   --border-active: #38bdf8;
   --border-focus: #0ea5e9;
 
-  /* Typography Colors */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  /* Typography Colors - 100% Opaque & Strong Contrast */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(248, 250, 252, 0.85);
+  --text-muted: rgba(255, 255, 255, 0.70);
   --text-accent: #38bdf8;
   --text-inverse: #090d16;
 
@@ -39,36 +41,36 @@
   --accent-cyan: #38bdf8;
   --accent-blue: #2563eb;
   --accent-indigo: #6366f1;
-  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #4f46e5 100%);
-  --accent-glow: rgba(56, 189, 248, 0.2);
+  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  --accent-glow: rgba(56, 189, 248, 0.25);
 
   /* Status Colors */
   --success-base: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.12);
-  --success-border: rgba(16, 185, 129, 0.35);
+  --success-bg: rgba(16, 185, 129, 0.14);
+  --success-border: rgba(16, 185, 129, 0.40);
   --success-text: #34d399;
 
   --warning-base: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.12);
-  --warning-border: rgba(245, 158, 11, 0.35);
+  --warning-bg: rgba(245, 158, 11, 0.14);
+  --warning-border: rgba(245, 158, 11, 0.40);
   --warning-text: #fbbf24;
 
   --danger-base: #f43f5e;
-  --danger-bg: rgba(244, 63, 94, 0.12);
-  --danger-border: rgba(244, 63, 94, 0.35);
+  --danger-bg: rgba(244, 63, 94, 0.14);
+  --danger-border: rgba(244, 63, 94, 0.40);
   --danger-text: #fb7185;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
-  --shadow-panel: 0 16px 36px -8px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
-  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.25);
+  --shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --shadow-card: 0 8px 30px rgba(0, 0, 0, 0.20);
   --shadow-glow: 0 0 24px rgba(56, 189, 248, 0.14);
-  --shadow-composer: 0 8px 30px rgba(0, 0, 0, 0.45);
+  --shadow-composer: 0 18px 50px rgba(0, 0, 0, 0.18);
 
   /* User Message Bubble */
-  --user-bubble-bg: linear-gradient(135deg, #0284c7, #4338ca);
+  --user-bubble-bg: rgba(37, 99, 235, 0.95);
   --user-bubble-text: #ffffff;
-  --user-bubble-border: rgba(56, 189, 248, 0.3);
+  --user-bubble-border: rgba(96, 165, 250, 0.40);
 
   /* Header Brand Monogram */
   --monogram-bg: linear-gradient(135deg, #1e3a8a, #0284c7);
@@ -78,33 +80,35 @@
   --bg-navy-deep: #020617;
   --bg-navy-mid: #06152f;
   --bg-navy-glow: #081b3a;
-  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-glass: rgba(255, 255, 255, 0.18);
   --border-glass-glow: rgba(56, 189, 248, 0.22);
 }
 
 [data-theme="light"] {
   color-scheme: light;
 
-  /* Surface & Canvas Hierarchy */
+  /* True Glassmorphic Surfaces - Light Theme */
   --bg-app: transparent;
-  --bg-panel: rgba(255, 255, 255, 0.88);
-  --bg-card: rgba(255, 255, 255, 0.86);
-  --bg-card-hover: rgba(248, 250, 252, 0.92);
-  --bg-elevated: rgba(255, 255, 255, 0.92);
-  --bg-glass: rgba(255, 255, 255, 0.85);
-  --bg-input: #ffffff;
+  --bg-panel: rgba(255, 255, 255, 0.22);
+  --bg-card: rgba(255, 255, 255, 0.32);
+  --bg-card-hover: rgba(255, 255, 255, 0.40);
+  --bg-elevated: rgba(255, 255, 255, 0.25);
+  --bg-glass: rgba(255, 255, 255, 0.26);
+  --bg-glass-card: rgba(255, 255, 255, 0.32);
+  --bg-glass-subtle: rgba(255, 255, 255, 0.18);
+  --bg-input: rgba(255, 255, 255, 0.25);
 
   /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.65);
-  --border-medium: rgba(14, 165, 233, 0.28);
-  --border-strong: rgba(14, 165, 233, 0.45);
+  --border-subtle: rgba(255, 255, 255, 0.35);
+  --border-medium: rgba(255, 255, 255, 0.45);
+  --border-strong: rgba(255, 255, 255, 0.55);
   --border-active: #0284c7;
   --border-focus: #0ea5e9;
 
-  /* Typography Colors */
+  /* Typography Colors - 100% Opaque & Strong Contrast */
   --text-primary: #0f172a;
-  --text-secondary: #334155;
-  --text-muted: #64748b;
+  --text-secondary: rgba(15, 23, 42, 0.82);
+  --text-muted: rgba(15, 23, 42, 0.65);
   --text-accent: #0284c7;
   --text-inverse: #ffffff;
 
@@ -112,46 +116,46 @@
   --accent-cyan: #0284c7;
   --accent-blue: #1d4ed8;
   --accent-indigo: #4f46e5;
-  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #4338ca 100%);
-  --accent-glow: rgba(2, 132, 199, 0.15);
+  --accent-gradient: linear-gradient(135deg, #0284c7 0%, #2563eb 100%);
+  --accent-glow: rgba(2, 132, 199, 0.18);
 
   /* Status Colors */
   --success-base: #059669;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --success-border: rgba(16, 185, 129, 0.28);
+  --success-bg: rgba(16, 185, 129, 0.14);
+  --success-border: rgba(16, 185, 129, 0.35);
   --success-text: #059669;
 
   --warning-base: #d97706;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --warning-border: rgba(245, 158, 11, 0.28);
+  --warning-bg: rgba(245, 158, 11, 0.14);
+  --warning-border: rgba(245, 158, 11, 0.35);
   --warning-text: #b45309;
 
   --danger-base: #e11d48;
-  --danger-bg: rgba(244, 63, 94, 0.1);
-  --danger-border: rgba(244, 63, 94, 0.28);
+  --danger-bg: rgba(244, 63, 94, 0.14);
+  --danger-border: rgba(244, 63, 94, 0.35);
   --danger-text: #e11d48;
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
-  --shadow-panel: 0 16px 36px -6px rgba(15, 23, 42, 0.12), 0 0 0 1px rgba(255, 255, 255, 0.4);
+  --shadow-panel: 0 20px 60px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.40);
   --shadow-card: 0 8px 24px -4px rgba(15, 23, 42, 0.08);
   --shadow-glow: 0 0 24px rgba(2, 132, 199, 0.14);
-  --shadow-composer: 0 12px 36px rgba(15, 23, 42, 0.12);
+  --shadow-composer: 0 18px 50px rgba(15, 23, 42, 0.08);
 
   /* User Message Bubble */
-  --user-bubble-bg: linear-gradient(135deg, #0284c7, #2563eb);
+  --user-bubble-bg: rgba(37, 99, 235, 0.95);
   --user-bubble-text: #ffffff;
-  --user-bubble-border: transparent;
+  --user-bubble-border: rgba(96, 165, 250, 0.40);
 
   /* Header Brand Monogram */
   --monogram-bg: linear-gradient(135deg, #0284c7, #2563eb);
-  --monogram-border: rgba(2, 132, 199, 0.3);
+  --monogram-border: rgba(14, 165, 233, 0.4);
 
   /* Digital Living Railway Network & Glass Tokens - Light Theme */
   --bg-navy-deep: #06152f;
   --bg-navy-mid: #081b3a;
   --bg-navy-glow: #0e2b5c;
-  --border-glass: rgba(255, 255, 255, 0.35);
+  --border-glass: rgba(255, 255, 255, 0.38);
   --border-glass-glow: rgba(14, 165, 233, 0.22);
 }
 
@@ -187,7 +191,7 @@ html, body {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--bg-app);
+  background-color: transparent !important;
   color: var(--text-primary);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -224,25 +228,25 @@ body {
   top: 12px;
   z-index: 100;
   background-color: var(--bg-glass);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--border-glass);
+  border-radius: 20px;
   margin-bottom: 16px;
-  box-shadow: var(--shadow-panel);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16);
   transition: all var(--transition-normal);
 }
 
 [data-theme="dark"] .app-header {
-  background-color: rgba(13, 19, 34, 0.82);
-  border-color: rgba(56, 189, 248, 0.12);
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.04);
+  background-color: rgba(5, 15, 35, 0.35);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 [data-theme="light"] .app-header {
-  background-color: rgba(255, 255, 255, 0.88);
-  border-color: rgba(15, 23, 42, 0.08);
-  box-shadow: 0 10px 30px -6px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(15, 23, 42, 0.04);
+  background-color: rgba(255, 255, 255, 0.30);
+  border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.60);
 }
 
 /* Brand Section (Left) */
@@ -617,15 +621,15 @@ body {
 
 .panel {
   background-color: var(--bg-panel);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  backdrop-filter: blur(24px) saturate(140%);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  border: 1px solid var(--border-glass);
+  border-radius: 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: var(--shadow-panel);
-  transition: background-color var(--transition-normal), border-color var(--transition-normal);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  transition: all var(--transition-normal);
 }
 
 .panel-header {
@@ -713,17 +717,28 @@ body {
 /* Hero / Empty State Card (AI Railway Assistant Landing Experience) */
 .empty-state-card {
   margin: auto;
-  max-width: 620px;
+  max-width: 640px;
   text-align: center;
-  padding: 48px 32px;
-  background-color: var(--bg-card);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-card);
+  padding: 48px 36px;
+  background-color: var(--bg-glass-card);
+  backdrop-filter: blur(28px) saturate(160%);
+  -webkit-backdrop-filter: blur(28px) saturate(160%);
+  border: 1px solid var(--border-glass-strong);
+  border-radius: 28px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+  position: relative;
+  overflow: hidden;
   animation: fadeIn 0.4s ease-out;
   transition: all var(--transition-normal);
+}
+
+.empty-state-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 35%);
+  pointer-events: none;
+  border-radius: inherit;
 }
 
 .empty-hero-badge {
@@ -2080,20 +2095,22 @@ body.booking-complete .aura-booking-success-view {
    ========================================================================== */
 
 .composer-container {
-  padding: 14px 24px 20px;
-  background-color: var(--bg-panel);
+  padding: 16px 24px 22px;
+  background-color: transparent;
   border-top: 1px solid var(--border-subtle);
 }
 
 .composer-input-wrap {
   display: flex;
   flex-direction: column;
-  background-color: var(--bg-input);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-lg);
-  padding: 12px 16px;
-  box-shadow: var(--shadow-sm);
-  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  background-color: var(--bg-glass);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid var(--border-glass-strong);
+  border-radius: 24px;
+  padding: 14px 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
 }
 
 .composer-input-wrap:focus-within {
@@ -2147,19 +2164,27 @@ kbd {
    ========================================================================== */
 
 .inspector-panel {
+  background-color: var(--bg-panel);
+  backdrop-filter: blur(26px) saturate(150%);
+  -webkit-backdrop-filter: blur(26px) saturate(150%);
+  border: 1px solid var(--border-glass);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
   overflow-y: auto;
   gap: 14px;
-  padding: 16px;
+  padding: 18px;
   height: calc(100vh - 160px);
   min-height: 600px;
 }
 
 .card {
-  background-color: var(--bg-card);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  background-color: var(--bg-glass-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-glass);
+  border-radius: 18px;
   padding: 18px;
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition: all var(--transition-normal);
 }
 
@@ -3058,9 +3083,10 @@ kbd {
 }
 
 /* ==========================================================================
-   17. LIVING ANIMATED RAILWAY NETWORK BACKGROUND & FLOATING GLASS UI
+   17. AURA PREMIUM GLASSMORPHIC FOREGROUND INTERFACE
    ========================================================================== */
 
+/* Background Environment Container (Fixed Fullscreen, Background Only) */
 .railway-background-env {
   position: fixed;
   inset: 0;
@@ -3087,133 +3113,483 @@ body.composer-focused .railway-background-env {
   pointer-events: none !important;
 }
 
-/* Floating Glass UI Components */
+/* ==========================================================================
+   TRUE GLASSMORPHIC MAJOR SURFACES:
+   The animated railway background MUST remain clearly visible through these!
+   ========================================================================== */
+
+/* 1. Floating Glass Navbar */
 .app-header {
-  background: var(--bg-glass) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid var(--border-glass) !important;
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.5), 0 0 24px var(--border-glass-glow) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
 }
 
-.empty-state-card {
-  background: var(--bg-glass) !important;
-  backdrop-filter: blur(24px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
-  border: 1px solid var(--border-glass) !important;
-  box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.55), 0 0 30px var(--border-glass-glow) !important;
+[data-theme="dark"] .app-header {
+  background: rgba(5, 15, 35, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
-.panel {
-  background: var(--bg-panel) !important;
-  backdrop-filter: blur(22px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
-  border: 1px solid var(--border-glass) !important;
-  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5) !important;
+[data-theme="light"] .app-header {
+  background: rgba(255, 255, 255, 0.30) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 16px 40px -8px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.60) !important;
+}
+
+/* 2. Main Workspace (Surrounding Hero & Composer) */
+.panel,
+.conversation-panel {
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+}
+
+[data-theme="dark"] .panel,
+[data-theme="dark"] .conversation-panel {
+  background: rgba(5, 15, 35, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+[data-theme="light"] .panel,
+[data-theme="light"] .conversation-panel {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.40) !important;
 }
 
 .panel-header {
   background: rgba(255, 255, 255, 0.04) !important;
-  border-bottom: 1px solid var(--border-glass) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
+[data-theme="light"] .panel-header {
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35) !important;
+}
+
+/* 3. Hero Card (Real Floating Glass Card) */
+.empty-state-card {
+  background: rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(28px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 28px !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+[data-theme="dark"] .empty-state-card {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+}
+
+[data-theme="light"] .empty-state-card {
+  background: rgba(255, 255, 255, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.50) !important;
+}
+
+/* Subtle Reflective Glass Highlight */
+.empty-state-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.14), transparent 35%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Hero Typography: 100% Opaque with Strong Contrast */
+.empty-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(56, 189, 248, 0.14) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
+  color: #38bdf8 !important;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  padding: 5px 16px;
+  border-radius: 9999px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 10px rgba(56, 189, 248, 0.15);
+}
+
+.empty-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  margin-bottom: 14px;
+  line-height: 1.15;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .empty-title {
+  color: #ffffff !important;
+}
+
+[data-theme="light"] .empty-title {
+  color: #0f172a !important;
+}
+
+.empty-desc {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  margin-bottom: 32px;
+  opacity: 1 !important;
+}
+
+[data-theme="dark"] .empty-desc {
+  color: rgba(248, 250, 252, 0.85) !important;
+}
+
+[data-theme="light"] .empty-desc {
+  color: rgba(15, 23, 42, 0.80) !important;
+}
+
+.popular-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+
+[data-theme="dark"] .popular-label {
+  color: rgba(255, 255, 255, 0.70) !important;
+}
+
+[data-theme="light"] .popular-label {
+  color: rgba(15, 23, 42, 0.70) !important;
+}
+
+/* 4. Popular Request Chips (Glass Pills) */
+.starter-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.20) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 9999px !important;
+  padding: 9px 18px;
+  font-family: var(--font-sans);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  white-space: nowrap;
+}
+
+[data-theme="dark"] .starter-chip {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.20) !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="light"] .starter-chip {
+  background: rgba(255, 255, 255, 0.35) !important;
+  border-color: rgba(255, 255, 255, 0.50) !important;
+  color: #0f172a !important;
+}
+
+.starter-chip:hover {
+  background: rgba(56, 189, 248, 0.15) !important;
+  border-color: rgba(56, 189, 248, 0.45) !important;
+  color: #38bdf8 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
+}
+
+/* 5. Floating Glass Composer */
 .composer-container {
-  background: rgba(255, 255, 255, 0.02) !important;
-  border-top: 1px solid var(--border-glass) !important;
+  padding: 16px 24px 22px !important;
+  background: transparent !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
+[data-theme="light"] .composer-container {
+  border-top: 1px solid rgba(255, 255, 255, 0.30) !important;
+}
+
+.composer-input-wrap {
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  border-radius: 24px !important;
+  padding: 14px 18px !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), background var(--transition-fast);
+}
+
+[data-theme="dark"] .composer-input-wrap {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+}
+
+[data-theme="light"] .composer-input-wrap {
+  background: rgba(255, 255, 255, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.50) !important;
+}
+
+.composer-input-wrap:focus-within {
+  border-color: rgba(56, 189, 248, 0.55) !important;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.20), 0 0 0 3px rgba(56, 189, 248, 0.10) !important;
+}
+
+textarea#composer-input {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none !important;
+  max-height: 110px;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+textarea#composer-input::placeholder {
+  color: rgba(255, 255, 255, 0.70) !important;
+}
+
+[data-theme="light"] textarea#composer-input::placeholder {
+  color: rgba(15, 23, 42, 0.60) !important;
+}
+
+/* 6. Send Button (Solid Visual Action Point) */
+#btn-send,
+.btn-primary {
+  background: linear-gradient(135deg, #0284c7 0%, #2563eb 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  border-radius: 15px !important;
+  box-shadow: 0 4px 16px rgba(2, 132, 199, 0.4) !important;
+  font-weight: 700 !important;
+  opacity: 1 !important;
+}
+
+#btn-send:hover:not(:disabled),
+.btn-primary:hover:not(:disabled) {
+  opacity: 0.96 !important;
+  box-shadow: 0 6px 22px rgba(2, 132, 199, 0.55) !important;
+  transform: translateY(-1px);
+}
+
+/* 7. Journey Panel (Glass Sidebar) */
 .inspector-panel {
-  background: var(--bg-panel) !important;
-  backdrop-filter: blur(22px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  backdrop-filter: blur(26px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(26px) saturate(150%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18) !important;
+  border-radius: 24px !important;
+  overflow-y: auto;
+  gap: 14px;
+  padding: 18px;
+  height: calc(100vh - 160px);
+  min-height: 600px;
 }
 
+[data-theme="dark"] .inspector-panel {
+  background: rgba(5, 15, 35, 0.32) !important;
+  border-color: rgba(255, 255, 255, 0.14) !important;
+}
+
+[data-theme="light"] .inspector-panel {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.12) !important;
+}
+
+/* 8. Journey Internal Cards (Second Glass Level - Depth) */
 .inspector-panel .card {
-  background: rgba(255, 255, 255, 0.04) !important;
-  border: 1px solid var(--border-glass) !important;
+  background: rgba(255, 255, 255, 0.10) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 18px !important;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  transition: all var(--transition-normal);
+}
+
+[data-theme="dark"] .inspector-panel .card {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
 }
 
 [data-theme="light"] .inspector-panel .card {
-  background: rgba(255, 255, 255, 0.78) !important;
-  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  background: rgba(255, 255, 255, 0.36) !important;
+  border-color: rgba(255, 255, 255, 0.50) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.60) !important;
+}
+
+.compact-route-display {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme="light"] .compact-route-display {
+  background: rgba(255, 255, 255, 0.45) !important;
+  border-color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.inspector-details {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: var(--radius-md) !important;
+}
+
+[data-theme="light"] .inspector-details {
+  background: rgba(255, 255, 255, 0.40) !important;
+  border-color: rgba(255, 255, 255, 0.50) !important;
+}
+
+/* 9. Mock Provider Banner (Glass with Warning Accent) */
+.mock-provider-banner {
+  background: rgba(245, 158, 11, 0.10) !important;
+  backdrop-filter: blur(16px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(140%) !important;
+  border: 1px solid rgba(245, 158, 11, 0.28) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12) !important;
 }
 
 /* ==========================================================================
    CRITICAL READABILITY EXCEPTION:
    Chat conversation messages, train cards, confirmation card, and final E-ticket
-   MUST REMAIN STRICTLY OPAQUE for 100% user readability!
+   MUST REMAIN STRICTLY OPAQUE (94–96%) for 100% user readability!
    ========================================================================== */
 
-.chat-bubble .bubble-body,
-.agent-message .bubble-body {
+/* User Message: 95% Opaque Blue */
+.chat-bubble.user-message .bubble-body {
+  background: rgba(37, 99, 235, 0.95) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(96, 165, 250, 0.40) !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
   opacity: 1 !important;
+  box-shadow: 0 4px 18px rgba(37, 99, 235, 0.35) !important;
 }
 
-[data-theme="dark"] .agent-message .bubble-body {
-  background-color: #0d1322 !important;
-  border-color: rgba(56, 189, 248, 0.28) !important;
+/* Agent Message: 95% Opaque */
+[data-theme="dark"] .chat-bubble.agent-message .bubble-body {
+  background: rgba(13, 19, 34, 0.95) !important;
   color: #f8fafc !important;
-}
-
-[data-theme="light"] .agent-message .bubble-body {
-  background-color: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
-  color: #0f172a !important;
-}
-
-.user-message .bubble-body {
-  background: var(--user-bubble-bg) !important;
-  opacity: 1 !important;
-}
-
-.trains-card {
-  background-color: #0d1322 !important;
+  border: 1px solid rgba(56, 189, 248, 0.30) !important;
   backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   opacity: 1 !important;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.45) !important;
+}
+
+[data-theme="light"] .chat-bubble.agent-message .bubble-body {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  border: 1px solid rgba(15, 23, 42, 0.12) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.10) !important;
+}
+
+.chat-bubble .bubble-body * {
+  opacity: 1 !important;
+}
+
+/* Train Search Results (94–96% Opaque) */
+.trains-card {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="dark"] .trains-card {
+  background: rgba(13, 19, 34, 0.95) !important;
+  border: 1px solid rgba(56, 189, 248, 0.35) !important;
 }
 
 [data-theme="light"] .trains-card {
-  background-color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(15, 23, 42, 0.14) !important;
 }
 
-.train-item-card {
-  background-color: #141c30 !important;
+[data-theme="dark"] .train-item-card {
+  background: rgba(20, 28, 48, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   opacity: 1 !important;
 }
 
 [data-theme="light"] .train-item-card {
-  background-color: #f8fafc !important;
+  background: rgba(248, 250, 252, 0.95) !important;
+  border: 1px solid rgba(15, 23, 42, 0.10) !important;
+  opacity: 1 !important;
 }
 
+/* Confirmation & Final Review Card (95% Opaque) */
 .confirmation-card,
 .final-review-card {
-  background-color: #0d1322 !important;
   backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
   opacity: 1 !important;
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.35) !important;
+}
+
+[data-theme="dark"] .confirmation-card,
+[data-theme="dark"] .final-review-card {
+  background: rgba(13, 19, 34, 0.95) !important;
+  border: 1px solid rgba(56, 189, 248, 0.40) !important;
 }
 
 [data-theme="light"] .confirmation-card,
 [data-theme="light"] .final-review-card {
-  background-color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(14, 165, 233, 0.35) !important;
 }
 
-.confirm-field,
-.route-summary-box {
-  background-color: #141c30 !important;
+[data-theme="dark"] .confirm-field,
+[data-theme="dark"] .route-summary-box {
+  background-color: rgba(20, 28, 48, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   opacity: 1 !important;
 }
 
 [data-theme="light"] .confirm-field,
 [data-theme="light"] .route-summary-box {
-  background-color: #f1f5f9 !important;
+  background-color: rgba(241, 245, 249, 0.95) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
+  opacity: 1 !important;
 }
 
 .final-status-card {
   opacity: 1 !important;
 }
 
+/* Final Railway E-Ticket: PRESERVE EXACT CRISP OPAQUE DESIGN */
 .aura-eticket-card {
   background-color: #ffffff !important;
   color: #0f172a !important;
