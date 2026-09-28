@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- INITIALIZATION ---
   initTheme();
   initEventListeners();
+  initRailwayNetworkCanvas();
 
   function initTheme() {
     const savedTheme = localStorage.getItem('aura-theme');
@@ -2024,4 +2025,606 @@ document.addEventListener('DOMContentLoaded', () => {
     const v = n % 100;
     return s[(v - 20) % 10] || s[v] || s[0];
   }
+  /**
+   * LIVING ANIMATED RAILWAY NETWORK BACKGROUND (Canvas Engine)
+   * Composition based directly on College Portal reference:
+   * - Deep navy canvas background (#020617, #06152F, #081B3A)
+   * - Dense glowing white & cyan particle network with thin connecting lines (1px)
+   * - Large particle clusters and brighter formations around the outer periphery
+   * - Quiet / calm zone in the center behind the main UI to maintain text readability
+   * - Diwali theme integrated as light: 12-15% warm golden/amber nodes with soft halos,
+   *   subtle background bokeh discs, and occasional gentle festive fireworks bursts
+   * - Railway identity: glowing transit tracks, small realistic moving train silhouettes
+   *   with lit windows & directional headlights, and subtle railway signals
+   * - Smooth 60fps vanilla canvas loop, high-DPI retina support, reduced-motion aware
+   */
+  function initRailwayNetworkCanvas() {
+    const canvas = document.getElementById('railway-network-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let width = 0;
+    let height = 0;
+    let dpr = 1;
+    let animFrameId = null;
+
+    // Motion preference
+    const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let prefersReducedMotion = motionQuery.matches;
+    if (motionQuery.addEventListener) {
+      motionQuery.addEventListener('change', (e) => {
+        prefersReducedMotion = e.matches;
+        if (prefersReducedMotion) {
+          if (animFrameId) cancelAnimationFrame(animFrameId);
+          drawFrame(true);
+        } else {
+          loop();
+        }
+      });
+    }
+
+    function resize() {
+      width = window.innerWidth;
+      height = window.innerHeight;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    resize();
+    window.addEventListener('resize', () => {
+      resize();
+      if (prefersReducedMotion) drawFrame(true);
+    });
+
+    // 1. Distant Bokeh Orbs (Diwali Warm Ambient Lighting)
+    const BOKEH_COUNT = 9;
+    const BOKEH_COLORS = [
+      'rgba(245, 158, 11, 0.055)',  // Warm amber
+      'rgba(251, 191, 36, 0.065)',  // Golden
+      'rgba(56, 189, 248, 0.045)',  // Cyan glow
+      'rgba(249, 115, 22, 0.05)',   // Deep festive amber
+      'rgba(99, 102, 241, 0.04)'    // Soft indigo
+    ];
+    const bokehOrbs = [];
+    for (let i = 0; i < BOKEH_COUNT; i++) {
+      bokehOrbs.push({
+        x: Math.random() * width,
+        y: Math.random() * height,
+        r: 60 + Math.random() * 90,
+        vx: (Math.random() - 0.5) * 0.12,
+        vy: (Math.random() - 0.5) * 0.12,
+        color: BOKEH_COLORS[i % BOKEH_COLORS.length]
+      });
+    }
+
+    // 2. Dense Particle Network (260-320 nodes)
+    const PARTICLE_COUNT = Math.min(300, Math.max(180, Math.floor(width * 0.18)));
+    const particles = [];
+
+    // Spawn biased towards perimeter to achieve the dense outer cluster effect from reference
+    function spawnParticlePosition() {
+      const isPerimeter = Math.random() < 0.76;
+      let x, y;
+      if (isPerimeter) {
+        const edge = Math.floor(Math.random() * 4); // 0: Top, 1: Right, 2: Bottom, 3: Left
+        if (edge === 0) { // Top
+          x = Math.random() * width;
+          y = Math.random() * (height * 0.28);
+        } else if (edge === 1) { // Right
+          x = width - Math.random() * (width * 0.25);
+          y = Math.random() * height;
+        } else if (edge === 2) { // Bottom
+          x = Math.random() * width;
+          y = height - Math.random() * (height * 0.28);
+        } else { // Left
+          x = Math.random() * (width * 0.25);
+          y = Math.random() * height;
+        }
+      } else {
+        x = Math.random() * width;
+        y = Math.random() * height;
+      }
+      return { x, y };
+    }
+
+    for (let i = 0; i < PARTICLE_COUNT; i++) {
+      const pos = spawnParticlePosition();
+      const rand = Math.random();
+      // 14% Diwali warm gold/amber nodes, 10% junction hubs, remainder crisp glowing white/cyan
+      let type = 'normal';
+      let color = '#FFFFFF';
+      let radius = 1.3 + Math.random() * 1.5;
+      let glow = false;
+
+      if (rand < 0.14) {
+        type = 'diwali';
+        const diwaliColors = ['#FBBF24', '#F59E0B', '#F97316', '#FEF08A'];
+        color = diwaliColors[Math.floor(Math.random() * diwaliColors.length)];
+        radius = 2.4 + Math.random() * 1.8;
+        glow = true;
+      } else if (rand < 0.24) {
+        type = 'hub';
+        color = '#38BDF8';
+        radius = 2.8 + Math.random() * 1.6;
+        glow = true;
+      } else {
+        color = Math.random() < 0.35 ? '#BAE6FD' : '#FFFFFF';
+      }
+
+      const speed = 0.15 + Math.random() * 0.38;
+      const angle = Math.random() * Math.PI * 2;
+      particles.push({
+        x: pos.x,
+        y: pos.y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        radius,
+        baseRadius: radius,
+        color,
+        type,
+        glow,
+        pulseOffset: Math.random() * Math.PI * 2
+      });
+    }
+
+    // 3. Railway Transit Corridors (3 track splines)
+    function getTrackCorridors() {
+      return [
+        {
+          // Upper elevated transit line
+          id: 'upper',
+          p0: { x: -120, y: height * 0.30 },
+          cp1: { x: width * 0.35, y: height * 0.24 },
+          cp2: { x: width * 0.68, y: height * 0.36 },
+          p1: { x: width + 120, y: height * 0.28 },
+          speed: 0.00065,
+          color: 'rgba(56, 189, 248, 0.25)'
+        },
+        {
+          // Lower valley mainline
+          id: 'lower',
+          p0: { x: width + 120, y: height * 0.82 },
+          cp1: { x: width * 0.68, y: height * 0.88 },
+          cp2: { x: width * 0.32, y: height * 0.74 },
+          p1: { x: -120, y: height * 0.80 },
+          speed: 0.00055,
+          color: 'rgba(251, 191, 36, 0.22)'
+        },
+        {
+          // Cross-diagonal express line
+          id: 'express',
+          p0: { x: -120, y: height * 0.62 },
+          cp1: { x: width * 0.40, y: height * 0.58 },
+          cp2: { x: width * 0.75, y: height * 0.65 },
+          p1: { x: width + 120, y: height * 0.60 },
+          speed: 0.0008,
+          color: 'rgba(129, 140, 248, 0.25)'
+        }
+      ];
+    }
+
+    // Evaluate cubic bezier for position and tangent angle
+    function getCubicPoint(t, p0, cp1, cp2, p1) {
+      const mt = 1 - t;
+      const mt2 = mt * mt;
+      const mt3 = mt2 * mt;
+      const t2 = t * t;
+      const t3 = t2 * t;
+
+      const x = mt3 * p0.x + 3 * mt2 * t * cp1.x + 3 * mt * t2 * cp2.x + t3 * p1.x;
+      const y = mt3 * p0.y + 3 * mt2 * t * cp1.y + 3 * mt * t2 * cp2.y + t3 * p1.y;
+
+      const dx = 3 * mt2 * (cp1.x - p0.x) + 6 * mt * t * (cp2.x - cp1.x) + 3 * t2 * (p1.x - cp2.x);
+      const dy = 3 * mt2 * (cp1.y - p0.y) + 6 * mt * t * (cp2.y - cp1.y) + 3 * t2 * (p1.y - cp2.y);
+      const angle = Math.atan2(dy, dx);
+
+      return { x, y, angle };
+    }
+
+    // Trains traveling along tracks
+    const trains = [
+      { trackIdx: 0, t: 0.18, length: 72, bodyColor: '#1E293B', stripeColor: '#38BDF8', headlightColor: '#FEF08A' },
+      { trackIdx: 1, t: 0.55, length: 78, bodyColor: '#1E1B4B', stripeColor: '#F59E0B', headlightColor: '#FEF08A' },
+      { trackIdx: 2, t: 0.82, length: 66, bodyColor: '#0F172A', stripeColor: '#34D399', headlightColor: '#FDE047' }
+    ];
+
+    // Railway Signal Masts along tracks
+    const signals = [
+      { x: 0.18, y: 0.29, mastH: 26, stateTime: 0 },
+      { x: 0.44, y: 0.59, mastH: 24, stateTime: 4 },
+      { x: 0.78, y: 0.81, mastH: 26, stateTime: 8 },
+      { x: 0.86, y: 0.32, mastH: 22, stateTime: 12 }
+    ];
+
+    // 4. Diwali Subtle Fireworks System
+    const fireworks = [];
+    let lastFireworkTime = 0;
+
+    function createFirework() {
+      const isLeft = Math.random() < 0.5;
+      const x = isLeft ? (width * (0.08 + Math.random() * 0.18)) : (width * (0.74 + Math.random() * 0.18));
+      const y = height * (0.12 + Math.random() * 0.26);
+
+      const hues = [
+        { core: '#FEF08A', spark: '#F59E0B' }, // Festive Gold & Amber
+        { core: '#FDE047', spark: '#F97316' }, // Deep Warm Gold
+        { core: '#BAE6FD', spark: '#38BDF8' }, // Starry Cyan
+        { core: '#FECDD3', spark: '#FB7185' }  // Warm Festive Rose
+      ];
+      const palette = hues[Math.floor(Math.random() * hues.length)];
+
+      const sparkCount = 26 + Math.floor(Math.random() * 10);
+      const sparks = [];
+      for (let i = 0; i < sparkCount; i++) {
+        const rad = (Math.PI * 2 * i) / sparkCount + (Math.random() - 0.5) * 0.3;
+        const force = 1.4 + Math.random() * 2.2;
+        sparks.push({
+          x,
+          y,
+          vx: Math.cos(rad) * force,
+          vy: Math.sin(rad) * force,
+          alpha: 1.0,
+          decay: 0.016 + Math.random() * 0.012,
+          size: 1.4 + Math.random() * 1.4,
+          core: palette.core,
+          spark: palette.spark
+        });
+      }
+      fireworks.push({ sparks });
+    }
+
+    createFirework();
+
+    // 5. Main Drawing Routine
+    let animTime = 0;
+
+    function drawFrame(isStatic) {
+      animTime += 0.016;
+
+      ctx.clearRect(0, 0, width, height);
+
+      const bgGrad = ctx.createRadialGradient(
+        width * 0.5, height * 0.3, width * 0.1,
+        width * 0.5, height * 0.5, width * 0.85
+      );
+      bgGrad.addColorStop(0, '#0a1d40');
+      bgGrad.addColorStop(0.45, '#06152f');
+      bgGrad.addColorStop(1, '#020617');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, width, height);
+
+      // A. Draw Distant Blurred Bokeh Orbs
+      ctx.save();
+      for (let i = 0; i < bokehOrbs.length; i++) {
+        const b = bokehOrbs[i];
+        if (!isStatic) {
+          b.x += b.vx;
+          b.y += b.vy;
+          if (b.x < -b.r) b.x = width + b.r;
+          if (b.x > width + b.r) b.x = -b.r;
+          if (b.y < -b.r) b.y = height + b.r;
+          if (b.y > height + b.r) b.y = -b.r;
+        }
+        const g = ctx.createRadialGradient(b.x, b.y, 0, b.x, b.y, b.r);
+        g.addColorStop(0, b.color);
+        g.addColorStop(1, 'transparent');
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // B. Draw Glowing Railway Track Splines
+      const tracks = getTrackCorridors();
+      ctx.save();
+      for (let i = 0; i < tracks.length; i++) {
+        const tr = tracks[i];
+        ctx.beginPath();
+        ctx.moveTo(tr.p0.x, tr.p0.y);
+        ctx.bezierCurveTo(tr.cp1.x, tr.cp1.y, tr.cp2.x, tr.cp2.y, tr.p1.x, tr.p1.y);
+
+        ctx.strokeStyle = tr.color;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.14)';
+        ctx.setLineDash([4, 14]);
+        ctx.lineDashOffset = -animTime * (i === 1 ? -25 : 30);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+      ctx.restore();
+
+      // C. Draw Railway Signals
+      ctx.save();
+      for (let i = 0; i < signals.length; i++) {
+        const sig = signals[i];
+        const sx = sig.x * width;
+        const sy = sig.y * height;
+        const h = sig.mastH;
+
+        ctx.strokeStyle = '#475569';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy);
+        ctx.lineTo(sx, sy - h);
+        ctx.stroke();
+
+        ctx.fillStyle = '#0F172A';
+        ctx.strokeStyle = '#334155';
+        ctx.lineWidth = 1;
+        ctx.fillRect(sx - 3.5, sy - h - 14, 7, 14);
+        ctx.strokeRect(sx - 3.5, sy - h - 14, 7, 14);
+
+        const cycle = (animTime + sig.stateTime) % 12;
+        let lampColor = '#10B981';
+        let lampGlow = 'rgba(16, 185, 129, 0.6)';
+        let lampY = sy - h - 3;
+        if (cycle > 9.5) {
+          lampColor = '#EF4444';
+          lampGlow = 'rgba(239, 68, 68, 0.6)';
+          lampY = sy - h - 11;
+        } else if (cycle > 7.5) {
+          lampColor = '#F59E0B';
+          lampGlow = 'rgba(245, 158, 11, 0.6)';
+          lampY = sy - h - 7;
+        }
+
+        ctx.fillStyle = lampColor;
+        ctx.shadowColor = lampGlow;
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(sx, lampY, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+      }
+      ctx.restore();
+
+      // D. Draw Realistic Moving Train Silhouettes with Lit Windows & Headlights
+      ctx.save();
+      for (let i = 0; i < trains.length; i++) {
+        const train = trains[i];
+        const tr = tracks[train.trackIdx];
+
+        if (!isStatic) {
+          train.t += tr.speed;
+          if (train.t > 1.05) train.t = -0.05;
+        }
+
+        const pt = getCubicPoint(train.t, tr.p0, tr.cp1, tr.cp2, tr.p1);
+
+        ctx.save();
+        ctx.translate(pt.x, pt.y);
+        ctx.rotate(pt.angle);
+
+        // Directional Headlight Beam
+        const beamGrad = ctx.createRadialGradient(25, 0, 0, 50, 0, 55);
+        beamGrad.addColorStop(0, 'rgba(254, 240, 138, 0.45)');
+        beamGrad.addColorStop(0.5, 'rgba(254, 240, 138, 0.15)');
+        beamGrad.addColorStop(1, 'transparent');
+
+        ctx.fillStyle = beamGrad;
+        ctx.beginPath();
+        ctx.moveTo(20, -1);
+        ctx.lineTo(75, -16);
+        ctx.lineTo(75, 16);
+        ctx.closePath();
+        ctx.fill();
+
+        // Train Body
+        const totalW = train.length;
+        const halfW = totalW / 2;
+        const coachW = (totalW - 6) / 3;
+        const coachH = 7.5;
+
+        // Engine Unit
+        ctx.fillStyle = train.bodyColor;
+        ctx.strokeStyle = train.stripeColor;
+        ctx.lineWidth = 1;
+
+        ctx.beginPath();
+        ctx.roundRect(halfW - coachW, -coachH / 2, coachW, coachH, [2, 4, 4, 2]);
+        ctx.fill();
+        ctx.stroke();
+
+        // Engine Headlight Bulb
+        ctx.fillStyle = train.headlightColor;
+        ctx.shadowColor = train.headlightColor;
+        ctx.shadowBlur = 5;
+        ctx.beginPath();
+        ctx.arc(halfW, 0, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        // Coaches
+        for (let c = 1; c < 3; c++) {
+          const cx = halfW - coachW * (c + 1) - c * 2;
+          ctx.fillStyle = train.bodyColor;
+          ctx.beginPath();
+          ctx.roundRect(cx, -coachH / 2, coachW, coachH, 1.5);
+          ctx.fill();
+          ctx.stroke();
+
+          // Lit Windows
+          ctx.fillStyle = '#FEF08A';
+          const winCount = 3;
+          for (let w = 0; w < winCount; w++) {
+            const wx = cx + 3 + w * 5;
+            ctx.fillRect(wx, -coachH / 2 + 1.8, 3, 2.2);
+          }
+        }
+
+        // Rear Red Tail Marker
+        const rearX = -halfW - 4;
+        ctx.fillStyle = '#EF4444';
+        ctx.shadowColor = '#EF4444';
+        ctx.shadowBlur = 6;
+        ctx.beginPath();
+        ctx.arc(rearX + 2, 0, 1.4, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+
+        ctx.restore();
+      }
+      ctx.restore();
+
+      // E. Draw Dense Particle Network with Outer Periphery Clustering & Central Quiet Zone
+      const quietCx = width * 0.5;
+      const quietCy = height * 0.48;
+      const quietRx = Math.min(width * 0.40, 560);
+      const quietRy = Math.min(height * 0.40, 400);
+
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+        if (!isStatic) {
+          const dx = p.x - quietCx;
+          const dy = p.y - quietCy;
+          const normDistSq = (dx * dx) / (quietRx * quietRx) + (dy * dy) / (quietRy * quietRy);
+          if (normDistSq < 1.0) {
+            const push = (1.0 - Math.sqrt(normDistSq)) * 0.06;
+            p.vx += (dx / quietRx) * push;
+            p.vy += (dy / quietRy) * push;
+          }
+
+          const curSpeed = Math.sqrt(p.vx * p.vx + p.vy * p.vy);
+          if (curSpeed > 0.8) {
+            p.vx = (p.vx / curSpeed) * 0.8;
+            p.vy = (p.vy / curSpeed) * 0.8;
+          }
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < -30) p.x = width + 25;
+          if (p.x > width + 30) p.x = -25;
+          if (p.y < -30) p.y = height + 25;
+          if (p.y > height + 30) p.y = -25;
+
+          if (p.glow) {
+            p.radius = p.baseRadius + Math.sin(animTime * 2.5 + p.pulseOffset) * 0.5;
+          }
+        }
+      }
+
+      // Interconnecting Lines
+      const maxConnectDist = 95;
+      ctx.lineWidth = 1;
+      for (let i = 0; i < particles.length; i++) {
+        const pi = particles[i];
+        for (let j = i + 1; j < particles.length; j++) {
+          const pj = particles[j];
+          const distDx = pi.x - pj.x;
+          const distDy = pi.y - pj.y;
+          const distSq = distDx * distDx + distDy * distDy;
+
+          if (distSq < maxConnectDist * maxConnectDist) {
+            const dist = Math.sqrt(distSq);
+            let alpha = (1 - dist / maxConnectDist) * 0.22;
+
+            const midX = (pi.x + pj.x) * 0.5;
+            const midY = (pi.y + pj.y) * 0.5;
+            const centerDistSq = ((midX - quietCx) ** 2) / (quietRx * quietRx) + ((midY - quietCy) ** 2) / (quietRy * quietRy);
+            if (centerDistSq < 1.0) {
+              alpha *= 0.28;
+            }
+
+            if (alpha > 0.015) {
+              ctx.beginPath();
+              ctx.moveTo(pi.x, pi.y);
+              ctx.lineTo(pj.x, pj.y);
+
+              if (pi.type === 'diwali' || pj.type === 'diwali') {
+                ctx.strokeStyle = `rgba(251, 191, 36, ${alpha * 1.2})`;
+              } else if (pi.type === 'hub' || pj.type === 'hub') {
+                ctx.strokeStyle = `rgba(56, 189, 248, ${alpha * 1.1})`;
+              } else {
+                ctx.strokeStyle = `rgba(224, 242, 254, ${alpha})`;
+              }
+              ctx.stroke();
+            }
+          }
+        }
+      }
+
+      // Nodes
+      for (let i = 0; i < particles.length; i++) {
+        const p = particles[i];
+
+        if (p.glow) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius * 2.8, 0, Math.PI * 2);
+          if (p.type === 'diwali') {
+            ctx.fillStyle = 'rgba(245, 158, 11, 0.22)';
+          } else {
+            ctx.fillStyle = 'rgba(56, 189, 248, 0.22)';
+          }
+          ctx.fill();
+          ctx.restore();
+        }
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, Math.max(0.8, p.radius), 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+      }
+
+      // F. Subtle Festive Fireworks Bursts (Diwali Celebration of Light)
+      if (!isStatic) {
+        if (animTime - lastFireworkTime > (3.5 + Math.random() * 2.0) && fireworks.length < 2) {
+          createFirework();
+          lastFireworkTime = animTime;
+        }
+
+        for (let f = fireworks.length - 1; f >= 0; f--) {
+          const fw = fireworks[f];
+          let allDead = true;
+
+          for (let s = 0; s < fw.sparks.length; s++) {
+            const sp = fw.sparks[s];
+            if (sp.alpha > 0.02) {
+              allDead = false;
+              sp.x += sp.vx;
+              sp.y += sp.vy;
+              sp.vx *= 0.975;
+              sp.vy *= 0.975;
+              sp.vy += 0.035;
+              sp.alpha -= sp.decay;
+
+              ctx.save();
+              ctx.beginPath();
+              ctx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+              ctx.fillStyle = sp.core;
+              ctx.shadowColor = sp.spark;
+              ctx.shadowBlur = 4;
+              ctx.globalAlpha = Math.max(0, sp.alpha);
+              ctx.fill();
+              ctx.restore();
+            }
+          }
+
+          if (allDead) {
+            fireworks.splice(f, 1);
+          }
+        }
+      }
+    }
+
+    function loop() {
+      if (prefersReducedMotion) {
+        drawFrame(true);
+        return;
+      }
+      drawFrame(false);
+      animFrameId = requestAnimationFrame(loop);
+    }
+
+    loop();
+  }
+
 });

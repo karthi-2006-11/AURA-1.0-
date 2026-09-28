@@ -74,38 +74,12 @@
   --monogram-bg: linear-gradient(135deg, #1e3a8a, #0284c7);
   --monogram-border: rgba(56, 189, 248, 0.4);
 
-  /* Living Railway World Environment Tokens - Dark Theme */
-  --sky-color-top: #020617;
-  --sky-color-mid: #0f172a;
-  --sky-color-bot: #172554;
-  --sun-glow-core: #93c5fd;
-  --sun-glow-outer: #38bdf8;
-  --sun-glow-ambient: #1e3a8a;
-  --celestial-disc-color: #e2e8f0;
-  --mount-far-top: #312e81;
-  --mount-far-mid: #1e1b4b;
-  --mount-far-bot: #0f172a;
-  --mount-mid-top: #1e293b;
-  --mount-mid-mid: #0f172a;
-  --mount-mid-bot: #020617;
-  --hill-back-top: #064e3b;
-  --hill-back-bot: #022c22;
-  --hill-back-shade: #011910;
-  --hill-front-top: #065f46;
-  --hill-front-mid: #047857;
-  --hill-front-bot: #064e3b;
-  --river-color-1: #0369a1;
-  --river-color-2: #0284c7;
-  --river-color-3: #0369a1;
-  --viaduct-top: #475569;
-  --viaduct-mid: #334155;
-  --viaduct-bot: #1e293b;
-  --city-building-1: #1e1b4b;
-  --city-building-2: #1e293b;
-  --city-building-3: #312e81;
-  --city-spire-color: #6366f1;
-  --headlight-glow: #38bdf8;
-  --headlight-glow-warm: #fef08a;
+  /* Digital Living Railway Network & Glass Tokens - Dark Theme */
+  --bg-navy-deep: #020617;
+  --bg-navy-mid: #06152f;
+  --bg-navy-glow: #081b3a;
+  --border-glass: rgba(255, 255, 255, 0.12);
+  --border-glass-glow: rgba(56, 189, 248, 0.22);
 }
 
 [data-theme="light"] {
@@ -173,38 +147,12 @@
   --monogram-bg: linear-gradient(135deg, #0284c7, #2563eb);
   --monogram-border: rgba(2, 132, 199, 0.3);
 
-  /* Living Railway World Environment Tokens - Light Theme */
-  --sky-color-top: #7DD3FC;
-  --sky-color-mid: #BAE6FD;
-  --sky-color-bot: #E0F2FE;
-  --sun-glow-core: #FEF08A;
-  --sun-glow-outer: #FDBA74;
-  --sun-glow-ambient: #93C5FD;
-  --celestial-disc-color: #FFFBEB;
-  --mount-far-top: #A78BFA;
-  --mount-far-mid: #818CF8;
-  --mount-far-bot: #6366F1;
-  --mount-mid-top: #818CF8;
-  --mount-mid-mid: #60A5FA;
-  --mount-mid-bot: #3B82F6;
-  --hill-back-top: #84CC16;
-  --hill-back-bot: #22C55E;
-  --hill-back-shade: #16A34A;
-  --hill-front-top: #4ADE80;
-  --hill-front-mid: #22C55E;
-  --hill-front-bot: #15803D;
-  --river-color-1: #0284C7;
-  --river-color-2: #38BDF8;
-  --river-color-3: #0284C7;
-  --viaduct-top: #CBD5E1;
-  --viaduct-mid: #94A3B8;
-  --viaduct-bot: #64748B;
-  --city-building-1: #4338CA;
-  --city-building-2: #3730A3;
-  --city-building-3: #4F46E5;
-  --city-spire-color: #818CF8;
-  --headlight-glow: #38BDF8;
-  --headlight-glow-warm: #FEF08A;
+  /* Digital Living Railway Network & Glass Tokens - Light Theme */
+  --bg-navy-deep: #06152f;
+  --bg-navy-mid: #081b3a;
+  --bg-navy-glow: #0e2b5c;
+  --border-glass: rgba(255, 255, 255, 0.35);
+  --border-glass-glow: rgba(14, 165, 233, 0.22);
 }
 
 /* Constants across themes */
@@ -3110,7 +3058,7 @@ kbd {
 }
 
 /* ==========================================================================
-   17. LIVING COLORFUL RAILWAY WORLD (ANIMATED ENVIRONMENT)
+   17. LIVING ANIMATED RAILWAY NETWORK BACKGROUND & FLOATING GLASS UI
    ========================================================================== */
 
 .railway-background-env {
@@ -3122,424 +3070,166 @@ kbd {
   user-select: none !important;
   z-index: 0;
   overflow: hidden;
+  background: radial-gradient(circle at 50% 25%, #081b3a 0%, #06152f 45%, #020617 100%);
   transition: opacity 0.5s ease;
 }
 
-/* Subtle focus dimming when user types */
 body.composer-focused .railway-background-env {
-  opacity: 0.65;
+  opacity: 0.72;
 }
 
-/* Vector Canvas Fullscreen */
-.railway-vector-canvas {
+.railway-network-canvas {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
-  pointer-events: none;
   display: block;
+  pointer-events: none !important;
 }
 
-/* 1. Celestial Orb / Sun / Moon Aura */
-.celestial-orb {
-  transform-origin: 1500px 180px;
-  animation: celestialAura 18s ease-in-out infinite alternate;
+/* Floating Glass UI Components */
+.app-header {
+  background: var(--bg-glass) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid var(--border-glass) !important;
+  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.5), 0 0 24px var(--border-glass-glow) !important;
 }
 
-@keyframes celestialAura {
-  0% { transform: scale(1); opacity: 0.8; }
-  100% { transform: scale(1.15); opacity: 1; }
+.empty-state-card {
+  background: var(--bg-glass) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid var(--border-glass) !important;
+  box-shadow: 0 20px 48px -12px rgba(0, 0, 0, 0.55), 0 0 30px var(--border-glass-glow) !important;
 }
 
-/* Night Stars (Fades in during dark mode) */
-.night-sky-stars {
-  opacity: 0;
-  transition: opacity 0.6s ease;
+.panel {
+  background: var(--bg-panel) !important;
+  backdrop-filter: blur(22px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
+  border: 1px solid var(--border-glass) !important;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5) !important;
 }
 
-[data-theme="dark"] .night-sky-stars {
-  opacity: 0.9;
+.panel-header {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-bottom: 1px solid var(--border-glass) !important;
 }
 
-.star {
-  fill: #ffffff;
-  animation: starTwinkle 4s ease-in-out infinite alternate;
+.composer-container {
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-top: 1px solid var(--border-glass) !important;
 }
 
-.star-1 { animation-delay: 0s; }
-.star-2 { animation-delay: 1.5s; }
-.star-3 { animation-delay: 2.8s; }
-
-@keyframes starTwinkle {
-  0%, 100% { opacity: 0.25; transform: scale(0.8); }
-  50% { opacity: 1; transform: scale(1.3); }
+.inspector-panel {
+  background: var(--bg-panel) !important;
+  backdrop-filter: blur(22px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(22px) saturate(180%) !important;
 }
 
-/* 2. Drifting Layered Clouds (6 Groups) */
-.cloud-drift {
-  will-change: transform;
+.inspector-panel .card {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid var(--border-glass) !important;
 }
 
-.cloud-group-1 {
-  animation: driftCloudR 70s linear infinite;
-  animation-delay: -12s;
+[data-theme="light"] .inspector-panel .card {
+  background: rgba(255, 255, 255, 0.78) !important;
+  border: 1px solid rgba(15, 23, 42, 0.08) !important;
 }
 
-.cloud-group-2 {
-  animation: driftCloudR 90s linear infinite;
-  animation-delay: -35s;
+/* ==========================================================================
+   CRITICAL READABILITY EXCEPTION:
+   Chat conversation messages, train cards, confirmation card, and final E-ticket
+   MUST REMAIN STRICTLY OPAQUE for 100% user readability!
+   ========================================================================== */
+
+.chat-bubble .bubble-body,
+.agent-message .bubble-body {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  opacity: 1 !important;
 }
 
-.cloud-group-3 {
-  animation: driftCloudR 110s linear infinite;
-  animation-delay: -58s;
+[data-theme="dark"] .agent-message .bubble-body {
+  background-color: #0d1322 !important;
+  border-color: rgba(56, 189, 248, 0.28) !important;
+  color: #f8fafc !important;
 }
 
-.cloud-group-4 {
-  animation: driftCloudR 80s linear infinite;
-  animation-delay: -22s;
+[data-theme="light"] .agent-message .bubble-body {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  color: #0f172a !important;
 }
 
-.cloud-group-5 {
-  animation: driftCloudR 55s linear infinite;
-  animation-delay: -40s;
+.user-message .bubble-body {
+  background: var(--user-bubble-bg) !important;
+  opacity: 1 !important;
 }
 
-.cloud-group-6 {
-  animation: driftCloudR 130s linear infinite;
-  animation-delay: -75s;
+.trains-card {
+  background-color: #0d1322 !important;
+  backdrop-filter: none !important;
+  opacity: 1 !important;
 }
 
-@keyframes driftCloudR {
-  0% { transform: translate3d(-400px, 0, 0); }
-  100% { transform: translate3d(2150px, 0, 0); }
+[data-theme="light"] .trains-card {
+  background-color: #ffffff !important;
 }
 
-/* 3. Mountain Parallax Silhouettes */
-.mount-far {
-  animation: mountainParallaxFar 120s ease-in-out infinite alternate;
+.train-item-card {
+  background-color: #141c30 !important;
+  opacity: 1 !important;
 }
 
-.mount-mid {
-  animation: mountainParallaxMid 90s ease-in-out infinite alternate;
+[data-theme="light"] .train-item-card {
+  background-color: #f8fafc !important;
 }
 
-@keyframes mountainParallaxFar {
-  0% { transform: translate3d(-18px, 0, 0); }
-  100% { transform: translate3d(18px, 0, 0); }
+.confirmation-card,
+.final-review-card {
+  background-color: #0d1322 !important;
+  backdrop-filter: none !important;
+  opacity: 1 !important;
 }
 
-@keyframes mountainParallaxMid {
-  0% { transform: translate3d(22px, 0, 0); }
-  100% { transform: translate3d(-22px, 0, 0); }
+[data-theme="light"] .confirmation-card,
+[data-theme="light"] .final-review-card {
+  background-color: #ffffff !important;
 }
 
-/* 4. City Skyline Aircraft Beacons */
-.beacon-light {
-  animation: beaconBlink 2.2s steps(2, start) infinite;
+.confirm-field,
+.route-summary-box {
+  background-color: #141c30 !important;
+  opacity: 1 !important;
 }
 
-@keyframes beaconBlink {
-  0%, 100% { opacity: 1; filter: drop-shadow(0 0 4px #ef4444); }
-  50% { opacity: 0.15; filter: none; }
+[data-theme="light"] .confirm-field,
+[data-theme="light"] .route-summary-box {
+  background-color: #f1f5f9 !important;
 }
 
-/* 5. River Ripples */
-.river-ripple {
-  animation: riverShimmer 6s ease-in-out infinite alternate;
+.final-status-card {
+  opacity: 1 !important;
 }
 
-.ripple-1 { animation-delay: 0s; }
-.ripple-2 { animation-delay: -2s; }
-.ripple-3 { animation-delay: -4s; }
-
-@keyframes riverShimmer {
-  0% { opacity: 0.25; stroke-dashoffset: 0; }
-  50% { opacity: 0.85; stroke-dashoffset: 20; }
-  100% { opacity: 0.25; stroke-dashoffset: 40; }
+.aura-eticket-card {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  opacity: 1 !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
 }
 
-/* 6. Tree Group Organic Sway */
-.tree-group {
-  transform-origin: bottom center;
-  animation: treeSway 8s ease-in-out infinite alternate;
+.aura-eticket-card * {
+  opacity: 1;
 }
 
-.tree-cluster-left { animation-delay: -1s; }
-.tree-cluster-mid { animation-delay: -3.5s; }
-.tree-cluster-right { animation-delay: -2s; }
-
-@keyframes treeSway {
-  0%, 100% { transform: rotate(0deg); }
-  50% { transform: rotate(1.8deg); }
-}
-
-/* 7. Station Location Pins (3s Pulse) */
-.station-pin {
-  transform-origin: 0 10px;
-  animation: pinBounce 3s ease-in-out infinite;
-}
-
-.pin-halo {
-  animation: haloPulse 3s ease-in-out infinite;
-}
-
-@keyframes pinBounce {
-  0%, 100% { transform: translateY(0) scale(1); }
-  50% { transform: translateY(-4px) scale(1.08); }
-}
-
-@keyframes haloPulse {
-  0%, 100% { transform: scale(1); opacity: 0.25; }
-  50% { transform: scale(1.5); opacity: 0.65; }
-}
-
-/* 8. Railway Signals (4 cycling masts) */
-.signal-lamp {
-  opacity: 0.2;
-  transition: opacity 0.4s ease;
-}
-
-.mast-1 .lamp-green { animation: signalCycleG1 14s infinite; }
-.mast-1 .lamp-yellow { animation: signalCycleY1 14s infinite; }
-.mast-1 .lamp-red { animation: signalCycleR1 14s infinite; }
-
-.mast-2 .lamp-green { animation: signalCycleG2 16s infinite; }
-.mast-2 .lamp-yellow { animation: signalCycleY2 16s infinite; }
-.mast-2 .lamp-red { animation: signalCycleR2 16s infinite; }
-
-.mast-3 .lamp-green { animation: signalCycleG1 18s infinite; animation-delay: -6s; }
-.mast-3 .lamp-yellow { animation: signalCycleY1 18s infinite; animation-delay: -6s; }
-.mast-3 .lamp-red { animation: signalCycleR1 18s infinite; animation-delay: -6s; }
-
-.mast-4 .lamp-green { animation: signalCycleG2 15s infinite; animation-delay: -8s; }
-.mast-4 .lamp-yellow { animation: signalCycleY2 15s infinite; animation-delay: -8s; }
-.mast-4 .lamp-red { animation: signalCycleR2 15s infinite; animation-delay: -8s; }
-
-@keyframes signalCycleG1 {
-  0%, 55%, 100% { opacity: 1; filter: drop-shadow(0 0 6px #10B981); }
-  60%, 95% { opacity: 0.2; filter: none; }
-}
-
-@keyframes signalCycleY1 {
-  0%, 55%, 70%, 100% { opacity: 0.2; filter: none; }
-  58%, 68% { opacity: 1; filter: drop-shadow(0 0 6px #F59E0B); }
-}
-
-@keyframes signalCycleR1 {
-  0%, 68%, 100% { opacity: 0.2; filter: none; }
-  72%, 96% { opacity: 1; filter: drop-shadow(0 0 6px #EF4444); }
-}
-
-@keyframes signalCycleG2 {
-  0%, 30%, 100% { opacity: 0.2; filter: none; }
-  35%, 85% { opacity: 1; filter: drop-shadow(0 0 6px #10B981); }
-}
-
-@keyframes signalCycleY2 {
-  0%, 25%, 38%, 85%, 100% { opacity: 0.2; filter: none; }
-  28%, 34%, 88%, 95% { opacity: 1; filter: drop-shadow(0 0 6px #F59E0B); }
-}
-
-@keyframes signalCycleR2 {
-  0%, 25%, 100% { opacity: 1; filter: drop-shadow(0 0 6px #EF4444); }
-  30%, 96% { opacity: 0.2; filter: none; }
-}
-
-/* 9. Glowing Animated Route Corridors */
-.route-glow-line {
-  fill: none;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-dasharray: 8 16;
-  animation: routeFlow 30s linear infinite;
-}
-
-.route-cyan {
-  stroke: #38BDF8;
-  filter: drop-shadow(0 0 6px #0284C7);
-}
-
-.route-pink {
-  stroke: #F472B6;
-  filter: drop-shadow(0 0 6px #DB2777);
-  animation-duration: 40s;
-  animation-direction: reverse;
-}
-
-.route-violet {
-  stroke: #A78BFA;
-  filter: drop-shadow(0 0 6px #7C3AED);
-  animation-duration: 35s;
-}
-
-@keyframes routeFlow {
-  to { stroke-dashoffset: -320; }
-}
-
-/* 10. Flowing Telemetry Packets & Sparkles */
-.route-particle {
-  filter: drop-shadow(0 0 4px currentColor);
-}
-
-.part-c1 { animation: flowParticleC 18s linear infinite; }
-.part-c2 { animation: flowParticleC 18s linear infinite -3s; }
-.part-c3 { animation: flowParticleC 18s linear infinite -6s; }
-.part-c4 { animation: flowParticleC 18s linear infinite -9s; }
-.part-c5 { animation: flowParticleC 18s linear infinite -12s; }
-.part-c6 { animation: flowParticleC 18s linear infinite -15s; }
-
-.part-p1 { animation: flowParticleP 24s linear infinite; }
-.part-p2 { animation: flowParticleP 24s linear infinite -4s; }
-.part-p3 { animation: flowParticleP 24s linear infinite -8s; }
-.part-p4 { animation: flowParticleP 24s linear infinite -12s; }
-.part-p5 { animation: flowParticleP 24s linear infinite -16s; }
-.part-p6 { animation: flowParticleP 24s linear infinite -20s; }
-
-.part-v1 { animation: flowParticleV 28s linear infinite; }
-.part-v2 { animation: flowParticleV 28s linear infinite -7s; }
-.part-v3 { animation: flowParticleV 28s linear infinite -14s; }
-.part-v4 { animation: flowParticleV 28s linear infinite -21s; }
-
-@keyframes flowParticleC {
-  0% { transform: translate3d(-100px, 620px, 0); opacity: 0; }
-  10% { opacity: 0.9; }
-  90% { opacity: 0.9; }
-  100% { transform: translate3d(2050px, 620px, 0); opacity: 0; }
-}
-
-@keyframes flowParticleP {
-  0% { transform: translate3d(-100px, 490px, 0); opacity: 0; }
-  10% { opacity: 0.85; }
-  90% { opacity: 0.85; }
-  100% { transform: translate3d(2050px, 500px, 0); opacity: 0; }
-}
-
-@keyframes flowParticleV {
-  0% { transform: translate3d(-100px, 840px, 0); opacity: 0; }
-  10% { opacity: 0.85; }
-  90% { opacity: 0.85; }
-  100% { transform: translate3d(2050px, 840px, 0); opacity: 0; }
-}
-
-.ambient-sparkle {
-  animation: sparkleTwinkle 5s ease-in-out infinite alternate;
-}
-
-.sp-1 { animation-delay: 0s; }
-.sp-2 { animation-delay: -1.2s; }
-.sp-3 { animation-delay: -2.5s; }
-.sp-4 { animation-delay: -3.7s; }
-.sp-5 { animation-delay: -4.5s; }
-.sp-6 { animation-delay: -1.8s; }
-
-@keyframes sparkleTwinkle {
-  0%, 100% { opacity: 0.2; transform: scale(0.8); }
-  50% { opacity: 0.95; transform: scale(1.25); }
-}
-
-/* 11. FIVE DISTINCT MOVING TRAINS (Multiple directions, speeds & paths) */
-.train-unit {
-  will-change: transform;
-}
-
-/* Train 1: Blue Futuristic Bullet Express (Left -> Right, 35s) */
-#train-track-express {
-  animation: moveTrainExpress 35s linear infinite;
-  animation-delay: -12s;
-}
-
-@keyframes moveTrainExpress {
-  0% { transform: translate3d(-380px, 620px, 0); }
-  100% { transform: translate3d(2150px, 620px, 0); }
-}
-
-/* Train 2: Crimson & Orange Passenger Train (Right -> Left, 50s) */
-#train-track-scenic {
-  animation: moveTrainScenic 50s linear infinite;
-  animation-delay: -24s;
-}
-
-@keyframes moveTrainScenic {
-  0% { transform: translate3d(2250px, 840px, 0); }
-  100% { transform: translate3d(-380px, 840px, 0); }
-}
-
-/* Train 3: Purple & Pink Mountain Express (Left -> Right, 65s) */
-#train-track-mountain {
-  animation: moveTrainMountain 65s linear infinite;
-  animation-delay: -38s;
-}
-
-@keyframes moveTrainMountain {
-  0% { transform: translate3d(-320px, 490px, 0); }
-  100% { transform: translate3d(2150px, 498px, 0); }
-}
-
-/* Train 4: Cyan Metro on Elevated Viaduct (Left -> Right, 75s) */
-#train-elevated-viaduct {
-  animation: moveTrainViaduct 75s linear infinite;
-  animation-delay: -52s;
-}
-
-@keyframes moveTrainViaduct {
-  0% { transform: translate3d(-300px, 345px, 0); }
-  100% { transform: translate3d(2150px, 345px, 0); }
-}
-
-/* Train 5: Cobalt & Gold Regional (Right -> Left, 90s) */
-#train-track-regional {
-  animation: moveTrainRegional 90s linear infinite;
-  animation-delay: -68s;
-}
-
-@keyframes moveTrainRegional {
-  0% { transform: translate3d(2200px, 642px, 0); }
-  100% { transform: translate3d(-300px, 642px, 0); }
-}
-
-/* 12. Reduced Motion Support */
+/* Reduced Motion Mode Support */
 @media (prefers-reduced-motion: reduce) {
-  .celestial-orb,
-  .star,
-  .cloud-drift,
-  .mountain-silhouette,
-  .beacon-light,
-  .river-ripple,
-  .tree-group,
-  .station-pin,
-  .pin-halo,
-  .signal-lamp,
-  .route-glow-line,
-  .route-particle,
-  .ambient-sparkle,
-  .train-unit {
-    animation: none !important;
-  }
-
-  /* Park trains at picturesque positions across the landscape */
-  #train-track-express { transform: translate3d(520px, 620px, 0) !important; }
-  #train-track-scenic { transform: translate3d(1400px, 840px, 0) !important; }
-  #train-track-mountain { transform: translate3d(260px, 490px, 0) !important; }
-  #train-elevated-viaduct { transform: translate3d(1050px, 345px, 0) !important; }
-  #train-track-regional { transform: translate3d(1650px, 642px, 0) !important; }
-
-  .cloud-group-1 { transform: translate3d(180px, 0, 0) !important; }
-  .cloud-group-2 { transform: translate3d(750px, 0, 0) !important; }
-  .cloud-group-3 { transform: translate3d(1350px, 0, 0) !important; }
-  .cloud-group-4 { transform: translate3d(450px, 0, 0) !important; }
-  .cloud-group-5 { transform: translate3d(1100px, 0, 0) !important; }
-  .cloud-group-6 { transform: translate3d(1600px, 0, 0) !important; }
-}
-
-/* 13. Mobile Responsiveness */
-@media (max-width: 768px) {
-  #train-track-mountain,
-  #train-track-regional {
-    display: none;
-  }
-  .city-skyline {
-    transform: translate(620px, 310px) scale(0.85);
+  .railway-network-canvas {
+    opacity: 0.85;
   }
 }
 
