@@ -80,67 +80,69 @@
         <div id="chat-stream" class="chat-stream" role="log" aria-live="polite">
           <!-- Empty State (Centered AI Assistant Landing Experience) -->
           <div id="empty-state" class="empty-state-card">
-            <!-- Refined Status Badge with Railway/AI Icon & Animated Cyan Glow -->
-            <div class="empty-hero-badge">
-              <svg class="hero-eyebrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <rect x="4" y="3" width="16" height="16" rx="2"></rect>
-                <path d="M4 11h16"></path>
-                <path d="M12 3v8"></path>
-                <path d="m8 19-2 3"></path>
-                <path d="m16 19 2 3"></path>
-              </svg>
-              <span>AI RAILWAY ASSISTANT</span>
-            </div>
+            <div class="hero-content">
+              <!-- Refined Status Badge with Railway/AI Icon & Animated Cyan Glow -->
+              <div class="empty-hero-badge">
+                <svg class="hero-eyebrow-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="4" y="3" width="16" height="16" rx="2"></rect>
+                  <path d="M4 11h16"></path>
+                  <path d="M12 3v8"></path>
+                  <path d="m8 19-2 3"></path>
+                  <path d="m16 19 2 3"></path>
+                </svg>
+                <span>AI RAILWAY ASSISTANT</span>
+              </div>
 
-            <h1 class="empty-title">Where would you like to go?</h1>
+              <h1 class="empty-title">Where would you like to go?</h1>
 
-            <p class="empty-desc">
-              Tell AURA about your journey in your own words.
-            </p>
+              <p class="empty-desc">
+                Tell AURA about your journey in your own words.
+              </p>
 
-            <!-- Compact AI Activity / Workflow Micro-Indicator -->
-            <div class="hero-workflow-indicator" aria-label="AURA workflow stages">
-              <span class="workflow-stage active-stage">
-                <span class="stage-dot pulse-dot" aria-hidden="true"></span>
-                <span class="stage-label">Understand</span>
-              </span>
-              <span class="workflow-arrow" aria-hidden="true">&rarr;</span>
-              <span class="workflow-stage">
-                <span class="stage-dot" aria-hidden="true"></span>
-                <span class="stage-label">Find</span>
-              </span>
-              <span class="workflow-arrow" aria-hidden="true">&rarr;</span>
-              <span class="workflow-stage">
-                <span class="stage-dot" aria-hidden="true"></span>
-                <span class="stage-label">Prepare</span>
-              </span>
-            </div>
+              <!-- Compact AI Activity / Workflow Micro-Indicator -->
+              <div class="hero-workflow-indicator" aria-label="AURA workflow stages">
+                <span class="workflow-stage active-stage">
+                  <span class="stage-dot pulse-dot" aria-hidden="true"></span>
+                  <span class="stage-label">Understand</span>
+                </span>
+                <span class="workflow-arrow" aria-hidden="true">&rarr;</span>
+                <span class="workflow-stage">
+                  <span class="stage-dot" aria-hidden="true"></span>
+                  <span class="stage-label">Find</span>
+                </span>
+                <span class="workflow-arrow" aria-hidden="true">&rarr;</span>
+                <span class="workflow-stage">
+                  <span class="stage-dot" aria-hidden="true"></span>
+                  <span class="stage-label">Prepare</span>
+                </span>
+              </div>
 
-            <!-- Popular Requests with Miniature Travel Routes -->
-            <div class="popular-requests-box">
-              <span class="popular-label">Popular requests</span>
-              <div class="popular-chips">
-                <button type="button" class="starter-chip" data-query="Book a train from Chennai to Coimbatore tomorrow" aria-label="Book a train from Chennai to Coimbatore tomorrow">
-                  <span class="chip-route-node origin-node" aria-hidden="true"></span>
-                  <span class="chip-station">Chennai</span>
-                  <span class="chip-route-arrow" aria-hidden="true">&rarr;</span>
-                  <span class="chip-route-node dest-node" aria-hidden="true"></span>
-                  <span class="chip-station">Coimbatore</span>
-                </button>
-                <button type="button" class="starter-chip" data-query="Book a train from Chennai to Bangalore tomorrow" aria-label="Book a train from Chennai to Bangalore tomorrow">
-                  <span class="chip-route-node origin-node" aria-hidden="true"></span>
-                  <span class="chip-station">Chennai</span>
-                  <span class="chip-route-arrow" aria-hidden="true">&rarr;</span>
-                  <span class="chip-route-node dest-node" aria-hidden="true"></span>
-                  <span class="chip-station">Bangalore</span>
-                </button>
-                <button type="button" class="starter-chip" data-query="Book a train from Salem to Chennai tomorrow" aria-label="Book a train from Salem to Chennai tomorrow">
-                  <span class="chip-route-node origin-node" aria-hidden="true"></span>
-                  <span class="chip-station">Salem</span>
-                  <span class="chip-route-arrow" aria-hidden="true">&rarr;</span>
-                  <span class="chip-route-node dest-node" aria-hidden="true"></span>
-                  <span class="chip-station">Chennai</span>
-                </button>
+              <!-- Popular Requests with Miniature Travel Routes -->
+              <div class="popular-requests-box">
+                <span class="popular-label">Popular requests</span>
+                <div class="popular-chips">
+                  <button type="button" class="starter-chip" data-query="Book a train from Chennai to Coimbatore tomorrow" aria-label="Book a train from Chennai to Coimbatore tomorrow">
+                    <span class="chip-route-node origin-node" aria-hidden="true"></span>
+                    <span class="chip-station">Chennai</span>
+                    <span class="chip-route-arrow" aria-hidden="true">&rarr;</span>
+                    <span class="chip-route-node dest-node" aria-hidden="true"></span>
+                    <span class="chip-station">Coimbatore</span>
+                  </button>
+                  <button type="button" class="starter-chip" data-query="Book a train from Chennai to Bangalore tomorrow" aria-label="Book a train from Chennai to Bangalore tomorrow">
+                    <span class="chip-route-node origin-node" aria-hidden="true"></span>
+                    <span class="chip-station">Chennai</span>
+                    <span class="chip-route-arrow" aria-hidden="true">&rarr;</span>
+                    <span class="chip-route-node dest-node" aria-hidden="true"></span>
+                    <span class="chip-station">Bangalore</span>
+                  </button>
+                  <button type="button" class="starter-chip" data-query="Book a train from Salem to Chennai tomorrow" aria-label="Book a train from Salem to Chennai tomorrow">
+                    <span class="chip-route-node origin-node" aria-hidden="true"></span>
+                    <span class="chip-station">Salem</span>
+                    <span class="chip-route-arrow" aria-hidden="true">&rarr;</span>
+                    <span class="chip-route-node dest-node" aria-hidden="true"></span>
+                    <span class="chip-station">Chennai</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

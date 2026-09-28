@@ -713,6 +713,7 @@ body {
   flex-direction: column;
   gap: 18px;
   scroll-behavior: smooth;
+  min-height: 0;
 }
 
 /* Custom Scrollbars */
@@ -735,9 +736,18 @@ body {
 /* Hero / Empty State Card (AI Railway Assistant Landing Experience) */
 .empty-state-card {
   margin: auto;
-  max-width: 640px;
+  max-width: 680px;
+  width: 100%;
+  height: auto;
+  min-height: 420px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
   text-align: center;
-  padding: 48px 36px;
+  padding: 48px 40px 44px;
   background-color: rgba(255, 255, 255, 0.045);
   backdrop-filter: blur(10px) saturate(125%);
   -webkit-backdrop-filter: blur(10px) saturate(125%);
@@ -745,7 +755,7 @@ body {
   border-radius: 28px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   animation: fadeIn 0.4s ease-out;
   transition: all var(--transition-normal);
 }
@@ -757,6 +767,19 @@ body {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 35%);
   pointer-events: none;
   border-radius: inherit;
+  z-index: 0;
+}
+
+.hero-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
 }
 
 .empty-hero-badge {
@@ -3116,17 +3139,49 @@ kbd {
 
   /* Responsive Hero / Empty State */
   .empty-state-card {
-    padding: 32px 18px !important;
+    padding: 32px 20px !important;
+    min-height: 0 !important;
   }
   .empty-title {
-    font-size: clamp(2.2rem, 7vw, 2.6rem) !important;
+    font-size: clamp(2.2rem, 10vw, 3rem) !important;
   }
   .hero-workflow-indicator {
+    flex-wrap: wrap;
     gap: 8px;
-    padding: 5px 12px;
+    padding: 6px 12px;
   }
   .workflow-stage {
     font-size: 0.70rem;
+  }
+  .popular-chips {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+  .starter-chip {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 1100px) {
+  .empty-state-card {
+    padding: 40px 32px 36px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .empty-state-card {
+    padding: 32px 20px !important;
+    min-height: 0 !important;
+  }
+  .empty-title {
+    font-size: clamp(2.2rem, 10vw, 3rem) !important;
+  }
+  .hero-workflow-indicator {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 6px 12px;
   }
   .popular-chips {
     flex-direction: column;
@@ -3304,6 +3359,17 @@ body.composer-focused .railway-background-env {
 
 /* 3. Hero Card (Real Thin Transparent Glass Sheet with Ambient Glow) */
 .empty-state-card {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: auto !important;
+  max-width: 680px !important;
+  width: 100% !important;
+  height: auto !important;
+  min-height: 420px !important;
+  flex-shrink: 0 !important;
+  box-sizing: border-box !important;
   background:
     radial-gradient(circle at 50% 35%, rgba(0, 180, 255, 0.07), transparent 55%),
     rgba(255, 255, 255, 0.045) !important;
@@ -3313,8 +3379,8 @@ body.composer-focused .railway-background-env {
   border-radius: 28px !important;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12) !important;
   position: relative !important;
-  overflow: hidden !important;
-  padding: 44px 36px !important;
+  overflow: visible !important;
+  padding: 48px 40px 44px !important;
 }
 
 [data-theme="dark"] .empty-state-card {
@@ -3341,6 +3407,19 @@ body.composer-focused .railway-background-env {
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), transparent 35%) !important;
   pointer-events: none;
   border-radius: inherit;
+  z-index: 0 !important;
+}
+
+.hero-content {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  width: 100% !important;
+  position: relative !important;
+  z-index: 2 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
 }
 
 /* Hero Eyebrow Status Badge with Subtle Animated Cyan Glow */
@@ -3357,7 +3436,7 @@ body.composer-focused .railway-background-env {
   text-transform: uppercase;
   padding: 5px 16px;
   border-radius: 9999px;
-  margin-bottom: 20px;
+  margin: 0 0 22px 0 !important;
   position: relative;
   animation: heroEyebrowPulse 2.8s ease-in-out infinite, heroFadeUp 0.5s ease-out both;
   opacity: 1 !important;
@@ -3397,7 +3476,7 @@ body.composer-focused .railway-background-env {
   font-weight: 800 !important;
   letter-spacing: -0.04em !important;
   line-height: 1.05 !important;
-  margin-bottom: 16px !important;
+  margin: 0 0 18px 0 !important;
   background: linear-gradient(180deg, #ffffff 40%, #bae6fd 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -3420,7 +3499,7 @@ body.composer-focused .railway-background-env {
   font-size: 1.05rem !important;
   line-height: 1.55 !important;
   max-width: 620px !important;
-  margin: 0 auto 20px !important;
+  margin: 0 auto 22px !important;
   opacity: 0.78 !important;
   color: rgba(248, 250, 252, 0.88) !important;
   animation: heroFadeUp 0.5s ease-out 0.2s both;
@@ -3436,7 +3515,7 @@ body.composer-focused .railway-background-env {
   align-items: center;
   justify-content: center;
   gap: 12px;
-  margin: 0 auto 28px;
+  margin: 0 auto 28px !important;
   padding: 6px 16px;
   background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.10);
@@ -3444,6 +3523,7 @@ body.composer-focused .railway-background-env {
   backdrop-filter: blur(5px);
   -webkit-backdrop-filter: blur(5px);
   animation: heroFadeUp 0.5s ease-out 0.3s both;
+  overflow: visible !important;
 }
 
 [data-theme="light"] .hero-workflow-indicator {
@@ -3519,7 +3599,15 @@ body.composer-focused .railway-background-env {
 
 /* Popular Requests Box & Miniature Travel Route Chips */
 .popular-requests-box {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 14px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
   animation: heroFadeUp 0.5s ease-out 0.4s both;
+  overflow: visible !important;
 }
 
 .popular-label {
@@ -3528,7 +3616,8 @@ body.composer-focused .railway-background-env {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.8px;
-  margin-bottom: 12px;
+  margin: 0 !important;
+  padding: 0 !important;
   opacity: 1 !important;
 }
 
@@ -3538,6 +3627,17 @@ body.composer-focused .railway-background-env {
 
 [data-theme="light"] .popular-label {
   color: rgba(15, 23, 42, 0.70) !important;
+}
+
+.popular-chips {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: center !important;
+  gap: 12px !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
 }
 
 /* 4. Popular Request Chips (Miniature Travel Route Design) */
